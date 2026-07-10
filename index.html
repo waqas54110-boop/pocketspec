@@ -99,6 +99,8 @@
     font-family:var(--mono);
   }
   .spec-card .sc-top{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:18px;}
+  .sc-img{width:100%; height:150px; object-fit:cover; border-radius:var(--radius); margin-bottom:16px; background:#0E0D0B;}
+  .card-img{width:100%; height:150px; object-fit:cover; border-radius:var(--radius); margin-bottom:14px; background:var(--paper-2);}
   .sc-name{font-family:var(--display); font-size:1.15rem; font-weight:600; color:#fff;}
   .sc-tag{font-size:0.7rem; color:#9BA2C4; letter-spacing:0.06em; text-transform:uppercase; margin-top:4px;}
   .sc-score{
@@ -135,6 +137,8 @@
 
   /* ---------- REVIEW GRID ---------- */
   .grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
+  .grid-4{grid-template-columns:repeat(4,1fr);}
+  @media (max-width: 1080px){ .grid-4{grid-template-columns:repeat(2,1fr);} }
   .card{
     border:1px solid var(--line); border-radius:var(--radius); padding:22px;
     background:#fff; display:flex; flex-direction:column; transition:border-color .15s, transform .15s;
@@ -236,9 +240,9 @@
   <section class="hero">
     <div class="wrap hero-grid">
       <div>
-        <div class="eyebrow">Budget tech, tested honestly</div>
-        <h1>We buy it,<br>break it in,<br><em>then tell you the truth.</em></h1>
-        <p class="lede">Earbuds, power banks and smartwatches under $60 — scored on real battery drain, real sound tests, real return-box wear. No brand ever pays for a rating.</p>
+        <div class="eyebrow">Budget tech, sorted honestly</div>
+        <h1>We dig through<br>the listings,<br><em>so you don't have to.</em></h1>
+        <p class="lede">Earbuds, power banks and smartwatches under Rs. 5,000 — ranked using real Daraz sales data, verified buyer ratings, and side-by-side spec comparisons. No brand pays for a spot on this list.</p>
         <div class="hero-actions">
           <a class="btn btn-solid" href="#reviews">See latest reviews</a>
           <a class="btn btn-ghost" href="#method">How scoring works</a>
@@ -246,20 +250,21 @@
       </div>
 
       <div class="spec-card" aria-label="Featured product score card">
+        <img class="sc-img" src="images/u39-earbuds.png" alt="U39 Wireless Gaming Earbuds">
         <div class="sc-top">
           <div>
-            <div class="sc-name">Aeris X2 Earbuds</div>
-            <div class="sc-tag">Wireless · ANC · Editor's Pick</div>
+            <div class="sc-name">U39 Wireless Gaming Earbuds</div>
+            <div class="sc-tag">Bluetooth 5.3 · ENC · Editor's Pick</div>
           </div>
-          <div class="sc-score">8.9<small>/ 10 overall</small></div>
+          <div class="sc-score">9.1<small>/ 10 value score</small></div>
         </div>
-        <div class="meter-row"><span class="meter-label">Sound</span><div class="meter-track"><div class="meter-fill" data-w="92"></div></div><span class="meter-val">9.2</span></div>
-        <div class="meter-row"><span class="meter-label">Battery</span><div class="meter-track"><div class="meter-fill" data-w="85"></div></div><span class="meter-val">8.5</span></div>
-        <div class="meter-row"><span class="meter-label">Comfort</span><div class="meter-track"><div class="meter-fill" data-w="88"></div></div><span class="meter-val">8.8</span></div>
-        <div class="meter-row"><span class="meter-label">Value</span><div class="meter-track"><div class="meter-fill" data-w="95"></div></div><span class="meter-val">9.5</span></div>
+        <div class="meter-row"><span class="meter-label">Rating</span><div class="meter-track"><div class="meter-fill" data-w="92"></div></div><span class="meter-val">4.6</span></div>
+        <div class="meter-row"><span class="meter-label">Discount</span><div class="meter-track"><div class="meter-fill" data-w="65"></div></div><span class="meter-val">65%</span></div>
+        <div class="meter-row"><span class="meter-label">Sold</span><div class="meter-track"><div class="meter-fill" data-w="70"></div></div><span class="meter-val">152</span></div>
+        <div class="meter-row"><span class="meter-label">Value</span><div class="meter-track"><div class="meter-fill" data-w="96"></div></div><span class="meter-val">9.6</span></div>
         <div class="sc-price">
-          <span class="amt">$34.99</span>
-          <a href="#" rel="sponsored nofollow">Check price →</a>
+          <span class="amt">Rs. 1,039</span>
+          <a href="https://go.urtrackinglink.com/aff_c?offer_id=164&aff_id=170889&url=https%3A%2F%2Fwww.daraz.pk%2Fproducts%2Fu39-wireless-gaming-earbuds_bluetooth-headphones-headset_enc-noise-cancelling-bluetooth-earphones_latest-53-bluethoot-chip-powerful-performance-fast-transmission_long-battery-true-stereo-earbuds-i1958928865.html%3Fsub_id1%3D{transaction_id}%26sub_aff_id%3D{affiliate_id}" rel="sponsored nofollow" target="_blank">Check price →</a>
         </div>
       </div>
     </div>
@@ -268,10 +273,10 @@
   <!-- TRUST BAR -->
   <div class="trust">
     <div class="wrap trust-grid">
-      <div class="trust-item"><b>140+</b>&nbsp;products tested</div>
-      <div class="trust-item"><b>1,800</b>&nbsp;test hours logged</div>
-      <div class="trust-item"><b>$0</b>&nbsp;taken from brands for ratings</div>
-      <div class="trust-item"><b>Updated</b>&nbsp;weekly</div>
+      <div class="trust-item"><b>Real</b>&nbsp;Daraz sales &amp; ratings data</div>
+      <div class="trust-item"><b>Rs. 0</b>&nbsp;taken from brands for placement</div>
+      <div class="trust-item"><b>Manually</b>&nbsp;vetted, not auto-listed</div>
+      <div class="trust-item"><b>Updated</b>&nbsp;regularly</div>
     </div>
   </div>
 
@@ -280,43 +285,58 @@
     <div class="wrap">
       <div class="sec-head">
         <div>
-          <h2>Latest reviews</h2>
-          <p>Fresh off the test bench. Each product gets a minimum of 10 days of daily use.</p>
+          <h2>Latest picks</h2>
+          <p>Sourced from Daraz's own sales rank and buyer reviews, checked against the spec sheet.</p>
         </div>
       </div>
-      <div class="grid">
+      <div class="grid grid-4">
 
         <article class="card">
+          <img class="card-img" src="images/u39-earbuds.png" alt="U39 Wireless Gaming Earbuds">
+          <div class="card-top"><span class="cat">Earbuds</span><span class="stars">★★★★★</span></div>
+          <h3>U39 Wireless Gaming Earbuds</h3>
+          <p class="desc">Bluetooth 5.3 with ENC noise-cancelling and touch controls. 152 sold with a 4.6-star rating from 32 buyers.</p>
+          <div class="pc">
+            <div class="pros"><div class="lbl">Pros</div><ul><li>ENC call clarity</li><li>Fast pairing</li></ul></div>
+            <div class="cons"><div class="lbl">Cons</div><ul><li>4–6hr per charge</li><li>Touch-only controls</li></ul></div>
+          </div>
+          <div class="card-foot"><span class="price">Rs. 1,039</span><a class="buy" href="https://go.urtrackinglink.com/aff_c?offer_id=164&aff_id=170889&url=https%3A%2F%2Fwww.daraz.pk%2Fproducts%2Fu39-wireless-gaming-earbuds_bluetooth-headphones-headset_enc-noise-cancelling-bluetooth-earphones_latest-53-bluethoot-chip-powerful-performance-fast-transmission_long-battery-true-stereo-earbuds-i1958928865.html%3Fsub_id1%3D{transaction_id}%26sub_aff_id%3D{affiliate_id}" rel="sponsored nofollow" target="_blank">View deal →</a></div>
+        </article>
+
+        <article class="card">
+          <img class="card-img" src="images/silm-powerbank.png" alt="Silm Pocket Power Bank 4000mAh">
           <div class="card-top"><span class="cat">Power Bank</span><span class="stars">★★★★☆</span></div>
-          <h3>Voltra 10K Slim</h3>
-          <p class="desc">Pocket-thin 10,000mAh bank that actually delivers its rated capacity — rare at this price.</p>
+          <h3>Silm Pocket 4000mAh</h3>
+          <p class="desc">Compact, travel-friendly power bank for phones and tablets. Early-bird pricing at 72% off the listed price.</p>
           <div class="pc">
-            <div class="pros"><div class="lbl">Pros</div><ul><li>True capacity</li><li>USB-C in/out</li></ul></div>
-            <div class="cons"><div class="lbl">Cons</div><ul><li>No wireless</li><li>Slow 10W input</li></ul></div>
+            <div class="pros"><div class="lbl">Pros</div><ul><li>Pocket-sized</li><li>Lightweight</li></ul></div>
+            <div class="cons"><div class="lbl">Cons</div><ul><li>4000mAh only</li><li>Newer listing</li></ul></div>
           </div>
-          <div class="card-foot"><span class="price">$21.99</span><a class="buy" href="#" rel="sponsored nofollow">View deal →</a></div>
+          <div class="card-foot"><span class="price">Rs. 499</span><a class="buy" href="https://go.urtrackinglink.com/aff_c?offer_id=164&aff_id=170889&url=https%3A%2F%2Fwww.daraz.pk%2Fproducts%2Fsilm-pocket-size-power-bank-4000mah-original-compact-portable-charger-for-smartphones-and-tablets-lightweight-and-travel-friendly-i518764065.html%3Fsub_id1%3D{transaction_id}%26sub_aff_id%3D{affiliate_id}" rel="sponsored nofollow" target="_blank">View deal →</a></div>
         </article>
 
         <article class="card">
+          <img class="card-img" src="images/luxury-smartwatch.png" alt="Luxury One Smartwatch">
           <div class="card-top"><span class="cat">Smartwatch</span><span class="stars">★★★★★</span></div>
-          <h3>Orbit Fit 2</h3>
-          <p class="desc">Seven-day battery in our loop test, plus the most accurate budget heart-rate sensor we've measured.</p>
+          <h3>Luxury One Smartwatch</h3>
+          <p class="desc">MP3 playback, SD card support and sleep monitoring, bundled with 7 interchangeable straps.</p>
           <div class="pc">
-            <div class="pros"><div class="lbl">Pros</div><ul><li>7-day battery</li><li>Accurate HR</li></ul></div>
-            <div class="cons"><div class="lbl">Cons</div><ul><li>No GPS</li><li>Small text</li></ul></div>
+            <div class="pros"><div class="lbl">Pros</div><ul><li>7 straps included</li><li>Sleep tracking</li></ul></div>
+            <div class="cons"><div class="lbl">Cons</div><ul><li>No GPS</li><li>Basic app</li></ul></div>
           </div>
-          <div class="card-foot"><span class="price">$28.50</span><a class="buy" href="#" rel="sponsored nofollow">View deal →</a></div>
+          <div class="card-foot"><span class="price">Rs. 2,849</span><a class="buy" href="https://go.urtrackinglink.com/aff_c?offer_id=164&aff_id=170889&url=https%3A%2F%2Fwww.daraz.pk%2Fproducts%2Fluxury-one-new-smartwatch-mp3-music-player-sd-card-supported-sleep-monitor-or-ultra-smart-watch-with-7-straps-price-in-pakistan-2026-i481313168.html%3Fsub_id1%3D{transaction_id}%26sub_aff_id%3D{affiliate_id}" rel="sponsored nofollow" target="_blank">View deal →</a></div>
         </article>
 
         <article class="card">
-          <div class="card-top"><span class="cat">Earbuds</span><span class="stars">★★★★☆</span></div>
-          <h3>Nomad Buds Air</h3>
-          <p class="desc">Punchy bass and surprisingly good call clarity in wind — our go-to outdoor commute pick.</p>
+          <img class="card-img" src="images/wantek-headset.png" alt="Wantek h602 Desk Headset">
+          <div class="card-top"><span class="cat">Headset</span><span class="stars">★★★★☆</span></div>
+          <h3>Wantek h602 Desk Headset</h3>
+          <p class="desc">Noise-cancelling mic headset built for desk phones and long call shifts — lightweight for all-day wear.</p>
           <div class="pc">
-            <div class="pros"><div class="lbl">Pros</div><ul><li>Great mic</li><li>Snug fit</li></ul></div>
-            <div class="cons"><div class="lbl">Cons</div><ul><li>Weak app</li><li>Case scuffs easily</li></ul></div>
+            <div class="pros"><div class="lbl">Pros</div><ul><li>Noise-cancel mic</li><li>All-day comfort</li></ul></div>
+            <div class="cons"><div class="lbl">Cons</div><ul><li>Wired, RJ9 only</li><li>Desk phone use</li></ul></div>
           </div>
-          <div class="card-foot"><span class="price">$26.00</span><a class="buy" href="#" rel="sponsored nofollow">View deal →</a></div>
+          <div class="card-foot"><span class="price">Rs. 4,000</span><a class="buy" href="https://go.urtrackinglink.com/aff_c?offer_id=164&aff_id=170889&url=https%3A%2F%2Fwww.daraz.pk%2Fproducts%2Fwantek-h602-rj9-rj1-desk-phone-headset-with-noise-canceling-mic-ultra-lightweight-professional-landline-headset-r5294-e-i1958106439.html%3Fsub_id1%3D{transaction_id}%26sub_aff_id%3D{affiliate_id}" rel="sponsored nofollow" target="_blank">View deal →</a></div>
         </article>
 
       </div>
@@ -328,16 +348,16 @@
     <div class="wrap" style="padding:64px 0 0;">
       <div class="sec-head" style="border:none; padding-bottom:0;">
         <div>
-          <h2>How a product earns its score</h2>
-          <p>Same four-stage process, every single time — so ratings stay comparable across categories.</p>
+          <h2>How a product earns a spot</h2>
+          <p>Same four-stage check, every single time — so picks stay comparable across categories.</p>
         </div>
       </div>
     </div>
     <div class="method-grid">
-      <div class="method-step"><div class="num">01 / Buy</div><h4>We buy it retail</h4><p>Same listing you'd order from — no review-unit swaps from the brand.</p></div>
-      <div class="method-step"><div class="num">02 / Live with it</div><h4>10+ days daily use</h4><p>Commute, gym, calls — the actual conditions the product is sold for.</p></div>
-      <div class="method-step"><div class="num">03 / Measure</div><h4>Bench-test the claims</h4><p>Battery drain curves, decibel output, charge cycles — logged, not guessed.</p></div>
-      <div class="method-step"><div class="num">04 / Score</div><h4>Weight & publish</h4><p>Four categories, weighted by what actually affects daily use, published in full.</p></div>
+      <div class="method-step"><div class="num">01 / Shortlist</div><h4>Scan the category</h4><p>We pull listings by sales rank within a category, not by who pays the most commission.</p></div>
+      <div class="method-step"><div class="num">02 / Verify</div><h4>Check real buyer reviews</h4><p>Star rating, review count, and written feedback — we skip anything under-reviewed or inconsistent.</p></div>
+      <div class="method-step"><div class="num">03 / Compare</div><h4>Read the spec sheet</h4><p>Battery, materials, warranty terms — matched against what similar listings charge for the same specs.</p></div>
+      <div class="method-step"><div class="num">04 / Publish</div><h4>List it, price and all</h4><p>Price and availability can shift on Daraz — we recheck and update picks regularly.</p></div>
     </div>
   </section>
 
@@ -346,19 +366,19 @@
     <div class="wrap">
       <div class="sec-head">
         <div>
-          <h2>Best budget earbuds — July 2026</h2>
-          <p>Our current ranked pick order, re-checked monthly against price changes.</p>
+          <h2>Best budget tech picks — July 2026</h2>
+          <p>Our current ranked pick order, re-checked against Daraz price changes.</p>
         </div>
       </div>
       <table>
         <thead>
-          <tr><th>Rank</th><th>Product</th><th>Score</th><th>Best for</th><th>Price</th><th></th></tr>
+          <tr><th>Rank</th><th>Product</th><th>Rating</th><th>Best for</th><th>Price</th><th></th></tr>
         </thead>
         <tbody>
-          <tr><td class="rank">01</td><td class="name">Aeris X2</td><td class="score">8.9</td><td>Overall sound</td><td class="price">$34.99</td><td><a class="buy-small" href="#" rel="sponsored nofollow">Check price →</a></td></tr>
-          <tr><td class="rank">02</td><td class="name">Nomad Buds Air</td><td class="score">8.3</td><td>Outdoor commutes</td><td class="price">$26.00</td><td><a class="buy-small" href="#" rel="sponsored nofollow">Check price →</a></td></tr>
-          <tr><td class="rank">03</td><td class="name">Fenn Lite Pro</td><td class="score">8.0</td><td>Tightest budget</td><td class="price">$18.75</td><td><a class="buy-small" href="#" rel="sponsored nofollow">Check price →</a></td></tr>
-          <tr><td class="rank">04</td><td class="name">Kord Sport 3</td><td class="score">7.6</td><td>Gym & sweat resistance</td><td class="price">$22.40</td><td><a class="buy-small" href="#" rel="sponsored nofollow">Check price →</a></td></tr>
+          <tr><td class="rank">01</td><td class="name">U39 Wireless Earbuds</td><td class="score">4.6★</td><td>Overall value</td><td class="price">Rs. 1,039</td><td><a class="buy-small" href="https://go.urtrackinglink.com/aff_c?offer_id=164&aff_id=170889&url=https%3A%2F%2Fwww.daraz.pk%2Fproducts%2Fu39-wireless-gaming-earbuds_bluetooth-headphones-headset_enc-noise-cancelling-bluetooth-earphones_latest-53-bluethoot-chip-powerful-performance-fast-transmission_long-battery-true-stereo-earbuds-i1958928865.html%3Fsub_id1%3D{transaction_id}%26sub_aff_id%3D{affiliate_id}" rel="sponsored nofollow" target="_blank">Check price →</a></td></tr>
+          <tr><td class="rank">02</td><td class="name">Luxury One Smartwatch</td><td class="score">5.0★</td><td>Extra straps &amp; sleep data</td><td class="price">Rs. 2,849</td><td><a class="buy-small" href="https://go.urtrackinglink.com/aff_c?offer_id=164&aff_id=170889&url=https%3A%2F%2Fwww.daraz.pk%2Fproducts%2Fluxury-one-new-smartwatch-mp3-music-player-sd-card-supported-sleep-monitor-or-ultra-smart-watch-with-7-straps-price-in-pakistan-2026-i481313168.html%3Fsub_id1%3D{transaction_id}%26sub_aff_id%3D{affiliate_id}" rel="sponsored nofollow" target="_blank">Check price →</a></td></tr>
+          <tr><td class="rank">03</td><td class="name">Wantek h602 Headset</td><td class="score">—</td><td>Desk phone use</td><td class="price">Rs. 4,000</td><td><a class="buy-small" href="https://go.urtrackinglink.com/aff_c?offer_id=164&aff_id=170889&url=https%3A%2F%2Fwww.daraz.pk%2Fproducts%2Fwantek-h602-rj9-rj1-desk-phone-headset-with-noise-canceling-mic-ultra-lightweight-professional-landline-headset-r5294-e-i1958106439.html%3Fsub_id1%3D{transaction_id}%26sub_aff_id%3D{affiliate_id}" rel="sponsored nofollow" target="_blank">Check price →</a></td></tr>
+          <tr><td class="rank">04</td><td class="name">Silm Pocket Power Bank</td><td class="score">4.0★</td><td>Tightest budget</td><td class="price">Rs. 499</td><td><a class="buy-small" href="https://go.urtrackinglink.com/aff_c?offer_id=164&aff_id=170889&url=https%3A%2F%2Fwww.daraz.pk%2Fproducts%2Fsilm-pocket-size-power-bank-4000mah-original-compact-portable-charger-for-smartphones-and-tablets-lightweight-and-travel-friendly-i518764065.html%3Fsub_id1%3D{transaction_id}%26sub_aff_id%3D{affiliate_id}" rel="sponsored nofollow" target="_blank">Check price →</a></td></tr>
         </tbody>
       </table>
     </div>
@@ -382,7 +402,7 @@
 
 <footer id="about">
   <div class="wrap foot-grid">
-    <p class="disclosure">PocketSpec is reader-supported. When you buy through links on this site, we may earn an affiliate commission at no extra cost to you. This never affects our test results or rankings — products are scored before we know which links will be used.</p>
+    <p class="disclosure">PocketSpec is reader-supported and participates in the Daraz Affiliate Program. When you buy through links on this site, we may earn a commission at no extra cost to you. Prices and availability are set by Daraz and can change at any time — always confirm on the product page before buying.</p>
     <div class="foot-links">
       <a href="#reviews">Reviews</a>
       <a href="#method">Methodology</a>
