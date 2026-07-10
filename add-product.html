@@ -49,6 +49,7 @@
   .list h2{font-family:var(--display); font-size:1.2rem; margin-bottom:16px;}
   .prod-row{display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid var(--line); font-size:0.9rem;}
   .prod-row .del{font-family:var(--mono); font-size:0.75rem; color:var(--red); cursor:pointer; background:none; border:none;}
+  .fb-status{font-size:0.75rem; color:var(--ink-soft); margin-top:4px;}
 </style>
 </head>
 <body>
@@ -66,7 +67,7 @@
     <a class="back" href="index.html">← Back to site</a>
     <div class="eyebrow">Add a Daraz product</div>
     <h1>New listing</h1>
-    <p class="sub">Daraz product link paste karo — affiliate tracking link khud ban jayega. Baaki fields bhar ke "Publish" dabao.</p>
+    <p class="sub">Daraz product link paste karo — affiliate tracking link khud ban jayega. Baaki fields bhar ke "Publish" dabao. Publish hote hi Facebook Page par bhi post ho jayega.</p>
 
     <label for="darazUrl">Daraz product URL</label>
     <input id="darazUrl" type="text" placeholder="https://www.daraz.pk/products/...">
@@ -125,6 +126,7 @@
 
     <button class="btn" id="submitBtn" onclick="submitProduct()">Publish to website</button>
     <div id="status"></div>
+    <div class="fb-status" id="fbStatus"></div>
 
     <div class="list">
       <h2>Already added (via this form)</h2>
@@ -139,6 +141,12 @@
   const ADMIN_PASSWORD = "zamzam123";
   const OFFER_ID = "164";
   const AFF_ID = "170889";
+
+  // ====== Facebook auto-post settings (Apps Script) ======
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw7SdawMLIuXMMiUqCAhtliyQi5pLq3aNt7B72oWbZJDKCHDm7BOEVZZZKSPvWV6JpciQ/exec";
+  // Apps Script Properties mein SHARED_SECRET is exact value ke sath set karo:
+  const APPS_SCRIPT_SECRET = "ps_3186313178@@5522";
+  // =========================================================
 
   const firebaseConfig = {
     apiKey: "AIzaSyAUHZpHe1J1jdK_87OmEhcV6aZ4ydQIK5U",
@@ -189,6 +197,41 @@
     el.className = ok ? 'ok' : 'err';
   }
 
+  function showFbStatus(msg){
+    document.getElementById('fbStatus').textContent = msg;
+  }
+
+  // Facebook par post karne wala function — Apps Script ko call karta hai
+  function postToFacebook(product){
+    if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf('PASTE_') === 0) {
+      showFbStatus('Facebook post skip hua — Apps Script URL set nahi hai.');
+      return;
+    }
+    showFbStatus('Facebook par post ho raha hai…');
+    fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' }, // Apps Script ke liye text/plain rakhna zaroori hai (CORS bachne ke liye)
+      body: JSON.stringify({
+        secret: APPS_SCRIPT_SECRET,
+        name: product.name,
+        price: product.price,
+        desc: product.desc,
+        image: product.image
+      })
+    })
+    .then(function(res){ return res.json(); })
+    .then(function(data){
+      if (data.ok === false) {
+        showFbStatus('Facebook post nahi hua: ' + (data.error || 'unknown error'));
+      } else {
+        showFbStatus('✓ Facebook Page par bhi post ho gaya.');
+      }
+    })
+    .catch(function(err){
+      showFbStatus('Facebook post fail: ' + err.message);
+    });
+  }
+
   function submitProduct(){
     const darazUrl = document.getElementById('darazUrl').value.trim();
     const name = document.getElementById('pName').value.trim();
@@ -211,6 +254,7 @@
     const btn = document.getElementById('submitBtn');
     btn.disabled = true;
     btn.textContent = 'Publishing…';
+    showFbStatus('');
 
     db.collection('products').add({
       name: name,
@@ -226,6 +270,10 @@
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     }).then(function(){
       showStatus('✓ Product website pe add ho gaya. Homepage refresh karke check karo.', true);
+
+      // Firestore save hote hi Facebook par bhi post karo
+      postToFacebook({ name: name, price: price, desc: desc, image: image });
+
       document.getElementById('darazUrl').value = '';
       document.getElementById('pName').value = '';
       document.getElementById('pPrice').value = '';
