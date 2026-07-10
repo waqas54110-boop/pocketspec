@@ -40,7 +40,6 @@
     *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;}
   }
 
-  /* ---------- HEADER ---------- */
   header{
     position:sticky; top:0; z-index:50;
     background:rgba(246,244,239,0.92);
@@ -63,7 +62,6 @@
   .nav-cta:hover{background:var(--ink); color:var(--paper);}
   .burger{display:none;}
 
-  /* ---------- HERO ---------- */
   .hero{
     padding:72px 0 56px;
     border-bottom:1px solid var(--line);
@@ -92,7 +90,6 @@
   .btn-solid:hover{transform:translateY(-2px); background:var(--signal); border-color:var(--signal);}
   .btn-ghost:hover{transform:translateY(-2px); background:var(--ink); color:var(--paper);}
 
-  /* spec-card signature element */
   .spec-card{
     background:var(--ink); color:var(--paper);
     border-radius:var(--radius); padding:26px 26px 22px;
@@ -123,19 +120,16 @@
   }
   .sc-price a:hover{background:var(--signal-dark);}
 
-  /* ---------- TRUST BAR ---------- */
   .trust{border-bottom:1px solid var(--line); background:var(--paper-2);}
   .trust-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:24px; padding:22px 0;}
   .trust-item{font-family:var(--mono); font-size:0.78rem; color:var(--ink-soft); display:flex; align-items:center; gap:8px;}
   .trust-item b{color:var(--ink); font-size:0.95rem;}
 
-  /* ---------- SECTION HEADERS ---------- */
   .sec{padding:72px 0;}
   .sec-head{display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:38px; gap:24px; border-bottom:1px solid var(--line); padding-bottom:20px;}
   .sec-head h2{font-family:var(--display); font-size:1.9rem; font-weight:600; letter-spacing:-0.01em;}
   .sec-head p{color:var(--ink-soft); font-size:0.92rem; max-width:38ch;}
 
-  /* ---------- REVIEW GRID ---------- */
   .grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
   .grid-4{grid-template-columns:repeat(4,1fr);}
   @media (max-width: 1080px){ .grid-4{grid-template-columns:repeat(2,1fr);} }
@@ -161,7 +155,6 @@
   .buy{font-size:0.8rem; font-weight:600; color:var(--signal); border-bottom:1px solid var(--signal); padding-bottom:2px;}
   .buy:hover{color:var(--signal-dark); border-color:var(--signal-dark);}
 
-  /* ---------- METHOD (numbered — real sequence) ---------- */
   .method{background:var(--paper-2); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
   .method-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line);}
   .method-step{background:var(--paper-2); padding:32px 26px;}
@@ -169,7 +162,6 @@
   .method-step h4{font-family:var(--display); font-size:1.02rem; margin-bottom:8px;}
   .method-step p{font-size:0.85rem; color:var(--ink-soft);}
 
-  /* ---------- RANKED TABLE ---------- */
   table{width:100%; border-collapse:collapse; font-size:0.9rem;}
   thead th{
     font-family:var(--mono); font-size:0.7rem; text-transform:uppercase; letter-spacing:0.06em;
@@ -182,7 +174,6 @@
   td.score{font-family:var(--mono); font-weight:700;}
   td a.buy-small{font-family:var(--mono); font-size:0.78rem; color:var(--signal); white-space:nowrap;}
 
-  /* ---------- NEWSLETTER / FOOTER ---------- */
   .cta-band{
     background:var(--ink); color:var(--paper); padding:64px 0; text-align:center;
   }
@@ -230,6 +221,7 @@
       <a href="#method">How We Test</a>
       <a href="#about">About</a>
       <a href="dashboard.html">Dashboard</a>
+      <a href="add-product.html">Add Product</a>
     </nav>
     <a class="nav-cta" href="#subscribe">Get weekly picks →</a>
   </div>
@@ -237,7 +229,6 @@
 
 <main id="top">
 
-  <!-- HERO -->
   <section class="hero">
     <div class="wrap hero-grid">
       <div>
@@ -271,7 +262,6 @@
     </div>
   </section>
 
-  <!-- TRUST BAR -->
   <div class="trust">
     <div class="wrap trust-grid">
       <div class="trust-item"><b>Real</b>&nbsp;Daraz sales &amp; ratings data</div>
@@ -281,7 +271,6 @@
     </div>
   </div>
 
-  <!-- REVIEWS -->
   <section class="sec" id="reviews">
     <div class="wrap">
       <div class="sec-head">
@@ -290,7 +279,7 @@
           <p>Sourced from Daraz's own sales rank and buyer reviews, checked against the spec sheet.</p>
         </div>
       </div>
-      <div class="grid grid-4">
+      <div class="grid grid-4" id="productGrid">
 
         <article class="card">
           <img class="card-img" src="images/u39-earbuds.png" alt="U39 Wireless Gaming Earbuds">
@@ -302,18 +291,6 @@
             <div class="cons"><div class="lbl">Cons</div><ul><li>4–6hr per charge</li><li>Touch-only controls</li></ul></div>
           </div>
           <div class="card-foot"><span class="price">Rs. 1,039</span><a class="buy" href="https://go.urtrackinglink.com/aff_c?offer_id=164&aff_id=170889&url=https%3A%2F%2Fwww.daraz.pk%2Fproducts%2Fu39-wireless-gaming-earbuds_bluetooth-headphones-headset_enc-noise-cancelling-bluetooth-earphones_latest-53-bluethoot-chip-powerful-performance-fast-transmission_long-battery-true-stereo-earbuds-i1958928865.html%3Fsub_id1%3D{transaction_id}%26sub_aff_id%3D{affiliate_id}" rel="sponsored nofollow" target="_blank" data-product="U39 Wireless Earbuds" data-slot="grid" onclick="trackClick(this)">View deal →</a></div>
-        </article>
-
-         <article class="card">
-          <img class="card-img" src="https://img.drz.lazcdn.com/static/pk/p/c6ce5a8c41f95c935e81660148a0a6b2.jpg_720x720q80.jpg" alt="Vintage-Inspired Retro Square Glasses for Men &amp; Women - Durable Plastic Frame with Adjustable Hinges, Lightweight &amp; Stylish for Daily Wear, Or Outdoor Activities, Outdoor Eyewear, Classic Eyewear Design, Comfortable Eyeglasses | Daraz.pk">
-          <div class="card-top"><span class="cat">Sunglasses</span><span class="stars">★★★★☆</span></div>
-          <h3>Vintage Retro Square Sunglasses</h3>
-          <p class="desc">Durable plastic frame with adjustable hinges — lightweight for daily wear or outdoor use.</p>
-          <div class="pc">
-            <div class="pros"><div class="lbl">Pros</div><ul><li>. Lightweight frame</li><li>Adjustable hinges</li></ul></div>
-            <div class="cons"><div class="lbl">Cons</div><ul><li>No rating yet</li><li>New listing/li></ul></div>
-          </div>
-          <div class="card-foot"><span class="price">Rs. 324</span><a class="buy" href="https://go.urtrackinglink.com/aff_c?offer_id=164&aff_id=170889&url=https%3A%2F%2Fwww.daraz.pk%2Fproducts%2F-i897422843.html%3Fsub_id1%3D{transaction_id}%26sub_aff_id%3D{affiliate_id}" rel="sponsored nofollow" target="_blank" data-product="Vintage-Inspired Retro Square Glasses for Men &amp; Women - Durable Plastic Frame with Adjustable Hinges, Lightweight &amp; Stylish for Daily Wear, Or Outdoor Activities, Outdoor Eyewear, Classic Eyewear Design, Comfortable Eyeglasses | Daraz.pk" data-slot="grid" onclick="trackClick(this)">View deal →</a></div>
         </article>
 
         <article class="card">
@@ -353,10 +330,11 @@
         </article>
 
       </div>
+
+      <p id="dynamicLoadNote" style="display:none; font-family:var(--mono); font-size:0.78rem; color:var(--ink-soft); margin-top:20px;">Loading more picks…</p>
     </div>
   </section>
 
-  <!-- METHOD — real sequential process, numbering justified -->
   <section class="method" id="method">
     <div class="wrap" style="padding:64px 0 0;">
       <div class="sec-head" style="border:none; padding-bottom:0;">
@@ -374,7 +352,6 @@
     </div>
   </section>
 
-  <!-- BEST OF — ranked, numbering justified -->
   <section class="sec" id="bestof">
     <div class="wrap">
       <div class="sec-head">
@@ -397,7 +374,6 @@
     </div>
   </section>
 
-  <!-- NEWSLETTER -->
   <section class="cta-band" id="subscribe">
     <div class="wrap">
       <h2>One email, every Friday.</h2>
@@ -425,15 +401,9 @@
   </div>
 </footer>
 
-<!-- ============ CLICK TRACKING (Firebase) ============
-     Setup: console.firebase.google.com -> project banao -> Firestore Database (test mode) ->
-     Project settings -> web app -> yahan config paste karo.
-     Guide: dashboard.html file ke comments mein bhi likha hai.
-============================================================ -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
-  // ---- 1) YAHAN APNA FIREBASE CONFIG PASTE KARO ----
   const firebaseConfig = {
     apiKey: "AIzaSyAUHZpHe1J1jdK_87OmEhcV6aZ4ydQIK5U",
     authDomain: "pocketspec-3295b.firebaseapp.com",
@@ -445,13 +415,10 @@
 
   let db = null;
   try {
-    if (firebaseConfig.apiKey !== "FIREBASE_CONFIG_YAHAN_PASTE_KARO") {
-      firebase.initializeApp(firebaseConfig);
-      db = firebase.firestore();
-    }
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
   } catch (e) { console.warn("Firebase init nahi hua:", e); }
 
-  // ---- 2) Traffic source detect karo (URL param > referrer > direct) ----
   (function detectSource(){
     const params = new URLSearchParams(window.location.search);
     const utm = (params.get('utm_source') || '').toLowerCase();
@@ -459,7 +426,7 @@
       sessionStorage.setItem('ps_source', utm);
       return;
     }
-    if (sessionStorage.getItem('ps_source')) return; // already set is session mein
+    if (sessionStorage.getItem('ps_source')) return;
 
     const ref = (document.referrer || '').toLowerCase();
     let source = 'direct';
@@ -471,9 +438,8 @@
     sessionStorage.setItem('ps_source', source);
   })();
 
-  // ---- 3) Click track function (buy button onclick se call hota hai) ----
   function trackClick(el){
-    if (!db) return; // config abhi nahi laga to silently skip
+    if (!db) return;
     const product = el.getAttribute('data-product') || 'unknown';
     const slot = el.getAttribute('data-slot') || 'unknown';
     const source = sessionStorage.getItem('ps_source') || 'direct';
@@ -488,12 +454,97 @@
     }).catch(function(e){ console.warn('Click log fail:', e); });
   }
 
-  // Animate rating meters when hero is visible
+  function buildProductCard(p){
+    const article = document.createElement('article');
+    article.className = 'card';
+
+    const img = document.createElement('img');
+    img.className = 'card-img';
+    img.src = p.image || '';
+    img.alt = p.name || 'Product';
+    article.appendChild(img);
+
+    const top = document.createElement('div');
+    top.className = 'card-top';
+    const cat = document.createElement('span');
+    cat.className = 'cat';
+    cat.textContent = p.category || 'Gadget';
+    const stars = document.createElement('span');
+    stars.className = 'stars';
+    const filled = Math.round(Number(p.rating) || 0);
+    stars.textContent = '★★★★★'.slice(0, filled) + '☆☆☆☆☆'.slice(0, 5 - filled);
+    top.appendChild(cat); top.appendChild(stars);
+    article.appendChild(top);
+
+    const h3 = document.createElement('h3');
+    h3.textContent = p.name || 'Untitled product';
+    article.appendChild(h3);
+
+    const desc = document.createElement('p');
+    desc.className = 'desc';
+    desc.textContent = p.desc || '';
+    article.appendChild(desc);
+
+    const pc = document.createElement('div');
+    pc.className = 'pc';
+    const prosDiv = document.createElement('div'); prosDiv.className = 'pros';
+    const prosLbl = document.createElement('div'); prosLbl.className = 'lbl'; prosLbl.textContent = 'Pros';
+    const prosUl = document.createElement('ul');
+    (p.pros || []).forEach(function(t){ if(!t) return; const li = document.createElement('li'); li.textContent = t; prosUl.appendChild(li); });
+    prosDiv.appendChild(prosLbl); prosDiv.appendChild(prosUl);
+
+    const consDiv = document.createElement('div'); consDiv.className = 'cons';
+    const consLbl = document.createElement('div'); consLbl.className = 'lbl'; consLbl.textContent = 'Cons';
+    const consUl = document.createElement('ul');
+    (p.cons || []).forEach(function(t){ if(!t) return; const li = document.createElement('li'); li.textContent = t; consUl.appendChild(li); });
+    consDiv.appendChild(consLbl); consDiv.appendChild(consUl);
+
+    pc.appendChild(prosDiv); pc.appendChild(consDiv);
+    article.appendChild(pc);
+
+    const foot = document.createElement('div');
+    foot.className = 'card-foot';
+    const price = document.createElement('span');
+    price.className = 'price';
+    price.textContent = 'Rs. ' + (p.price || '—');
+    const buy = document.createElement('a');
+    buy.className = 'buy';
+    buy.href = p.affLink || '#';
+    buy.target = '_blank';
+    buy.rel = 'sponsored nofollow';
+    buy.textContent = 'View deal →';
+    buy.setAttribute('data-product', p.name || 'unknown');
+    buy.setAttribute('data-slot', 'grid-dynamic');
+    buy.onclick = function(){ trackClick(buy); };
+    foot.appendChild(price); foot.appendChild(buy);
+    article.appendChild(foot);
+
+    return article;
+  }
+
+  function loadDynamicProducts(){
+    if (!db) return;
+    const note = document.getElementById('dynamicLoadNote');
+    if (note) note.style.display = 'block';
+    db.collection('products').orderBy('createdAt', 'desc').get().then(function(snap){
+      const grid = document.getElementById('productGrid');
+      snap.forEach(function(doc){
+        const p = doc.data();
+        if (grid) grid.appendChild(buildProductCard(p));
+      });
+      if (note) note.style.display = 'none';
+    }).catch(function(e){
+      console.warn('Products load fail:', e);
+      if (note) note.style.display = 'none';
+    });
+  }
+
   window.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.meter-fill').forEach(el => {
       const target = el.getAttribute('data-w');
       requestAnimationFrame(() => { el.style.width = target + '%'; });
     });
+    loadDynamicProducts();
   });
 
   function handleSubscribe(e){
