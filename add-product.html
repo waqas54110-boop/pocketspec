@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Add Product — PocketSpec Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F4EF; --paper-2:#EFEBE1; --ink:#171614; --ink-soft:#5B584F;
+    --line:#D8D3C7; --signal:#2F5FE0; --signal-dark:#1F42A8; --green:#3E8E5A; --red:#C4462B;
+    --radius:2px; --display:'Space Grotesk',sans-serif; --body:'Inter',sans-serif; --mono:'JetBrains Mono',monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--paper); color:var(--ink); font-family:var(--body); line-height:1.5;}
+  a{color:var(--signal); text-decoration:none;}
+  .wrap{max-width:640px; margin:0 auto; padding:48px 24px 100px;}
+  .eyebrow{font-family:var(--mono); font-size:0.78rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--signal); margin-bottom:10px;}
+  h1{font-family:var(--display); font-weight:700; font-size:2rem; margin-bottom:8px;}
+  .sub{color:var(--ink-soft); font-size:0.95rem; margin-bottom:36px;}
+  label{display:block; font-family:var(--mono); font-size:0.72rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--ink-soft); margin-bottom:6px; margin-top:20px;}
+  input, textarea, select{
+    width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius);
+    background:#fff; font-family:var(--body); font-size:0.95rem; color:var(--ink);
+  }
+  input:focus, textarea:focus, select:focus{outline:2px solid var(--signal); border-color:var(--signal);}
+  textarea{resize:vertical; min-height:70px;}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .hint{font-size:0.78rem; color:var(--ink-soft); margin-top:6px;}
+  .btn{
+    margin-top:32px; width:100%; padding:15px; border:none; border-radius:var(--radius);
+    background:var(--ink); color:var(--paper); font-family:var(--body); font-weight:600;
+    font-size:0.95rem; cursor:pointer; transition:background .15s;
+  }
+  .btn:hover{background:var(--signal);}
+  .btn:disabled{opacity:0.5; cursor:not-allowed;}
+  #gate{max-width:360px; margin:100px auto; text-align:center;}
+  #gate input{margin-bottom:14px;}
+  #gate .btn{margin-top:0;}
+  #app{display:none;}
+  #status{margin-top:18px; padding:14px; border-radius:var(--radius); font-size:0.88rem; display:none;}
+  #status.ok{display:block; background:#E7F3EB; color:var(--green); border:1px solid var(--green);}
+  #status.err{display:block; background:#FBEAE6; color:var(--red); border:1px solid var(--red);}
+  .preview-link{font-family:var(--mono); font-size:0.7rem; color:var(--ink-soft); word-break:break-all; margin-top:8px; background:var(--paper-2); padding:10px; border-radius:var(--radius); display:none;}
+  .back{display:inline-block; margin-bottom:24px; font-family:var(--mono); font-size:0.82rem; color:var(--ink-soft);}
+  .back:hover{color:var(--ink);}
+  .list{margin-top:56px; border-top:1px solid var(--line); padding-top:30px;}
+  .list h2{font-family:var(--display); font-size:1.2rem; margin-bottom:16px;}
+  .prod-row{display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid var(--line); font-size:0.9rem;}
+  .prod-row .del{font-family:var(--mono); font-size:0.75rem; color:var(--red); cursor:pointer; background:none; border:none;}
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="eyebrow">PocketSpec Admin</div>
+  <h1 style="font-size:1.4rem;">Enter password</h1>
+  <input type="password" id="pwInput" placeholder="Password" autocomplete="off">
+  <button class="btn" onclick="checkPassword()">Unlock</button>
+  <p id="gateErr" style="color:var(--red); font-size:0.85rem; margin-top:10px; display:none;">Galat password.</p>
+</div>
+
+<div id="app">
+  <div class="wrap">
+    <a class="back" href="index.html">← Back to site</a>
+    <div class="eyebrow">Add a Daraz product</div>
+    <h1>New listing</h1>
+    <p class="sub">Daraz product link paste karo — affiliate tracking link khud ban jayega. Baaki fields bhar ke "Publish" dabao.</p>
+
+    <label for="darazUrl">Daraz product URL</label>
+    <input id="darazUrl" type="text" placeholder="https://www.daraz.pk/products/...">
+    <div class="hint">Poora link paste karo, jaisa browser address bar se copy hota hai — extra <code>?spm=...</code> hissa khud hat jayega.</div>
+    <div class="preview-link" id="linkPreview"></div>
+
+    <div class="row2">
+      <div>
+        <label for="pName">Product name</label>
+        <input id="pName" type="text" placeholder="U39 Wireless Earbuds">
+      </div>
+      <div>
+        <label for="pPrice">Price (Rs.)</label>
+        <input id="pPrice" type="number" placeholder="1039">
+      </div>
+    </div>
+
+    <div class="row2">
+      <div>
+        <label for="pCategory">Category</label>
+        <select id="pCategory">
+          <option>Earbuds</option>
+          <option>Power Bank</option>
+          <option>Smartwatch</option>
+          <option>Headset</option>
+          <option>Phone Accessory</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div>
+        <label for="pRating">Rating (1-5)</label>
+        <input id="pRating" type="number" min="1" max="5" step="0.1" placeholder="4.5">
+      </div>
+    </div>
+
+    <label for="pImage">Image URL</label>
+    <input id="pImage" type="text" placeholder="Daraz product page pe image pe right-click → Copy image address">
+
+    <label for="pDesc">Short description</label>
+    <textarea id="pDesc" placeholder="1-2 line description of the product"></textarea>
+
+    <div class="row2">
+      <div>
+        <label for="pPro1">Pro 1</label>
+        <input id="pPro1" type="text" placeholder="e.g. Fast charging">
+        <label for="pPro2">Pro 2</label>
+        <input id="pPro2" type="text" placeholder="e.g. Lightweight">
+      </div>
+      <div>
+        <label for="pCon1">Con 1</label>
+        <input id="pCon1" type="text" placeholder="e.g. No warranty card">
+        <label for="pCon2">Con 2</label>
+        <input id="pCon2" type="text" placeholder="e.g. New listing">
+      </div>
+    </div>
+
+    <button class="btn" id="submitBtn" onclick="submitProduct()">Publish to website</button>
+    <div id="status"></div>
+
+    <div class="list">
+      <h2>Already added (via this form)</h2>
+      <div id="prodList"><p class="hint">Loading…</p></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+  const ADMIN_PASSWORD = "zamzam123";
+  const OFFER_ID = "164";
+  const AFF_ID = "170889";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAUHZpHe1J1jdK_87OmEhcV6aZ4ydQIK5U",
+    authDomain: "pocketspec-3295b.firebaseapp.com",
+    projectId: "pocketspec-3295b",
+    storageBucket: "pocketspec-3295b.firebasestorage.app",
+    messagingSenderId: "1080432853252",
+    appId: "1:1080432853252:web:7a1e55f469a0f96f481051"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  function checkPassword(){
+    const val = document.getElementById('pwInput').value;
+    if (val === ADMIN_PASSWORD) {
+      document.getElementById('gate').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      loadExistingProducts();
+    } else {
+      document.getElementById('gateErr').style.display = 'block';
+    }
+  }
+  document.getElementById('pwInput').addEventListener('keydown', function(e){
+    if (e.key === 'Enter') checkPassword();
+  });
+
+  function buildAffLink(rawUrl){
+    let clean = rawUrl.trim().split('?')[0]; // query params hata do
+    if (!clean) return '';
+    const encoded = encodeURIComponent(clean);
+    return `https://go.urtrackinglink.com/aff_c?offer_id=${OFFER_ID}&aff_id=${AFF_ID}&url=${encoded}%3Fsub_id1%3D{transaction_id}%26sub_aff_id%3D{affiliate_id}`;
+  }
+
+  document.getElementById('darazUrl').addEventListener('input', function(){
+    const link = buildAffLink(this.value);
+    const preview = document.getElementById('linkPreview');
+    if (link) {
+      preview.textContent = link;
+      preview.style.display = 'block';
+    } else {
+      preview.style.display = 'none';
+    }
+  });
+
+  function showStatus(msg, ok){
+    const el = document.getElementById('status');
+    el.textContent = msg;
+    el.className = ok ? 'ok' : 'err';
+  }
+
+  function submitProduct(){
+    const darazUrl = document.getElementById('darazUrl').value.trim();
+    const name = document.getElementById('pName').value.trim();
+    const price = document.getElementById('pPrice').value.trim();
+    const category = document.getElementById('pCategory').value;
+    const rating = document.getElementById('pRating').value.trim();
+    const image = document.getElementById('pImage').value.trim();
+    const desc = document.getElementById('pDesc').value.trim();
+    const pro1 = document.getElementById('pPro1').value.trim();
+    const pro2 = document.getElementById('pPro2').value.trim();
+    const con1 = document.getElementById('pCon1').value.trim();
+    const con2 = document.getElementById('pCon2').value.trim();
+
+    if (!darazUrl || !name || !price) {
+      showStatus('Daraz URL, naam aur price zaroori hain.', false);
+      return;
+    }
+
+    const affLink = buildAffLink(darazUrl);
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Publishing…';
+
+    db.collection('products').add({
+      name: name,
+      price: price,
+      category: category,
+      rating: rating || 4.5,
+      image: image,
+      desc: desc,
+      pros: [pro1, pro2],
+      cons: [con1, con2],
+      darazUrl: darazUrl,
+      affLink: affLink,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(function(){
+      showStatus('✓ Product website pe add ho gaya. Homepage refresh karke check karo.', true);
+      document.getElementById('darazUrl').value = '';
+      document.getElementById('pName').value = '';
+      document.getElementById('pPrice').value = '';
+      document.getElementById('pRating').value = '';
+      document.getElementById('pImage').value = '';
+      document.getElementById('pDesc').value = '';
+      document.getElementById('pPro1').value = '';
+      document.getElementById('pPro2').value = '';
+      document.getElementById('pCon1').value = '';
+      document.getElementById('pCon2').value = '';
+      document.getElementById('linkPreview').style.display = 'none';
+      loadExistingProducts();
+    }).catch(function(e){
+      showStatus('Error: ' + e.message, false);
+    }).finally(function(){
+      btn.disabled = false;
+      btn.textContent = 'Publish to website';
+    });
+  }
+
+  function loadExistingProducts(){
+    const list = document.getElementById('prodList');
+    db.collection('products').orderBy('createdAt', 'desc').get().then(function(snap){
+      list.innerHTML = '';
+      if (snap.empty) {
+        list.innerHTML = '<p class="hint">Abhi tak koi product add nahi hua.</p>';
+        return;
+      }
+      snap.forEach(function(doc){
+        const p = doc.data();
+        const row = document.createElement('div');
+        row.className = 'prod-row';
+        const label = document.createElement('span');
+        label.textContent = (p.name || 'Untitled') + ' — Rs. ' + (p.price || '—');
+        const del = document.createElement('button');
+        del.className = 'del';
+        del.textContent = 'Remove';
+        del.onclick = function(){
+          if (confirm('Ye product remove karna hai?')) {
+            db.collection('products').doc(doc.id).delete().then(loadExistingProducts);
+          }
+        };
+        row.appendChild(label);
+        row.appendChild(del);
+        list.appendChild(row);
+      });
+    }).catch(function(e){
+      list.innerHTML = '<p class="hint">Load nahi hua: ' + e.message + '</p>';
+    });
+  }
+</script>
+
+</body>
+</html>
