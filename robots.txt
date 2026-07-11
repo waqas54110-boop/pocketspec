@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://waqas54110-boop.github.io/pocketspec/sitemap.xml
