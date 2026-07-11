@@ -848,6 +848,41 @@
     db = firebase.firestore();
   } catch (e) { console.warn("Firebase init nahi hua:", e); }
 
+  // ====== Facebook auto-post settings (Apps Script) — add-product.html jaisa hi ======
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw7SdawMLIuXMMiUqCAhtliyQi5pLq3aNt7B72oWbZJDKCHDm7BOEVZZZKSPvWV6JpciQ/exec";
+  const APPS_SCRIPT_SECRET = "ps_3186313178@@5522";
+  // =====================================================================
+
+  // "Apna Product" bhi isi function se Facebook Page par post ho jata hai
+  function postOwnProductToFacebook(product){
+    if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf('PASTE_') === 0) return;
+    fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        secret: APPS_SCRIPT_SECRET,
+        name: product.name,
+        price: product.price,
+        desc: product.desc,
+        image: product.image
+      })
+    })
+    .then(function(res){ return res.json(); })
+    .then(function(data){
+      if (data.error) {
+        var msg = (data.error && data.error.message) ? data.error.message : JSON.stringify(data.error);
+        showToast('Facebook post nahi hua: ' + msg);
+      } else if (data.ok === false) {
+        showToast('Facebook post nahi hua: ' + (data.error || 'unknown error'));
+      } else if (data.id || data.post_id) {
+        showToast('✓ Facebook Page par bhi post ho gaya.');
+      }
+    })
+    .catch(function(err){
+      showToast('Facebook post fail: ' + err.message);
+    });
+  }
+
   // ===== Admin-only nav links: secret URL code se unlock hote hain =====
   // Apna khud ka secret code neeche "YOUR_SECRET_CODE_HERE" ki jagah likhein.
   // Kisi bhi normal visitor ko yeh links nahi dikhenge. Aap sirf ek dafa yeh link kholein:
@@ -1338,6 +1373,9 @@
         if (grid) grid.appendChild(buildProductCard(localCopy, pidx));
         window.dispatchEvent(new CustomEvent('ps:gridUpdated'));
         window.dispatchEvent(new CustomEvent('ps:productsLoaded', { detail: allProducts }));
+
+        // Ab "Apna Product" bhi Daraz products ki tarah Facebook Page par post ho jayega
+        postOwnProductToFacebook({ name: name, price: price, desc: desc, image: image });
       }).catch(function(err){
         console.warn('Own product save fail:', err);
         showToast('Save nahi ho saka — dobara try karein.');
