@@ -221,10 +221,16 @@
     })
     .then(function(res){ return res.json(); })
     .then(function(data){
-      if (data.ok === false) {
+      if (data.error) {
+        // Facebook Graph API error format: { error: { message, type, code } }
+        var msg = (data.error && data.error.message) ? data.error.message : JSON.stringify(data.error);
+        showFbStatus('Facebook post nahi hua: ' + msg);
+      } else if (data.ok === false) {
         showFbStatus('Facebook post nahi hua: ' + (data.error || 'unknown error'));
-      } else {
+      } else if (data.id || data.post_id) {
         showFbStatus('✓ Facebook Page par bhi post ho gaya.');
+      } else {
+        showFbStatus('Facebook status unclear, response: ' + JSON.stringify(data));
       }
     })
     .catch(function(err){
