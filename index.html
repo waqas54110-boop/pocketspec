@@ -6,142 +6,223 @@
 <title>PocketSpec — Honest Budget Tech Reviews</title>
 <meta name="description" content="Real hours-tested reviews of budget earbuds, power banks and smartwatches. No fluff, just the numbers.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --paper:#F6F4EF;
-    --paper-2:#EFEBE1;
-    --ink:#171614;
+    --paper:#F7F5F0;
+    --paper-2:#EFEBE0;
+    --ink:#15140F;
     --ink-soft:#5B584F;
-    --line:#D8D3C7;
+    --line:#DFDACD;
     --signal:#2F5FE0;
     --signal-dark:#1F42A8;
+    --signal-light:#EEF2FF;
     --amber:#E8A33D;
-    --green:#3E8E5A;
+    --green:#2F8F5B;
     --red:#C4462B;
-    --radius:2px;
+    --radius:6px;
+    --radius-lg:14px;
+    --shadow-sm: 0 1px 2px rgba(21,20,15,0.06);
+    --shadow-md: 0 6px 20px -6px rgba(21,20,15,0.14);
+    --shadow-lg: 0 20px 50px -18px rgba(21,20,15,0.28);
     --display: 'Space Grotesk', sans-serif;
     --body: 'Inter', sans-serif;
     --mono: 'JetBrains Mono', monospace;
+    --ease: cubic-bezier(.22,1,.36,1);
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   html{scroll-behavior:smooth;}
   body{
-    background:var(--paper);
+    background:
+      radial-gradient(circle at 12% 8%, rgba(47,95,224,0.05), transparent 45%),
+      radial-gradient(circle at 88% 0%, rgba(232,163,61,0.06), transparent 40%),
+      var(--paper);
     color:var(--ink);
     font-family:var(--body);
-    line-height:1.55;
+    line-height:1.6;
     -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
   }
   a{color:inherit; text-decoration:none;}
   img{max-width:100%; display:block;}
-  .wrap{max-width:1120px; margin:0 auto; padding:0 24px;}
+  .wrap{max-width:1140px; margin:0 auto; padding:0 24px;}
+  ::selection{background:var(--signal); color:#fff;}
   @media (prefers-reduced-motion: reduce){
     *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;}
   }
 
+  /* ===== HEADER ===== */
   header{
     position:sticky; top:0; z-index:50;
-    background:rgba(246,244,239,0.92);
-    backdrop-filter:blur(6px);
+    background:rgba(247,245,240,0.85);
+    backdrop-filter:blur(10px) saturate(160%);
     border-bottom:1px solid var(--line);
   }
-  .nav{display:flex; align-items:center; justify-content:space-between; height:68px;}
+  .nav{display:flex; align-items:center; justify-content:space-between; height:70px;}
   .logo{
-    font-family:var(--display); font-weight:700; font-size:1.25rem; letter-spacing:-0.02em;
+    font-family:var(--display); font-weight:700; font-size:1.3rem; letter-spacing:-0.02em;
     display:flex; align-items:baseline; gap:6px;
   }
-  .logo span{color:var(--signal); font-family:var(--mono); font-size:0.85rem; font-weight:500;}
-  .nav-links{display:flex; gap:32px; font-size:0.92rem; font-weight:500;}
-  .nav-links a{color:var(--ink-soft); transition:color .15s;}
+  .logo span{color:var(--signal); font-family:var(--mono); font-size:0.82rem; font-weight:500;}
+  .nav-links{display:flex; align-items:center; gap:30px; font-size:0.92rem; font-weight:500;}
+  .nav-links a{color:var(--ink-soft); transition:color .18s var(--ease); position:relative;}
+  .nav-links a::after{
+    content:''; position:absolute; left:0; bottom:-6px; width:0; height:2px;
+    background:var(--signal); transition:width .2s var(--ease);
+  }
   .nav-links a:hover, .nav-links a:focus-visible{color:var(--ink);}
+  .nav-links a:hover::after{width:100%;}
+  .nav-links a.admin-link{color:var(--signal-dark);}
+  /* Admin-only nav items hidden until confirmed logged-in admin (see JS below) */
+  .admin-only{display:none !important;}
+  body.is-admin .admin-only{display:inline-flex !important;}
+
   .nav-cta{
     font-family:var(--mono); font-size:0.8rem; font-weight:500;
-    border:1px solid var(--ink); padding:8px 16px; border-radius:var(--radius);
+    border:1px solid var(--ink); padding:9px 18px; border-radius:var(--radius);
+    transition:all .18s var(--ease);
   }
-  .nav-cta:hover{background:var(--ink); color:var(--paper);}
-  .burger{display:none;}
+  .nav-cta:hover{background:var(--ink); color:var(--paper); box-shadow:var(--shadow-sm); transform:translateY(-1px);}
+  .burger{
+    display:none; width:38px; height:38px; border:1px solid var(--line); border-radius:var(--radius);
+    background:#fff; align-items:center; justify-content:center; cursor:pointer;
+  }
+  .burger span, .burger span::before, .burger span::after{
+    content:''; display:block; width:18px; height:2px; background:var(--ink); position:relative; transition:.2s;
+  }
+  .burger span::before{content:''; position:absolute; top:-6px; width:18px; height:2px; background:var(--ink);}
+  .burger span::after{content:''; position:absolute; top:6px; width:18px; height:2px; background:var(--ink);}
+  .mobile-panel{display:none;}
 
-  .hero{
-    padding:72px 0 56px;
-    border-bottom:1px solid var(--line);
-  }
-  .hero-grid{
-    display:grid; grid-template-columns:1.1fr 0.9fr; gap:56px; align-items:end;
-  }
+  /* ===== HERO ===== */
+  .hero{padding:76px 0 60px; border-bottom:1px solid var(--line); position:relative; overflow:hidden;}
+  .hero-grid{display:grid; grid-template-columns:1.1fr 0.9fr; gap:56px; align-items:end;}
   .eyebrow{
-    font-family:var(--mono); font-size:0.78rem; text-transform:uppercase; letter-spacing:0.12em;
-    color:var(--signal); margin-bottom:18px; display:flex; align-items:center; gap:10px;
+    font-family:var(--mono); font-size:0.78rem; text-transform:uppercase; letter-spacing:0.14em;
+    color:var(--signal); margin-bottom:20px; display:flex; align-items:center; gap:10px;
   }
-  .eyebrow::before{content:''; width:22px; height:1px; background:var(--signal);}
+  .eyebrow::before{content:''; width:24px; height:1px; background:var(--signal);}
   h1{
-    font-family:var(--display); font-weight:700; font-size:clamp(2.4rem, 5vw, 3.6rem);
-    line-height:1.03; letter-spacing:-0.02em; margin-bottom:20px;
+    font-family:var(--display); font-weight:700; font-size:clamp(2.5rem, 5vw, 3.8rem);
+    line-height:1.02; letter-spacing:-0.025em; margin-bottom:22px;
   }
-  h1 em{font-style:normal; color:var(--signal);}
-  .hero p.lede{font-size:1.08rem; color:var(--ink-soft); max-width:46ch; margin-bottom:28px;}
+  h1 em{
+    font-style:normal;
+    background:linear-gradient(92deg, var(--signal), #6E8CFF 60%, var(--amber));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .hero p.lede{font-size:1.1rem; color:var(--ink-soft); max-width:46ch; margin-bottom:30px;}
   .hero-actions{display:flex; gap:14px; flex-wrap:wrap;}
   .btn{
     font-family:var(--body); font-weight:600; font-size:0.92rem;
-    padding:13px 24px; border-radius:var(--radius); border:1px solid var(--ink);
-    display:inline-flex; align-items:center; gap:8px; transition:transform .15s, background .15s, color .15s;
+    padding:14px 26px; border-radius:var(--radius); border:1px solid var(--ink);
+    display:inline-flex; align-items:center; gap:8px; transition:transform .2s var(--ease), background .2s, color .2s, box-shadow .2s;
   }
-  .btn-solid{background:var(--ink); color:var(--paper);}
-  .btn-solid:hover{transform:translateY(-2px); background:var(--signal); border-color:var(--signal);}
-  .btn-ghost:hover{transform:translateY(-2px); background:var(--ink); color:var(--paper);}
+  .btn svg{transition:transform .2s var(--ease);}
+  .btn-solid{background:var(--ink); color:var(--paper); box-shadow:var(--shadow-sm);}
+  .btn-solid:hover{transform:translateY(-3px); background:var(--signal); border-color:var(--signal); box-shadow:var(--shadow-md);}
+  .btn-solid:hover svg{transform:translateX(3px);}
+  .btn-ghost{background:transparent;}
+  .btn-ghost:hover{transform:translateY(-3px); background:var(--ink); color:var(--paper); box-shadow:var(--shadow-md);}
 
   .spec-card{
-    background:var(--ink); color:var(--paper);
-    border-radius:var(--radius); padding:26px 26px 22px;
-    font-family:var(--mono);
+    background:linear-gradient(165deg, #1B1A16, var(--ink) 60%); color:var(--paper);
+    border-radius:var(--radius-lg); padding:28px 28px 24px;
+    font-family:var(--mono); box-shadow:var(--shadow-lg);
+    border:1px solid #2A2823;
   }
   .spec-card .sc-top{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:18px;}
   .sc-img{width:100%; height:150px; object-fit:cover; border-radius:var(--radius); margin-bottom:16px; background:#0E0D0B;}
-  .card-img{width:100%; height:150px; object-fit:cover; border-radius:var(--radius); margin-bottom:14px; background:var(--paper-2);}
-  .sc-name{font-family:var(--display); font-size:1.15rem; font-weight:600; color:#fff;}
+  .card-img-wrap{overflow:hidden; border-radius:var(--radius); margin-bottom:14px;}
+  .card-img{width:100%; height:150px; object-fit:cover; background:var(--paper-2); transition:transform .5s var(--ease);}
+  .card:hover .card-img{transform:scale(1.06);}
+  .sc-name{font-family:var(--display); font-size:1.18rem; font-weight:600; color:#fff;}
   .sc-tag{font-size:0.7rem; color:#9BA2C4; letter-spacing:0.06em; text-transform:uppercase; margin-top:4px;}
-  .sc-score{
-    font-size:1.5rem; font-weight:700; color:var(--amber); text-align:right; line-height:1;
-  }
+  .sc-score{font-size:1.6rem; font-weight:700; color:var(--amber); text-align:right; line-height:1;}
   .sc-score small{display:block; font-size:0.62rem; color:#8B8873; font-weight:400; margin-top:3px;}
   .meter-row{display:flex; align-items:center; gap:10px; margin-bottom:11px; font-size:0.74rem;}
   .meter-label{width:92px; color:#B8BAC9; flex-shrink:0;}
   .meter-track{flex:1; height:6px; background:#2C2A26; border-radius:3px; overflow:hidden;}
-  .meter-fill{height:100%; background:linear-gradient(90deg, var(--signal), #7C9BFF); border-radius:3px; width:0; transition:width 1.1s cubic-bezier(.22,1,.36,1);}
+  .meter-fill{height:100%; background:linear-gradient(90deg, var(--signal), #8FA8FF); border-radius:3px; width:0; transition:width 1.1s var(--ease);}
   .meter-val{width:32px; text-align:right; color:#E9E7DD;}
-  .sc-price{
-    margin-top:16px; padding-top:16px; border-top:1px dashed #3A382F;
-    display:flex; justify-content:space-between; align-items:center;
-  }
-  .sc-price .amt{font-size:1.1rem; color:#fff; font-weight:700;}
+  .sc-price{margin-top:16px; padding-top:16px; border-top:1px dashed #3A382F; display:flex; justify-content:space-between; align-items:center;}
+  .sc-price .amt{font-size:1.15rem; color:#fff; font-weight:700;}
   .sc-price a{
     font-family:var(--body); font-size:0.78rem; font-weight:600; background:var(--signal);
-    color:#fff; padding:8px 14px; border-radius:var(--radius);
+    color:#fff; padding:9px 16px; border-radius:var(--radius); transition:background .18s, transform .18s;
   }
-  .sc-price a:hover{background:var(--signal-dark);}
+  .sc-price a:hover{background:var(--signal-dark); transform:translateY(-2px);}
 
-  .trust{border-bottom:1px solid var(--line); background:var(--paper-2);}
-  .trust-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:24px; padding:22px 0;}
+  /* ===== AUTO-SCROLL BANNER CAROUSEL ===== */
+  .carousel-section{border-bottom:1px solid var(--line); background:var(--paper-2);}
+  .carousel{
+    position:relative; overflow:hidden; border-radius:0;
+  }
+  .carousel-track{
+    display:flex; transition:transform .6s var(--ease);
+  }
+  .carousel-slide{
+    min-width:100%; display:flex; align-items:center; gap:40px;
+    padding:28px 24px; justify-content:center;
+  }
+  .cs-img{
+    width:96px; height:96px; border-radius:var(--radius); object-fit:cover; flex-shrink:0;
+    box-shadow:var(--shadow-sm); border:1px solid var(--line);
+  }
+  .cs-info{max-width:520px;}
+  .cs-cat{font-family:var(--mono); font-size:0.68rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--signal); margin-bottom:4px;}
+  .cs-name{font-family:var(--display); font-weight:700; font-size:1.15rem; margin-bottom:4px;}
+  .cs-desc{font-size:0.85rem; color:var(--ink-soft);}
+  .cs-price-tag{
+    font-family:var(--mono); font-weight:700; font-size:1.4rem; color:var(--ink);
+    display:flex; flex-direction:column; align-items:flex-end; flex-shrink:0; margin-left:auto;
+  }
+  .cs-price-tag small{font-family:var(--body); font-weight:600; font-size:0.72rem; color:var(--green); background:#E5F3EA; padding:2px 8px; border-radius:20px; margin-bottom:6px;}
+  .cs-buy{
+    font-family:var(--body); font-size:0.78rem; font-weight:600; background:var(--ink); color:#fff;
+    padding:9px 16px; border-radius:var(--radius); flex-shrink:0; transition:background .18s, transform .18s;
+  }
+  .cs-buy:hover{background:var(--signal); transform:translateY(-2px);}
+  .carousel-arrow{
+    position:absolute; top:50%; transform:translateY(-50%); z-index:5;
+    width:38px; height:38px; border-radius:50%; background:#fff; border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:var(--shadow-sm);
+    transition:background .15s, color .15s;
+  }
+  .carousel-arrow:hover{background:var(--ink); color:#fff;}
+  .carousel-arrow.prev{left:16px;}
+  .carousel-arrow.next{right:16px;}
+  .carousel-dots{display:flex; justify-content:center; gap:8px; padding:14px 0 20px;}
+  .carousel-dot{width:7px; height:7px; border-radius:50%; background:var(--line); cursor:pointer; transition:background .2s, width .2s;}
+  .carousel-dot.active{background:var(--signal); width:22px; border-radius:4px;}
+  @media (max-width: 700px){
+    .carousel-slide{flex-direction:column; text-align:center; gap:14px; padding:26px 50px;}
+    .cs-price-tag{margin-left:0; align-items:center;}
+    .cs-info{max-width:100%;}
+  }
+
+  .trust{border-bottom:1px solid var(--line);}
+  .trust-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:24px; padding:24px 0;}
   .trust-item{font-family:var(--mono); font-size:0.78rem; color:var(--ink-soft); display:flex; align-items:center; gap:8px;}
   .trust-item b{color:var(--ink); font-size:0.95rem;}
 
-  .sec{padding:72px 0;}
-  .sec-head{display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:38px; gap:24px; border-bottom:1px solid var(--line); padding-bottom:20px;}
-  .sec-head h2{font-family:var(--display); font-size:1.9rem; font-weight:600; letter-spacing:-0.01em;}
-  .sec-head p{color:var(--ink-soft); font-size:0.92rem; max-width:38ch;}
+  .sec{padding:76px 0;}
+  .sec-head{display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:40px; gap:24px; border-bottom:1px solid var(--line); padding-bottom:22px;}
+  .sec-head h2{font-family:var(--display); font-size:2rem; font-weight:700; letter-spacing:-0.015em;}
+  .sec-head p{color:var(--ink-soft); font-size:0.94rem; max-width:38ch;}
 
   .grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
   .grid-4{grid-template-columns:repeat(4,1fr);}
   @media (max-width: 1080px){ .grid-4{grid-template-columns:repeat(2,1fr);} }
   .card{
-    border:1px solid var(--line); border-radius:var(--radius); padding:22px;
-    background:#fff; display:flex; flex-direction:column; transition:border-color .15s, transform .15s;
+    border:1px solid var(--line); border-radius:var(--radius-lg); padding:22px;
+    background:#fff; display:flex; flex-direction:column; transition:border-color .2s, transform .25s var(--ease), box-shadow .25s var(--ease);
   }
-  .card:hover{border-color:var(--ink); transform:translateY(-3px);}
+  .card:hover{border-color:transparent; transform:translateY(-5px); box-shadow:var(--shadow-md);}
   .card-top{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;}
-  .cat{font-family:var(--mono); font-size:0.68rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--signal);}
+  .cat{font-family:var(--mono); font-size:0.68rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--signal); background:var(--signal-light); padding:3px 8px; border-radius:20px;}
   .stars{font-size:0.85rem; color:var(--amber); letter-spacing:1px;}
-  .card h3{font-family:var(--display); font-size:1.18rem; font-weight:600; margin-bottom:8px;}
+  .card h3{font-family:var(--display); font-size:1.2rem; font-weight:700; margin-bottom:8px;}
   .card p.desc{font-size:0.88rem; color:var(--ink-soft); margin-bottom:16px; flex:1;}
   .pc{display:flex; gap:16px; font-size:0.78rem; margin-bottom:16px;}
   .pc div{flex:1;}
@@ -151,15 +232,16 @@
   .pc ul{list-style:none; color:var(--ink-soft);}
   .pc li{margin-bottom:2px;}
   .card-foot{display:flex; justify-content:space-between; align-items:center; padding-top:14px; border-top:1px solid var(--line);}
-  .price{font-family:var(--mono); font-weight:700; font-size:1rem;}
-  .buy{font-size:0.8rem; font-weight:600; color:var(--signal); border-bottom:1px solid var(--signal); padding-bottom:2px;}
+  .price{font-family:var(--mono); font-weight:700; font-size:1.02rem;}
+  .buy{font-size:0.8rem; font-weight:600; color:var(--signal); border-bottom:1px solid var(--signal); padding-bottom:2px; transition:color .15s, border-color .15s;}
   .buy:hover{color:var(--signal-dark); border-color:var(--signal-dark);}
 
   .method{background:var(--paper-2); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
   .method-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line);}
-  .method-step{background:var(--paper-2); padding:32px 26px;}
+  .method-step{background:var(--paper-2); padding:34px 26px; transition:background .2s;}
+  .method-step:hover{background:#fff;}
   .method-step .num{font-family:var(--mono); font-size:0.75rem; color:var(--signal); margin-bottom:14px;}
-  .method-step h4{font-family:var(--display); font-size:1.02rem; margin-bottom:8px;}
+  .method-step h4{font-family:var(--display); font-size:1.04rem; margin-bottom:8px; font-weight:700;}
   .method-step p{font-size:0.85rem; color:var(--ink-soft);}
 
   table{width:100%; border-collapse:collapse; font-size:0.9rem;}
@@ -167,39 +249,44 @@
     font-family:var(--mono); font-size:0.7rem; text-transform:uppercase; letter-spacing:0.06em;
     color:var(--ink-soft); text-align:left; padding:10px 12px; border-bottom:1px solid var(--ink);
   }
-  tbody td{padding:16px 12px; border-bottom:1px solid var(--line);}
+  tbody td{padding:18px 12px; border-bottom:1px solid var(--line);}
+  tbody tr{transition:background .15s;}
   tbody tr:hover{background:#fff;}
   .rank{font-family:var(--mono); font-weight:700; color:var(--signal);}
   td.name{font-family:var(--display); font-weight:600;}
   td.score{font-family:var(--mono); font-weight:700;}
   td a.buy-small{font-family:var(--mono); font-size:0.78rem; color:var(--signal); white-space:nowrap;}
+  td a.buy-small:hover{color:var(--signal-dark);}
 
   .cta-band{
-    background:var(--ink); color:var(--paper); padding:64px 0; text-align:center;
+    background:radial-gradient(circle at 20% 20%, #23221D, var(--ink) 60%);
+    color:var(--paper); padding:70px 0; text-align:center;
   }
-  .cta-band h2{font-family:var(--display); font-size:2rem; margin-bottom:12px;}
-  .cta-band p{color:#B8B6AC; max-width:44ch; margin:0 auto 26px;}
+  .cta-band h2{font-family:var(--display); font-size:2.1rem; margin-bottom:12px; font-weight:700;}
+  .cta-band p{color:#B8B6AC; max-width:44ch; margin:0 auto 28px;}
   .subscribe{display:flex; justify-content:center; gap:10px; max-width:420px; margin:0 auto; flex-wrap:wrap;}
   .subscribe input{
-    flex:1; min-width:200px; padding:13px 16px; border-radius:var(--radius); border:1px solid #43413A;
-    background:#211F1A; color:#fff; font-family:var(--body); font-size:0.9rem;
+    flex:1; min-width:200px; padding:14px 16px; border-radius:var(--radius); border:1px solid #43413A;
+    background:#211F1A; color:#fff; font-family:var(--body); font-size:0.9rem; transition:border-color .15s;
   }
-  .subscribe input:focus-visible{outline:2px solid var(--signal);}
+  .subscribe input:focus-visible{outline:none; border-color:var(--signal);}
   .subscribe button{
-    background:var(--signal); color:#fff; border:none; padding:13px 22px; border-radius:var(--radius);
-    font-weight:600; font-size:0.9rem; cursor:pointer; transition:background .15s;
+    background:var(--signal); color:#fff; border:none; padding:14px 24px; border-radius:var(--radius);
+    font-weight:600; font-size:0.9rem; cursor:pointer; transition:background .18s, transform .18s;
   }
-  .subscribe button:hover{background:var(--signal-dark);}
+  .subscribe button:hover{background:var(--signal-dark); transform:translateY(-2px);}
   .form-note{font-size:0.75rem; color:#8B8873; margin-top:12px;}
 
-  footer{padding:40px 0; border-top:1px solid var(--line);}
+  footer{padding:44px 0; border-top:1px solid var(--line);}
   .foot-grid{display:flex; justify-content:space-between; align-items:flex-start; gap:24px; flex-wrap:wrap;}
-  .disclosure{font-size:0.78rem; color:var(--ink-soft); max-width:52ch; line-height:1.6;}
+  .disclosure{font-size:0.78rem; color:var(--ink-soft); max-width:52ch; line-height:1.7;}
   .foot-links{display:flex; gap:20px; font-size:0.82rem; color:var(--ink-soft);}
+  .foot-links a{transition:color .15s;}
   .foot-links a:hover{color:var(--ink);}
 
   @media (max-width: 860px){
     .nav-links{display:none;}
+    .burger{display:flex;}
     .hero-grid{grid-template-columns:1fr; gap:36px;}
     .trust-grid{grid-template-columns:repeat(2,1fr);}
     .grid{grid-template-columns:1fr;}
@@ -207,6 +294,12 @@
     .sec-head{flex-direction:column; align-items:flex-start;}
     table{font-size:0.8rem;}
     thead th:nth-child(4), tbody td:nth-child(4){display:none;}
+    .mobile-panel.open{
+      display:flex; flex-direction:column; gap:2px; position:absolute; top:70px; left:0; right:0;
+      background:var(--paper); border-bottom:1px solid var(--line); box-shadow:var(--shadow-md); padding:8px 24px 16px;
+    }
+    .mobile-panel a{padding:12px 0; font-size:0.95rem; font-weight:500; color:var(--ink-soft); border-bottom:1px solid var(--line);}
+    .mobile-panel a:last-child{border-bottom:none;}
   }
 </style>
 </head>
@@ -220,10 +313,19 @@
       <a href="#bestof">Best Of</a>
       <a href="#method">How We Test</a>
       <a href="#about">About</a>
-      <a href="dashboard.html">Dashboard</a>
-      <a href="add-product.html">Add Product</a>
+      <a class="admin-only admin-link" href="dashboard.html">Dashboard</a>
+      <a class="admin-only admin-link" href="add-product.html">Add Product</a>
     </nav>
     <a class="nav-cta" href="#subscribe">Get weekly picks →</a>
+    <button class="burger" id="burgerBtn" aria-label="Menu"><span></span></button>
+  </div>
+  <div class="mobile-panel" id="mobilePanel">
+    <a href="#reviews">Reviews</a>
+    <a href="#bestof">Best Of</a>
+    <a href="#method">How We Test</a>
+    <a href="#about">About</a>
+    <a class="admin-only" href="dashboard.html">Dashboard</a>
+    <a class="admin-only" href="add-product.html">Add Product</a>
   </div>
 </header>
 
@@ -236,7 +338,7 @@
         <h1>We dig through<br>the listings,<br><em>so you don't have to.</em></h1>
         <p class="lede">Earbuds, power banks and smartwatches under Rs. 5,000 — ranked using real Daraz sales data, verified buyer ratings, and side-by-side spec comparisons. No brand pays for a spot on this list.</p>
         <div class="hero-actions">
-          <a class="btn btn-solid" href="#reviews">See latest reviews</a>
+          <a class="btn btn-solid" href="#reviews">See latest reviews <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
           <a class="btn btn-ghost" href="#method">How scoring works</a>
         </div>
       </div>
@@ -262,6 +364,61 @@
     </div>
   </section>
 
+  <!-- ===== AUTO-SCROLLING PRODUCT BANNER (advances every 4s) ===== -->
+  <section class="carousel-section">
+    <div class="carousel" id="promoCarousel">
+      <button class="carousel-arrow prev" id="carPrev" aria-label="Previous">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <div class="carousel-track" id="carTrack">
+        <div class="carousel-slide">
+          <img class="cs-img" src="images/u39-earbuds.png" alt="U39 Wireless Gaming Earbuds">
+          <div class="cs-info">
+            <div class="cs-cat">Earbuds · Editor's Pick</div>
+            <div class="cs-name">U39 Wireless Gaming Earbuds</div>
+            <div class="cs-desc">Bluetooth 5.3, ENC noise-cancelling, 152 sold at 4.6★</div>
+          </div>
+          <div class="cs-price-tag"><small>65% OFF</small>Rs. 1,039</div>
+          <a class="cs-buy" href="https://go.urtrackinglink.com/aff_c?offer_id=164&aff_id=170889&url=https%3A%2F%2Fwww.daraz.pk%2Fproducts%2Fu39-wireless-gaming-earbuds_bluetooth-headphones-headset_enc-noise-cancelling-bluetooth-earphones_latest-53-bluethoot-chip-powerful-performance-fast-transmission_long-battery-true-stereo-earbuds-i1958928865.html%3Fsub_id1%3D{transaction_id}%26sub_aff_id%3D{affiliate_id}" rel="sponsored nofollow" target="_blank" data-product="U39 Wireless Earbuds" data-slot="banner" onclick="trackClick(this)">View deal →</a>
+        </div>
+        <div class="carousel-slide">
+          <img class="cs-img" src="images/silm-powerbank.png" alt="Silm Pocket Power Bank">
+          <div class="cs-info">
+            <div class="cs-cat">Power Bank · Tightest Budget</div>
+            <div class="cs-name">Silm Pocket 4000mAh</div>
+            <div class="cs-desc">Compact travel-friendly power bank, early-bird pricing</div>
+          </div>
+          <div class="cs-price-tag"><small>72% OFF</small>Rs. 499</div>
+          <a class="cs-buy" href="https://go.urtrackinglink.com/aff_c?offer_id=164&aff_id=170889&url=https%3A%2F%2Fwww.daraz.pk%2Fproducts%2Fsilm-pocket-size-power-bank-4000mah-original-compact-portable-charger-for-smartphones-and-tablets-lightweight-and-travel-friendly-i518764065.html%3Fsub_id1%3D{transaction_id}%26sub_aff_id%3D{affiliate_id}" rel="sponsored nofollow" target="_blank" data-product="Silm Pocket Power Bank" data-slot="banner" onclick="trackClick(this)">View deal →</a>
+        </div>
+        <div class="carousel-slide">
+          <img class="cs-img" src="images/luxury-smartwatch.png" alt="Luxury One Smartwatch">
+          <div class="cs-info">
+            <div class="cs-cat">Smartwatch · 7 Straps Included</div>
+            <div class="cs-name">Luxury One Smartwatch</div>
+            <div class="cs-desc">MP3 playback, SD card support, sleep monitoring</div>
+          </div>
+          <div class="cs-price-tag"><small>5.0★ rated</small>Rs. 2,849</div>
+          <a class="cs-buy" href="https://go.urtrackinglink.com/aff_c?offer_id=164&aff_id=170889&url=https%3A%2F%2Fwww.daraz.pk%2Fproducts%2Fluxury-one-new-smartwatch-mp3-music-player-sd-card-supported-sleep-monitor-or-ultra-smart-watch-with-7-straps-price-in-pakistan-2026-i481313168.html%3Fsub_id1%3D{transaction_id}%26sub_aff_id%3D{affiliate_id}" rel="sponsored nofollow" target="_blank" data-product="Luxury One Smartwatch" data-slot="banner" onclick="trackClick(this)">View deal →</a>
+        </div>
+        <div class="carousel-slide">
+          <img class="cs-img" src="images/wantek-headset.png" alt="Wantek h602 Desk Headset">
+          <div class="cs-info">
+            <div class="cs-cat">Headset · Desk Phone</div>
+            <div class="cs-name">Wantek h602 Desk Headset</div>
+            <div class="cs-desc">Noise-cancelling mic, all-day comfort for long shifts</div>
+          </div>
+          <div class="cs-price-tag"><small>4.0★ rated</small>Rs. 4,000</div>
+          <a class="cs-buy" href="https://go.urtrackinglink.com/aff_c?offer_id=164&aff_id=170889&url=https%3A%2F%2Fwww.daraz.pk%2Fproducts%2Fwantek-h602-rj9-rj1-desk-phone-headset-with-noise-canceling-mic-ultra-lightweight-professional-landline-headset-r5294-e-i1958106439.html%3Fsub_id1%3D{transaction_id}%26sub_aff_id%3D{affiliate_id}" rel="sponsored nofollow" target="_blank" data-product="Wantek h602 Headset" data-slot="banner" onclick="trackClick(this)">View deal →</a>
+        </div>
+      </div>
+      <button class="carousel-arrow next" id="carNext" aria-label="Next">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+    </div>
+    <div class="carousel-dots" id="carDots"></div>
+  </section>
+
   <div class="trust">
     <div class="wrap trust-grid">
       <div class="trust-item"><b>Real</b>&nbsp;Daraz sales &amp; ratings data</div>
@@ -282,7 +439,7 @@
       <div class="grid grid-4" id="productGrid">
 
         <article class="card">
-          <img class="card-img" src="images/u39-earbuds.png" alt="U39 Wireless Gaming Earbuds">
+          <div class="card-img-wrap"><img class="card-img" src="images/u39-earbuds.png" alt="U39 Wireless Gaming Earbuds"></div>
           <div class="card-top"><span class="cat">Earbuds</span><span class="stars">★★★★★</span></div>
           <h3>U39 Wireless Gaming Earbuds</h3>
           <p class="desc">Bluetooth 5.3 with ENC noise-cancelling and touch controls. 152 sold with a 4.6-star rating from 32 buyers.</p>
@@ -294,7 +451,7 @@
         </article>
 
         <article class="card">
-          <img class="card-img" src="images/silm-powerbank.png" alt="Silm Pocket Power Bank 4000mAh">
+          <div class="card-img-wrap"><img class="card-img" src="images/silm-powerbank.png" alt="Silm Pocket Power Bank 4000mAh"></div>
           <div class="card-top"><span class="cat">Power Bank</span><span class="stars">★★★★☆</span></div>
           <h3>Silm Pocket 4000mAh</h3>
           <p class="desc">Compact, travel-friendly power bank for phones and tablets. Early-bird pricing at 72% off the listed price.</p>
@@ -306,7 +463,7 @@
         </article>
 
         <article class="card">
-          <img class="card-img" src="images/luxury-smartwatch.png" alt="Luxury One Smartwatch">
+          <div class="card-img-wrap"><img class="card-img" src="images/luxury-smartwatch.png" alt="Luxury One Smartwatch"></div>
           <div class="card-top"><span class="cat">Smartwatch</span><span class="stars">★★★★★</span></div>
           <h3>Luxury One Smartwatch</h3>
           <p class="desc">MP3 playback, SD card support and sleep monitoring, bundled with 7 interchangeable straps.</p>
@@ -318,7 +475,7 @@
         </article>
 
         <article class="card">
-          <img class="card-img" src="images/wantek-headset.png" alt="Wantek h602 Desk Headset">
+          <div class="card-img-wrap"><img class="card-img" src="images/wantek-headset.png" alt="Wantek h602 Desk Headset"></div>
           <div class="card-top"><span class="cat">Headset</span><span class="stars">★★★★☆</span></div>
           <h3>Wantek h602 Desk Headset</h3>
           <p class="desc">Noise-cancelling mic headset built for desk phones and long call shifts — lightweight for all-day wear.</p>
@@ -403,6 +560,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyAUHZpHe1J1jdK_87OmEhcV6aZ4ydQIK5U",
@@ -418,6 +576,44 @@
     firebase.initializeApp(firebaseConfig);
     db = firebase.firestore();
   } catch (e) { console.warn("Firebase init nahi hua:", e); }
+
+  // ===== Admin-only nav links: secret URL code se unlock hote hain =====
+  // Apna khud ka secret code neeche "YOUR_SECRET_CODE_HERE" ki jagah likhein.
+  // Kisi bhi normal visitor ko yeh links nahi dikhenge. Aap sirf ek dafa yeh link kholein:
+  //   https://waqas54110-boop.github.io/pocketspec/?admin=YOUR_SECRET_CODE_HERE
+  // Uske baad browser yaad rakh lega (localStorage) — dobara link ki zaroorat nahi.
+  // Logout/hide karne ke liye: ?admin=off
+  (function adminGate(){
+    const ADMIN_SECRET = "YOUR_SECRET_CODE_HERE"; // <-- yahan apna secret code likhein
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('admin');
+
+    if (code === ADMIN_SECRET) {
+      localStorage.setItem('ps_admin', 'true');
+    } else if (code === 'off') {
+      localStorage.removeItem('ps_admin');
+    }
+
+    if (localStorage.getItem('ps_admin') === 'true') {
+      document.body.classList.add('is-admin');
+    }
+
+    // URL se ?admin=... hata do taake code screenshot/history me na reh jaye
+    if (code !== null) {
+      params.delete('admin');
+      const newUrl = window.location.pathname + (params.toString() ? '?' + params.toString() : '') + window.location.hash;
+      window.history.replaceState({}, '', newUrl);
+    }
+  })();
+
+  // ===== Mobile menu toggle =====
+  (function(){
+    const btn = document.getElementById('burgerBtn');
+    const panel = document.getElementById('mobilePanel');
+    if (btn && panel){
+      btn.addEventListener('click', function(){ panel.classList.toggle('open'); });
+    }
+  })();
 
   (function detectSource(){
     const params = new URLSearchParams(window.location.search);
@@ -458,11 +654,14 @@
     const article = document.createElement('article');
     article.className = 'card';
 
+    const imgWrap = document.createElement('div');
+    imgWrap.className = 'card-img-wrap';
     const img = document.createElement('img');
     img.className = 'card-img';
     img.src = p.image || '';
     img.alt = p.name || 'Product';
-    article.appendChild(img);
+    imgWrap.appendChild(img);
+    article.appendChild(imgWrap);
 
     const top = document.createElement('div');
     top.className = 'card-top';
@@ -538,6 +737,48 @@
       if (note) note.style.display = 'none';
     });
   }
+
+  // ===== Auto-scrolling promo banner: advances every 4 seconds =====
+  (function initCarousel(){
+    const track = document.getElementById('carTrack');
+    const dotsWrap = document.getElementById('carDots');
+    const prevBtn = document.getElementById('carPrev');
+    const nextBtn = document.getElementById('carNext');
+    const section = document.getElementById('promoCarousel');
+    if (!track) return;
+
+    const slides = Array.from(track.children);
+    let index = 0;
+    let timer = null;
+    const INTERVAL = 4000;
+
+    slides.forEach(function(_, i){
+      const dot = document.createElement('span');
+      dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+      dot.addEventListener('click', function(){ goTo(i); restart(); });
+      dotsWrap.appendChild(dot);
+    });
+    const dots = Array.from(dotsWrap.children);
+
+    function goTo(i){
+      index = (i + slides.length) % slides.length;
+      track.style.transform = 'translateX(-' + (index * 100) + '%)';
+      dots.forEach(function(d, di){ d.classList.toggle('active', di === index); });
+    }
+    function next(){ goTo(index + 1); }
+    function prev(){ goTo(index - 1); }
+    function start(){ timer = setInterval(next, INTERVAL); }
+    function stop(){ if (timer) clearInterval(timer); }
+    function restart(){ stop(); start(); }
+
+    nextBtn.addEventListener('click', function(){ next(); restart(); });
+    prevBtn.addEventListener('click', function(){ prev(); restart(); });
+    section.addEventListener('mouseenter', stop);
+    section.addEventListener('mouseleave', start);
+
+    goTo(0);
+    start();
+  })();
 
   window.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.meter-fill').forEach(el => {
