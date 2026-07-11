@@ -367,11 +367,28 @@
   .pc ul{list-style:none; color:var(--ink-soft);}
   .pc li{margin-bottom:2px;}
   .card-mid-actions{display:flex; gap:8px; margin-bottom:10px;}
-  .quickview-btn, .compare-chip{
-    flex:1; font-family:var(--mono); font-size:0.66rem; text-transform:uppercase; letter-spacing:0.04em;
-    padding:7px 8px; border-radius:8px; border:1px dashed var(--line); background:transparent; color:var(--ink-soft);
-    cursor:pointer; text-align:center; transition:all .15s;
-  }
+ .quickview-btn,
+ .compare-chip {
+    flex: 1;
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 7px 8px;
+    border-radius: 8px;
+    border: 1px solid #28a745;
+    background: #28a745; /* Green background */
+    color: #fff; /* White text */
+    cursor: pointer;
+    text-align: center;
+    transition: all .15s;
+}
+
+.quickview-btn:hover,
+.compare-chip:hover {
+    background: #218838; /* Darker green on hover */
+    border-color: #218838;
+}
   .quickview-btn:hover{border-color:var(--cyan); color:var(--ink);}
   .compare-chip:hover{border-color:var(--violet); color:var(--ink);}
   .compare-chip.active{background:var(--violet); border-color:var(--violet); color:#fff; border-style:solid;}
