@@ -532,7 +532,7 @@
       <a href="#about">About</a>
       <a class="admin-only admin-link" href="dashboard.html">Dashboard</a>
       <a class="admin-only admin-link" href="add-product.html">Add Product</a>
-      <a class="admin-only admin-link add-own-trigger" href="javascript:void(0)">Create Product</a>
+      <a class="admin-only admin-link add-own-trigger" href="javascript:void(0)">+ Apna Product</a>
     </nav>
     <div class="nav-search">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
@@ -552,7 +552,7 @@
     <a href="#about">About</a>
     <a class="admin-only" href="dashboard.html">Dashboard</a>
     <a class="admin-only" href="add-product.html">Add Product</a>
-    <a class="admin-only add-own-trigger" href="javascript:void(0)">+ Create Product</a>
+    <a class="admin-only add-own-trigger" href="javascript:void(0)">+ Apna Product</a>
     <input id="navSearchMobile" type="text" placeholder="Search products…" autocomplete="off">
   </div>
 </header>
@@ -637,7 +637,7 @@
           <button class="filter-chip" data-filter="Power Bank">Power Bank</button>
           <button class="filter-chip" data-filter="Smartwatch">Smartwatch</button>
           <button class="filter-chip" data-filter="Headset">Headset</button>
-          <button class="filter-chip" data-filter="own" data-mode="source">🏷️My Own Products</button>
+          <button class="filter-chip" data-filter="own" data-mode="source">🏷️ Apna Products</button>
         </div>
         <select class="sort-select" id="sortSelect">
           <option value="default">Sort: Featured</option>
@@ -812,7 +812,7 @@
   <div class="op-modal">
     <button class="qv-close" id="opClose" aria-label="Close">✕</button>
     <h3>Apna Product Add Karein</h3>
-    <p class="op-note">Yeh Daraz se nahi aayega — seedha aapka apna product hai. Grid mein alag violet badge ke saath, Daraz picks se saaf pehchana jayega.</p>
+    <p class="op-note">Yeh Daraz se nahi aayega — seedha aapka apna product hai. Grid mein alag violet badge ke saath, Daraz picks se saaf pehchana jayega. Order link WhatsApp par khud-ba-khud ban jayega — is naam, price aur category ke saath.</p>
     <form id="opForm">
       <div class="op-field"><label>Product Name</label><input required id="opName" placeholder="e.g. DesiDrop Matte Lipstick"></div>
       <div class="op-field"><label>Category</label><input required id="opCategory" placeholder="e.g. Cosmetics"></div>
@@ -822,7 +822,6 @@
       <div class="op-field"><label>Description</label><textarea required id="opDesc"></textarea></div>
       <div class="op-field"><label>Pros (comma se separate karein)</label><input id="opPros" placeholder="Fast delivery, Cash on delivery"></div>
       <div class="op-field"><label>Cons (comma se separate karein)</label><input id="opCons" placeholder="Limited stock"></div>
-      <div class="op-field"><label>Order Link (WhatsApp / contact)</label><input required id="opLink" placeholder="https://wa.me/92..."></div>
       <button type="submit" class="btn btn-solid" style="width:100%; justify-content:center; border-radius:10px;">Product Add Karein</button>
     </form>
   </div>
@@ -1279,11 +1278,16 @@
   // ===== Add Own Product (admin only — for products that are NOT from Daraz) =====
   // Yeh Firestore ke usi 'products' collection mein save hota hai, bas source:'own' tag ke saath,
   // taake grid mein yeh Daraz picks se hamesha alag (violet badge + border) nazar aaye.
+  // WhatsApp order link ab MANUALLY nahi dena parta — neeche fix number se khud-ba-khud
+  // product ke naam, price aur category ke saath ban jata hai.
   (function initAddOwnProduct(){
     const overlay = document.getElementById('opOverlay');
     const closeBtn = document.getElementById('opClose');
     const form = document.getElementById('opForm');
     if (!overlay || !form) return;
+
+    // <-- Yahan apna WhatsApp number likhein (country code ke sath, + ya 0 ke bina) -->
+    const WHATSAPP_NUMBER = "923186313178";
 
     function open(){ overlay.classList.add('open'); }
     function close(){ overlay.classList.remove('open'); }
@@ -1309,9 +1313,12 @@
       const desc = document.getElementById('opDesc').value.trim();
       const pros = document.getElementById('opPros').value.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
       const cons = document.getElementById('opCons').value.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
-      const affLink = document.getElementById('opLink').value.trim();
 
-      if (!name || !category || !image || !desc || !affLink){ showToast('Sab required fields bharein.'); return; }
+      if (!name || !category || !image || !desc){ showToast('Sab required fields bharein.'); return; }
+
+      // WhatsApp order link automatic ban jata hai — product ka naam, price, category shamil hote hain
+      const waMessage = "Hi, mujhe yeh product order karna hai: " + name + "\nPrice: Rs. " + price + "\nModel/Category: " + category;
+      const affLink = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(waMessage);
 
       const productObj = {
         name: name, category: category, price: price, rating: rating, image: image,
