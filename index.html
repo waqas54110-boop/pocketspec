@@ -918,12 +918,24 @@
     appId: "1:1080432853252:web:7a1e55f469a0f96f481051"
   };
 
-  let db = null;
+let db = null;
   try {
     firebase.initializeApp(firebaseConfig);
     db = firebase.firestore();
   } catch (e) { console.warn("Firebase init nahi hua:", e); }
 
+  try {
+    const messagingFg = firebase.messaging();
+    messagingFg.onMessage(function(payload) {
+      const title = payload.notification?.title || "PocketSpec";
+      const body = payload.notification?.body || "Naya update aaya hai.";
+      showToast('🔔 ' + title + ': ' + body);
+      new Notification(title, {
+        body: body,
+        icon: payload.notification?.image || "images/u39-earbuds.png"
+      });
+    });
+  } catch (e) { console.warn("Foreground messaging listener setup fail:", e); }
   // ====== Facebook auto-post settings (Apps Script) — add-product.html jaisa hi ======
   const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw7SdawMLIuXMMiUqCAhtliyQi5pLq3aNt7B72oWbZJDKCHDm7BOEVZZZKSPvWV6JpciQ/exec";
   const APPS_SCRIPT_SECRET = "ps_3186313178@@5522";
