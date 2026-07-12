@@ -610,6 +610,9 @@
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
       <span class="badge" id="wishlistCount">0</span>
     </button>
+    <button class="icon-btn" id="notifyBtn" aria-label="Enable notifications" title="Enable notifications">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    </button>
     <a class="nav-cta" href="#subscribe">Get weekly picks →</a>
     <button class="burger" id="burgerBtn" aria-label="Menu"><span></span></button>
   </div>
@@ -904,6 +907,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyAUHZpHe1J1jdK_87OmEhcV6aZ4ydQIK5U",
@@ -1614,6 +1618,69 @@
 
     // Re-apply after dynamic products load in (small delay so Firestore items are in the DOM)
     window.addEventListener('ps:gridUpdated', function(){ applyFilter(); applySort(); });
+  })();
+
+  // ===== Push Notifications (Enable Notifications button) =====
+  (function initPushNotifications(){
+    const VAPID_KEY = "BFxquSrDt8OGiOoEygHzJE8J9ajOSp2E-_RaPbAyBrvoRwmMhmJ_pXJxT-ZvvHWiQJFa8_fvLjSxPXiwXdC6xYg";
+    const btn = document.getElementById('notifyBtn');
+    if (!btn) return;
+
+    function setSubscribedUI(isSubscribed){
+      if (isSubscribed){
+        btn.classList.add('liked');
+        btn.setAttribute('title', 'Notifications ON');
+      } else {
+        btn.classList.remove('liked');
+        btn.setAttribute('title', 'Enable notifications');
+      }
+    }
+
+    // Agar pehle se permission mil chuki hai, UI update kar dein
+    if ('Notification' in window && Notification.permission === 'granted' && localStorage.getItem('ps_push_subscribed') === 'true'){
+      setSubscribedUI(true);
+    }
+
+    btn.addEventListener('click', async function(){
+      if (!('Notification' in window) || !('serviceWorker' in navigator)){
+        showToast('Aapka browser notifications support nahi karta.');
+        return;
+      }
+      if (!db){
+        showToast('Firebase available nahi.');
+        return;
+      }
+
+      try {
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted'){
+          showToast('Notifications allow nahi ki gayi.');
+          return;
+        }
+
+        const registration = await navigator.serviceWorker.register('/pocketspec/firebase-messaging-sw.js');
+        const messaging = firebase.messaging();
+        const token = await messaging.getToken({ vapidKey: VAPID_KEY, serviceWorkerRegistration: registration });
+
+        if (!token){
+          showToast('Token nahi mila — dobara try karein.');
+          return;
+        }
+
+        await db.collection('subscribers').doc(token).set({
+          token: token,
+          subscribedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          page: window.location.pathname
+        });
+
+        localStorage.setItem('ps_push_subscribed', 'true');
+        setSubscribedUI(true);
+        showToast('✓ Notifications ON — naye products ki update milegi.');
+      } catch (err){
+        console.warn('Push subscribe fail:', err);
+        showToast('Notifications enable nahi ho saki: ' + err.message);
+      }
+    });
   })();
 
   window.addEventListener('DOMContentLoaded', () => {
