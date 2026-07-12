@@ -1111,6 +1111,15 @@
     mid.appendChild(qvBtn); mid.appendChild(cmpBtn);
     article.appendChild(mid);
 
+    // Read full review link → own/dynamic products ke liye generic review.html page kholta hai
+    const reviewLink = document.createElement('a');
+    reviewLink.className = 'full-review-link';
+    const reviewData = encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(p)))));
+    reviewLink.href = 'review.html?p=' + reviewData;
+    reviewLink.target = '_blank';
+    reviewLink.textContent = 'Read full review →';
+    article.appendChild(reviewLink);
+
     const foot = document.createElement('div');
     foot.className = 'card-foot';
     const price = document.createElement('span');

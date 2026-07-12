@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Review — PocketSpec</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0D14; --surface:#141A27; --surface-2:#1A2130; --line:#262E3E;
+    --ink:#ECEFF6; --ink-soft:#8D96AA; --ink-faint:#5B6478;
+    --violet:#7C6CF6; --violet-dark:#5A4BDB; --amber:#FFBB3D; --amber-dark:#E7A324;
+    --cyan:#49D6C4; --red:#FF6E6E; --radius:14px; --radius-lg:22px;
+    --display:'Space Grotesk', sans-serif; --body:'Inter', sans-serif; --mono:'JetBrains Mono', monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:radial-gradient(circle at 14% -4%, rgba(124,108,246,0.16), transparent 40%), var(--bg);
+    color:var(--ink); font-family:var(--body); line-height:1.6; min-height:100vh;
+  }
+  .wrap{max-width:760px; margin:0 auto; padding:40px 24px 80px;}
+  a{color:inherit;}
+  .back{font-family:var(--mono); font-size:0.8rem; color:var(--ink-soft); display:inline-block; margin-bottom:28px;}
+  .back:hover{color:var(--cyan);}
+  .badge{display:inline-block; font-family:var(--mono); font-size:0.65rem; text-transform:uppercase; letter-spacing:0.06em; background:var(--violet); color:#fff; padding:4px 10px; border-radius:20px; margin-bottom:14px;}
+  h1{font-family:var(--display); font-size:2rem; font-weight:700; margin-bottom:10px; letter-spacing:-0.02em;}
+  .stars{color:var(--amber); font-size:1rem; margin-bottom:20px;}
+  .stars span{color:var(--ink-soft); font-size:0.85rem; margin-left:6px;}
+  img.hero-img{width:100%; max-height:340px; object-fit:contain; background:var(--surface); border-radius:var(--radius-lg); border:1px solid var(--line); margin-bottom:26px; padding:16px;}
+  .desc{font-size:1.02rem; color:var(--ink-soft); margin-bottom:30px;}
+  .pc-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:30px;}
+  .pc-box{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px;}
+  .pc-box .lbl{font-family:var(--mono); font-size:0.7rem; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px;}
+  .pc-box.pros .lbl{color:var(--cyan);} .pc-box.cons .lbl{color:var(--red);}
+  .pc-box ul{list-style:none; color:var(--ink-soft); font-size:0.9rem;}
+  .pc-box li{margin-bottom:6px; padding-left:14px; position:relative;}
+  .pc-box li::before{content:'—'; position:absolute; left:0; color:var(--ink-faint);}
+  .price-box{display:flex; align-items:center; justify-content:space-between; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-lg); padding:22px 24px;}
+  .price-box .amt{font-family:var(--mono); font-size:1.5rem; font-weight:700;}
+  .price-box a{background:var(--amber); color:#1B1300; font-weight:700; font-size:0.9rem; padding:12px 24px; border-radius:999px; transition:background .15s;}
+  .price-box a:hover{background:var(--amber-dark);}
+  .notfound{text-align:center; padding:80px 20px; color:var(--ink-soft);}
+</style>
+</head>
+<body>
+<div class="wrap" id="content">
+  <a class="back" href="index.html">← Back to all reviews</a>
+  <div id="reviewBody"><div class="notfound">Loading review…</div></div>
+</div>
+
+<script>
+  function getProductFromUrl(){
+    const params = new URLSearchParams(window.location.search);
+    const raw = params.get('p');
+    if (!raw) return null;
+    try {
+      const json = decodeURIComponent(escape(atob(decodeURIComponent(raw))));
+      return JSON.parse(json);
+    } catch(e){
+      console.warn('Product data parse fail:', e);
+      return null;
+    }
+  }
+
+  function render(p){
+    document.title = (p.name || 'Product') + ' — Review — PocketSpec';
+    const filled = Math.round(Number(p.rating) || 0);
+    const starsStr = '★★★★★'.slice(0, filled) + '☆☆☆☆☆'.slice(0, 5 - filled);
+    const isOwn = p.source === 'own';
+    const prosHtml = (p.pros || []).map(t => '<li>' + t + '</li>').join('') || '<li>—</li>';
+    const consHtml = (p.cons || []).map(t => '<li>' + t + '</li>').join('') || '<li>—</li>';
+
+    document.getElementById('reviewBody').innerHTML = `
+      ${isOwn ? '<span class="badge">🏷️ Not on Daraz</span>' : ''}
+      <h1>${p.name || 'Untitled product'}</h1>
+      <div class="stars">${starsStr} <span>(${p.rating != null ? p.rating : '—'} / 5)</span></div>
+      <img class="hero-img" src="${p.image || ''}" alt="${p.name || ''}">
+      <p class="desc">${p.desc || ''}</p>
+      <div class="pc-grid">
+        <div class="pc-box pros"><div class="lbl">Pros</div><ul>${prosHtml}</ul></div>
+        <div class="pc-box cons"><div class="lbl">Cons</div><ul>${consHtml}</ul></div>
+      </div>
+      <div class="price-box">
+        <span class="amt">Rs. ${p.price != null ? p.price : '—'}</span>
+        <a href="${p.affLink || '#'}" target="_blank" rel="${isOwn ? 'noopener' : 'sponsored nofollow'}">${isOwn ? 'Order now →' : 'Check price →'}</a>
+      </div>
+    `;
+  }
+
+  const product = getProductFromUrl();
+  if (product) {
+    render(product);
+  } else {
+    document.getElementById('reviewBody').innerHTML = '<div class="notfound">Review data nahi mila. Please product card se dobara try karein.</div>';
+  }
+</script>
+</body>
+</html>
