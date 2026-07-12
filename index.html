@@ -1120,6 +1120,15 @@
     mid.appendChild(qvBtn); mid.appendChild(cmpBtn);
     article.appendChild(mid);
 
+     const reviewLink = document.createElement('a');
+    reviewLink.className = 'full-review-link';
+    reviewLink.href = 'javascript:void(0)';
+    reviewLink.textContent = 'Read full review →';
+    reviewLink.addEventListener('click', function(){
+      qvOpen(p);
+    });
+    article.appendChild(reviewLink);
+
     const foot = document.createElement('div');
     foot.className = 'card-foot';
     const price = document.createElement('span');
@@ -1321,6 +1330,7 @@
         '</div>';
       overlay.classList.add('open');
     }
+    window.qvOpen = function(p){ open(p); };
     function close(){ overlay.classList.remove('open'); }
 
     document.addEventListener('click', function(e){
