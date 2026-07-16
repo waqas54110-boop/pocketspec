@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -263,6 +264,53 @@
   .burger span::before{content:''; position:absolute; top:-5px; width:16px; height:2px; background:var(--ink);}
   .burger span::after{content:''; position:absolute; top:5px; width:16px; height:2px; background:var(--ink);}
   .mobile-panel{display:none;}
+
+  /* ===== FEATURED AD VIDEO STRIP (Facebook ad video shown below navbar) ===== */
+  .fbad-strip{
+    background:linear-gradient(180deg, var(--bg-alt), var(--bg));
+    border-bottom:1px solid var(--line);
+    padding:22px 0 26px;
+  }
+  .fbad-inner{
+    display:grid; grid-template-columns:340px 1fr; gap:28px; align-items:center;
+  }
+  .fbad-video-wrap{
+    position:relative; width:100%; aspect-ratio:9/16; max-height:420px;
+    background:#0B0F18; border-radius:var(--radius-lg); overflow:hidden;
+    box-shadow:var(--shadow-lg); border:1px solid var(--line);
+  }
+  .fbad-video-wrap video{width:100%; height:100%; object-fit:cover; display:block;}
+  .fbad-badge{
+    position:absolute; top:10px; left:10px; z-index:2; font-family:var(--mono); font-size:0.6rem;
+    font-weight:700; text-transform:uppercase; letter-spacing:0.05em; background:var(--violet); color:#fff;
+    padding:4px 9px; border-radius:20px; display:flex; align-items:center; gap:5px;
+  }
+  .fbad-badge::before{content:''; width:6px; height:6px; border-radius:50%; background:#fff;}
+  .fbad-mute-btn{
+    position:absolute; bottom:10px; right:10px; z-index:2; width:32px; height:32px; border-radius:50%;
+    background:rgba(20,21,29,0.55); backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,0.25);
+    color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer;
+  }
+  .fbad-eyebrow{
+    font-family:var(--mono); font-size:0.7rem; text-transform:uppercase; letter-spacing:0.14em;
+    color:var(--violet-dark); display:flex; align-items:center; gap:8px; margin-bottom:10px;
+  }
+  .fbad-eyebrow::before{content:''; width:20px; height:1px; background:var(--violet);}
+  .fbad-copy h2{font-family:var(--display); font-size:1.5rem; font-weight:700; letter-spacing:-0.01em; margin-bottom:8px;}
+  .fbad-copy p{color:var(--ink-soft); font-size:0.92rem; max-width:52ch; margin-bottom:16px;}
+  .fbad-actions{display:flex; gap:12px; flex-wrap:wrap;}
+  .fbad-actions a{
+    font-family:var(--body); font-weight:600; font-size:0.86rem; padding:11px 22px; border-radius:999px;
+    display:inline-flex; align-items:center; gap:8px; transition:transform .18s var(--ease), box-shadow .18s var(--ease);
+  }
+  .fbad-cta-primary{background:var(--violet); color:#fff; box-shadow:0 0 0 1px rgba(108,92,231,0.28);}
+  .fbad-cta-primary:hover{transform:translateY(-2px); box-shadow:0 12px 28px -8px var(--violet-glow);}
+  .fbad-cta-ghost{background:var(--surface); color:var(--ink); border:1px solid var(--line);}
+  .fbad-cta-ghost:hover{transform:translateY(-2px); border-color:var(--cyan);}
+  @media (max-width: 860px){
+    .fbad-inner{grid-template-columns:1fr;}
+    .fbad-video-wrap{max-width:260px; margin:0 auto;}
+  }
 
   /* ===== COMPARE TOOL BANNER ===== */
   .compare-banner{
@@ -760,6 +808,50 @@
   </div>
 </header>
 
+<!-- ===== FACEBOOK AD VIDEO STRIP — shows the same video you're running as a Facebook ad, right below the navbar ===== -->
+<section class="fbad-strip" id="fbAdStrip">
+  <div class="wrap fbad-inner">
+    <div class="fbad-video-wrap">
+      <span class="fbad-badge">As seen on Facebook</span>
+      <video id="fbAdVideo" playsinline muted loop preload="metadata"
+             poster="images/u39-earbuds.png"
+             aria-label="PocketSpec Facebook ad video">
+        <source src="videos/fb-ad-featured.mp4" type="video/mp4">
+      </video>
+      <button class="fbad-mute-btn" id="fbAdMuteBtn" aria-label="Unmute video" title="Unmute">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5 6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+      </button>
+    </div>
+    <div class="fbad-copy">
+      <div class="fbad-eyebrow">From our Facebook page</div>
+      <h2 id="fbAdTitle">U39 Wireless Gaming Earbuds — the ad, straight from Facebook</h2>
+      <p id="fbAdDesc">Same video running as our Facebook ad, embedded here so you can watch it, check the real Daraz price, and read the full hands-on review without leaving the page.</p>
+      <div class="fbad-actions">
+        <a class="fbad-cta-primary" id="fbAdCtaBuy" href="https://go.urtrackinglink.com/aff_c?offer_id=164&aff_id=170889&url=https%3A%2F%2Fwww.daraz.pk%2Fproducts%2Fu39-wireless-gaming-earbuds_bluetooth-headphones-headset_enc-noise-cancelling-bluetooth-earphones_latest-53-bluethoot-chip-powerful-performance-fast-transmission_long-battery-true-stereo-earbuds-i1958928865.html%3Fsub_id1%3D{transaction_id}%26sub_aff_id%3D{affiliate_id}" rel="sponsored nofollow" target="_blank" data-product="U39 Wireless Earbuds" data-slot="fbad-video" onclick="trackClick(this)">Check price →</a>
+        <a class="fbad-cta-ghost" id="fbAdCtaFacebook" href="https://facebook.com/" target="_blank" rel="noopener">Follow our Facebook page</a>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- VideoObject SEO schema for the Facebook ad video (kept in sync with #fbAdVideo via JS) -->
+<script type="application/ld+json" id="fbAdVideoSchema">
+{
+  "@context": "https://schema.org",
+  "@type": "VideoObject",
+  "name": "U39 Wireless Gaming Earbuds — Facebook Ad",
+  "description": "Same video running as our Facebook ad for the U39 Wireless Gaming Earbuds — Bluetooth 5.3, ENC noise-cancelling, under Rs. 5,000 in Pakistan.",
+  "thumbnailUrl": ["https://waqas54110-boop.github.io/pocketspec/images/u39-earbuds.png"],
+  "uploadDate": "2026-07-16T00:00:00+05:00",
+  "contentUrl": "https://waqas54110-boop.github.io/pocketspec/videos/fb-ad-featured.mp4",
+  "embedUrl": "https://waqas54110-boop.github.io/pocketspec/#fbAdStrip",
+  "publisher": {
+    "@type": "Organization",
+    "name": "PocketSpec",
+    "logo": { "@type": "ImageObject", "url": "https://waqas54110-boop.github.io/pocketspec/images/u39-earbuds.png" }
+  }
+}
+</script>
+
 <!-- ===== COMPARE TOOL BANNER ===== -->
 <section class="compare-banner">
   <div class="wrap compare-inner">
@@ -1114,6 +1206,86 @@ let db = null;
   // ====== Facebook auto-post settings (Apps Script) — add-product.html jaisa hi ======
   const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw7SdawMLIuXMMiUqCAhtliyQi5pLq3aNt7B72oWbZJDKCHDm7BOEVZZZKSPvWV6JpciQ/exec";
   const APPS_SCRIPT_SECRET = "ps_3186313178@@5522";
+  // =====================================================================
+
+  // ====== FACEBOOK AD VIDEO — edit this one object whenever a new ad goes live ======
+  // src        : direct link/path to the same mp4 you're using as the Facebook ad video
+  // poster     : thumbnail shown before the video plays / loads
+  // title/desc : shown next to the video and used for the VideoObject SEO schema below
+  // productKey : must match a product "name" in allProducts, so the buy button + price stay correct
+  // facebookUrl: link to your Facebook Page or the exact ad post
+  const FB_AD_VIDEO = {
+    src: "videos/fb-ad-featured.mp4",
+    poster: "images/u39-earbuds.png",
+    title: "U39 Wireless Gaming Earbuds — the ad, straight from Facebook",
+    desc: "Same video running as our Facebook ad, embedded here so you can watch it, check the real Daraz price, and read the full hands-on review without leaving the page.",
+    productKey: "U39 Wireless Gaming Earbuds",
+    facebookUrl: "https://facebook.com/",
+    uploadDate: "2026-07-16T00:00:00+05:00"
+  };
+  // =====================================================================
+
+  function initFbAdVideo(){
+    const wrap = document.getElementById('fbAdStrip');
+    if (!wrap) return;
+    const videoEl = document.getElementById('fbAdVideo');
+    const source = videoEl ? videoEl.querySelector('source') : null;
+    const titleEl = document.getElementById('fbAdTitle');
+    const descEl = document.getElementById('fbAdDesc');
+    const fbLink = document.getElementById('fbAdCtaFacebook');
+    const buyLink = document.getElementById('fbAdCtaBuy');
+    const muteBtn = document.getElementById('fbAdMuteBtn');
+
+    if (source) source.src = FB_AD_VIDEO.src;
+    if (videoEl) { videoEl.poster = FB_AD_VIDEO.poster; videoEl.load(); }
+    if (titleEl) titleEl.textContent = FB_AD_VIDEO.title;
+    if (descEl) descEl.textContent = FB_AD_VIDEO.desc;
+    if (fbLink) fbLink.href = FB_AD_VIDEO.facebookUrl;
+
+    // Link the buy button + price copy to the matching product, so it never goes stale
+    const matched = allProducts.find(function(p){ return p.name === FB_AD_VIDEO.productKey; });
+    if (matched && buyLink){
+      buyLink.href = matched.affLink || buyLink.href;
+      buyLink.setAttribute('data-product', matched.name);
+    }
+
+    // Autoplay muted (browsers allow this), pause when scrolled out of view to save data
+    if (videoEl){
+      const playPromise = videoEl.play();
+      if (playPromise && playPromise.catch) playPromise.catch(function(){ /* autoplay blocked, user can tap unmute */ });
+      if ('IntersectionObserver' in window){
+        const io = new IntersectionObserver(function(entries){
+          entries.forEach(function(entry){
+            if (entry.isIntersecting) videoEl.play().catch(function(){});
+            else videoEl.pause();
+          });
+        }, { threshold: 0.35 });
+        io.observe(videoEl);
+      }
+    }
+
+    if (muteBtn && videoEl){
+      muteBtn.addEventListener('click', function(){
+        videoEl.muted = !videoEl.muted;
+        muteBtn.setAttribute('aria-label', videoEl.muted ? 'Unmute video' : 'Mute video');
+        muteBtn.setAttribute('title', videoEl.muted ? 'Unmute' : 'Mute');
+      });
+    }
+
+    // Keep the VideoObject SEO schema in sync with FB_AD_VIDEO so search engines see the right data
+    const schemaEl = document.getElementById('fbAdVideoSchema');
+    if (schemaEl){
+      try {
+        const schema = JSON.parse(schemaEl.textContent);
+        schema.name = FB_AD_VIDEO.title;
+        schema.description = FB_AD_VIDEO.desc;
+        schema.thumbnailUrl = [new URL(FB_AD_VIDEO.poster, window.location.href).href];
+        schema.contentUrl = new URL(FB_AD_VIDEO.src, window.location.href).href;
+        schema.uploadDate = FB_AD_VIDEO.uploadDate;
+        schemaEl.textContent = JSON.stringify(schema);
+      } catch(e){ console.warn('fbAdVideoSchema sync fail:', e); }
+    }
+  }
   // =====================================================================
 
   function postOwnProductToFacebook(product){
@@ -2114,6 +2286,7 @@ let db = null;
       const target = el.getAttribute('data-w');
       requestAnimationFrame(() => { el.style.width = target + '%'; });
     });
+    initFbAdVideo();
     loadDynamicProducts();
   });
 
