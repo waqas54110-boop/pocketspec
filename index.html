@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1208,52 +1207,55 @@ let db = null;
   const APPS_SCRIPT_SECRET = "ps_3186313178@@5522";
   // =====================================================================
 
-  // ====== FACEBOOK AD VIDEO — edit this one object whenever a new ad goes live ======
-  // src        : direct link/path to the same mp4 you're using as the Facebook ad video
-  // poster     : thumbnail shown before the video plays / loads
-  // title/desc : shown next to the video and used for the VideoObject SEO schema below
-  // productKey : must match a product "name" in allProducts, so the buy button + price stay correct
-  // facebookUrl: link to your Facebook Page or the exact ad post
-  const FB_AD_VIDEO = {
-    src: "videos/fb-ad-featured.mp4",
-    poster: "images/u39-earbuds.png",
-    title: "U39 Wireless Gaming Earbuds — the ad, straight from Facebook",
-    desc: "Same video running as our Facebook ad, embedded here so you can watch it, check the real Daraz price, and read the full hands-on review without leaving the page.",
-    productKey: "U39 Wireless Gaming Earbuds",
-    facebookUrl: "https://facebook.com/",
-    uploadDate: "2026-07-16T00:00:00+05:00"
-  };
-  // =====================================================================
-
+  // ====== FACEBOOK AD VIDEO — auto-synced from your Facebook Page via Firestore ======
+  // A background Apps Script job (see the separate .gs file) fetches your Page's latest
+  // video/reel every hour and writes it to Firestore at site_config/fbAdVideo.
+  // This front-end just reads that document — no manual editing needed anymore.
   function initFbAdVideo(){
     const wrap = document.getElementById('fbAdStrip');
     if (!wrap) return;
-    const videoEl = document.getElementById('fbAdVideo');
-    const source = videoEl ? videoEl.querySelector('source') : null;
-    const titleEl = document.getElementById('fbAdTitle');
-    const descEl = document.getElementById('fbAdDesc');
-    const fbLink = document.getElementById('fbAdCtaFacebook');
-    const buyLink = document.getElementById('fbAdCtaBuy');
-    const muteBtn = document.getElementById('fbAdMuteBtn');
+    if (!db) { wrap.style.display = 'none'; return; }
 
-    if (source) source.src = FB_AD_VIDEO.src;
-    if (videoEl) { videoEl.poster = FB_AD_VIDEO.poster; videoEl.load(); }
-    if (titleEl) titleEl.textContent = FB_AD_VIDEO.title;
-    if (descEl) descEl.textContent = FB_AD_VIDEO.desc;
-    if (fbLink) fbLink.href = FB_AD_VIDEO.facebookUrl;
+    db.collection('site_config').doc('fbAdVideo').get().then(function(doc){
+      if (!doc.exists) { wrap.style.display = 'none'; return; }
+      const remote = doc.data();
+      if (!remote || !remote.src) { wrap.style.display = 'none'; return; }
 
-    // Link the buy button + price copy to the matching product, so it never goes stale
-    const matched = allProducts.find(function(p){ return p.name === FB_AD_VIDEO.productKey; });
-    if (matched && buyLink){
-      buyLink.href = matched.affLink || buyLink.href;
-      buyLink.setAttribute('data-product', matched.name);
-    }
+      const videoEl = document.getElementById('fbAdVideo');
+      const source = videoEl ? videoEl.querySelector('source') : null;
+      const titleEl = document.getElementById('fbAdTitle');
+      const descEl = document.getElementById('fbAdDesc');
+      const fbLink = document.getElementById('fbAdCtaFacebook');
+      const buyLink = document.getElementById('fbAdCtaBuy');
+      const muteBtn = document.getElementById('fbAdMuteBtn');
 
-    // Autoplay muted (browsers allow this), pause when scrolled out of view to save data
-    if (videoEl){
-      const playPromise = videoEl.play();
+      if (source) source.src = remote.src;
+      if (videoEl) { videoEl.poster = remote.poster || ''; videoEl.load(); }
+      if (titleEl) titleEl.textContent = remote.title || 'From our Facebook page';
+      if (descEl) descEl.textContent = remote.desc || 'Watch our latest Facebook video right here.';
+      if (fbLink) fbLink.href = remote.facebookUrl || 'https://facebook.com/';
+
+      // Buy button ab kisi ek fixed product se link nahi — video badalti rehti hai,
+      // is liye seedha reviews section par le jaayein, ya matching product mil jaye to us par.
+      if (buyLink){
+        const matched = (typeof allProducts !== 'undefined') ? allProducts.find(function(p){
+          return remote.title && p.name && remote.title.toLowerCase().indexOf(p.name.toLowerCase()) !== -1;
+        }) : null;
+        if (matched){
+          buyLink.href = matched.affLink || '#reviews';
+          buyLink.textContent = 'Check price →';
+          buyLink.setAttribute('data-product', matched.name);
+        } else {
+          buyLink.href = '#reviews';
+          buyLink.removeAttribute('target');
+          buyLink.textContent = 'See today\'s picks →';
+          buyLink.setAttribute('data-product', 'fb-video-generic');
+        }
+      }
+
+      const playPromise = videoEl && videoEl.play();
       if (playPromise && playPromise.catch) playPromise.catch(function(){ /* autoplay blocked, user can tap unmute */ });
-      if ('IntersectionObserver' in window){
+      if (videoEl && 'IntersectionObserver' in window){
         const io = new IntersectionObserver(function(entries){
           entries.forEach(function(entry){
             if (entry.isIntersecting) videoEl.play().catch(function(){});
@@ -1262,29 +1264,31 @@ let db = null;
         }, { threshold: 0.35 });
         io.observe(videoEl);
       }
-    }
 
-    if (muteBtn && videoEl){
-      muteBtn.addEventListener('click', function(){
-        videoEl.muted = !videoEl.muted;
-        muteBtn.setAttribute('aria-label', videoEl.muted ? 'Unmute video' : 'Mute video');
-        muteBtn.setAttribute('title', videoEl.muted ? 'Unmute' : 'Mute');
-      });
-    }
+      if (muteBtn && videoEl){
+        muteBtn.addEventListener('click', function(){
+          videoEl.muted = !videoEl.muted;
+          muteBtn.setAttribute('aria-label', videoEl.muted ? 'Unmute video' : 'Mute video');
+          muteBtn.setAttribute('title', videoEl.muted ? 'Unmute' : 'Mute');
+        });
+      }
 
-    // Keep the VideoObject SEO schema in sync with FB_AD_VIDEO so search engines see the right data
-    const schemaEl = document.getElementById('fbAdVideoSchema');
-    if (schemaEl){
-      try {
-        const schema = JSON.parse(schemaEl.textContent);
-        schema.name = FB_AD_VIDEO.title;
-        schema.description = FB_AD_VIDEO.desc;
-        schema.thumbnailUrl = [new URL(FB_AD_VIDEO.poster, window.location.href).href];
-        schema.contentUrl = new URL(FB_AD_VIDEO.src, window.location.href).href;
-        schema.uploadDate = FB_AD_VIDEO.uploadDate;
-        schemaEl.textContent = JSON.stringify(schema);
-      } catch(e){ console.warn('fbAdVideoSchema sync fail:', e); }
-    }
+      const schemaEl = document.getElementById('fbAdVideoSchema');
+      if (schemaEl){
+        try {
+          const schema = JSON.parse(schemaEl.textContent);
+          schema.name = remote.title || schema.name;
+          schema.description = remote.desc || schema.description;
+          schema.thumbnailUrl = remote.poster ? [remote.poster] : schema.thumbnailUrl;
+          schema.contentUrl = remote.src;
+          schema.uploadDate = remote.uploadDate || schema.uploadDate;
+          schemaEl.textContent = JSON.stringify(schema);
+        } catch(e){ console.warn('fbAdVideoSchema sync fail:', e); }
+      }
+    }).catch(function(e){
+      console.warn('Latest FB video fetch fail:', e);
+      wrap.style.display = 'none';
+    });
   }
   // =====================================================================
 
