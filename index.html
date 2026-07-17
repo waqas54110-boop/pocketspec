@@ -556,27 +556,72 @@
     display:none; align-items:center; justify-content:center; padding:20px;
   }
   .op-overlay.open{display:flex;}
-  .op-modal{
-    background:var(--surface); border:1px solid var(--violet); border-radius:var(--radius-lg);
-    max-width:480px; width:100%; max-height:88vh; overflow:auto; padding:26px; position:relative;
-    box-shadow:0 0 0 1px rgba(108,92,231,0.20), var(--shadow-lg);
-  }
-  .op-modal h3{font-family:var(--display); font-size:1.2rem; margin-bottom:6px; padding-right:30px;}
-  .op-note{font-size:0.8rem; color:var(--ink-soft); margin-bottom:18px;}
-  .op-field{margin-bottom:12px;}
-  .op-field label{display:block; font-family:var(--mono); font-size:0.68rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-soft); margin-bottom:5px;}
-  .op-field input, .op-field textarea{
-    width:100%; background:var(--surface-2); border:1px solid var(--line); color:var(--ink);
-    padding:10px 12px; border-radius:8px; font-family:var(--body); font-size:0.86rem; resize:vertical;
-  }
-  .op-field input:focus-visible, .op-field textarea:focus-visible{outline:none; border-color:var(--violet);}
-  .op-field textarea{min-height:70px;}
-  .wishlist-btn{
-    position:absolute; top:10px; right:10px; z-index:2; width:32px; height:32px; border-radius:999px;
-    background:rgba(255,255,255,0.85); backdrop-filter:blur(4px); border:1px solid var(--line);
-    display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink-soft);
-    transition:color .15s, transform .15s, border-color .15s;
-  }
+ .op-overlay{
+  position:fixed; inset:0; z-index:95; background:rgba(20,21,29,0.55); backdrop-filter:blur(4px);
+  display:none; align-items:center; justify-content:center; padding:20px;
+}
+.op-overlay.open{display:flex;}
+.op-modal{
+  background:linear-gradient(165deg, #171E30, #0E1320 70%);
+  border:1px solid rgba(108,92,231,0.35);
+  border-radius:var(--radius-lg);
+  max-width:560px; width:100%; max-height:90vh; overflow:auto;
+  padding:28px; position:relative;
+  box-shadow:0 0 0 1px rgba(108,92,231,0.25), var(--shadow-lg);
+  color:#F5F6FA;
+}
+.op-modal::before{
+  content:''; position:absolute; top:0; left:-30%; width:60%; height:2px;
+  background:linear-gradient(90deg, transparent, var(--violet), var(--cyan), transparent);
+  animation:scan 3.2s linear infinite;
+}
+.op-modal h3{font-family:var(--display); font-size:1.35rem; color:#fff; margin-bottom:6px; padding-right:30px;}
+.op-note{font-size:0.8rem; color:#AEB4C7; margin-bottom:20px; line-height:1.6;}
+.op-field{margin-bottom:16px;}
+.op-field label{
+  display:flex; align-items:center; gap:6px;
+  font-family:var(--mono); font-size:0.68rem; text-transform:uppercase; letter-spacing:0.06em;
+  color:var(--cyan); margin-bottom:6px;
+}
+.op-field input[type="text"],
+.op-field input[type="number"],
+.op-field input[type="url"],
+.op-field textarea{
+  width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12);
+  color:#fff; padding:11px 13px; border-radius:9px; font-family:var(--body); font-size:0.86rem; resize:vertical;
+  transition:border-color .15s, background .15s;
+}
+.op-field input:focus-visible, .op-field textarea:focus-visible{
+  outline:none; border-color:var(--violet); background:rgba(108,92,231,0.10);
+}
+.op-field textarea{min-height:70px;}
+.op-two-col{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+.op-file-drop{
+  display:block; border:1.5px dashed rgba(255,255,255,0.22); border-radius:12px; padding:18px; text-align:center;
+  cursor:pointer; transition:border-color .15s, background .15s; background:rgba(255,255,255,0.03);
+}
+.op-file-drop:hover{border-color:var(--violet); background:rgba(108,92,231,0.08);}
+.op-file-drop input{display:none;}
+.op-file-drop .op-file-hint{font-size:0.78rem; color:#AEB4C7;}
+.op-gallery{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;}
+.op-thumb{
+  position:relative; width:64px; height:64px; border-radius:8px; overflow:hidden;
+  border:2px solid rgba(255,255,255,0.15); cursor:pointer; flex-shrink:0; transition:border-color .15s, transform .15s;
+}
+.op-thumb img{width:100%; height:100%; object-fit:cover;}
+.op-thumb:hover{transform:translateY(-2px);}
+.op-thumb.cover{border-color:var(--amber); box-shadow:0 0 0 2px rgba(255,176,32,0.35);}
+.op-thumb .op-cover-tag{
+  position:absolute; bottom:0; left:0; right:0; background:var(--amber); color:#1B1300;
+  font-family:var(--mono); font-size:0.55rem; text-align:center; font-weight:700; padding:1px 0;
+}
+.op-thumb .op-thumb-remove{
+  position:absolute; top:2px; right:2px; width:16px; height:16px; border-radius:50%; background:var(--red);
+  color:#fff; font-size:0.6rem; line-height:16px; text-align:center; border:none; cursor:pointer; padding:0;
+}
+.op-video-preview{margin-top:10px; width:100%; max-height:160px; border-radius:10px; background:#000; display:none;}
+.op-upload-progress{font-family:var(--mono); font-size:0.7rem; color:var(--cyan); margin-top:6px; display:none;}
+.op-tags-hint{font-size:0.72rem; color:#767D91; margin-top:4px;}
   .wishlist-btn:hover{transform:scale(1.08); border-color:var(--red);}
   .wishlist-btn.active{color:var(--red);}
   .wishlist-btn.active svg{fill:var(--red);}
@@ -1147,21 +1192,56 @@
 </div>
 
 <!-- Add own product modal (admin only) -->
+<!-- Add own product modal (admin only) -->
 <div class="op-overlay" id="opOverlay">
   <div class="op-modal">
     <button class="qv-close" id="opClose" aria-label="Close">✕</button>
-    <h3>Apna Product Add Karein</h3>
-    <p class="op-note">Yeh Daraz se nahi aayega — seedha aapka apna product hai. Grid mein alag violet badge ke saath, Daraz picks se saaf pehchana jayega. Order link WhatsApp par khud-ba-khud ban jayega — is naam, price aur category ke saath.</p>
+    <h3>🛍️ Apna Product Add Karein</h3>
+    <p class="op-note">Yeh Daraz se nahi aayega — seedha aapka apna product hai. Grid mein violet badge ke saath alag pehchana jayega. Order link WhatsApp par khud-ba-khud ban jayega.</p>
     <form id="opForm">
-      <div class="op-field"><label>Product Name</label><input required id="opName" placeholder="e.g. DesiDrop Matte Lipstick"></div>
-      <div class="op-field"><label>Category</label><input required id="opCategory" placeholder="e.g. Cosmetics"></div>
-      <div class="op-field"><label>Price (Rs.)</label><input required type="number" min="0" id="opPrice"></div>
-      <div class="op-field"><label>Rating (0–5)</label><input type="number" step="0.1" min="0" max="5" id="opRating" value="5"></div>
-      <div class="op-field"><label>Image URL</label><input required id="opImage" placeholder="images/my-product.png"></div>
-      <div class="op-field"><label>Description</label><textarea required id="opDesc"></textarea></div>
-      <div class="op-field"><label>Pros (comma se separate karein)</label><input id="opPros" placeholder="Fast delivery, Cash on delivery"></div>
-      <div class="op-field"><label>Cons (comma se separate karein)</label><input id="opCons" placeholder="Limited stock"></div>
-      <button type="submit" class="btn btn-solid" style="width:100%; justify-content:center; border-radius:10px;">Product Add Karein</button>
+      <div class="op-field"><label>📦 Product Name</label><input type="text" required id="opName" placeholder="e.g. DesiDrop Matte Lipstick"></div>
+
+      <div class="op-two-col">
+        <div class="op-field"><label>🗂️ Category</label><input type="text" required id="opCategory" placeholder="e.g. Cosmetics"></div>
+        <div class="op-field"><label>⭐ Rating (0–5)</label><input type="number" step="0.1" min="0" max="5" id="opRating" value="5"></div>
+      </div>
+      <div class="op-field"><label>💰 Price (Rs.)</label><input type="number" required min="0" id="opPrice"></div>
+
+      <div class="op-field">
+        <label>🖼️ Product Images (multiple)</label>
+        <label class="op-file-drop" for="opImages">
+          <input type="file" id="opImages" accept="image/*" multiple>
+          <div class="op-file-hint">Click karke ek ya zyada images select karein — jis image par click karenge, wahi cover (top) image banegi</div>
+        </label>
+        <div class="op-gallery" id="opGallery"></div>
+        <div class="op-upload-progress" id="opImgProgress">Uploading images…</div>
+      </div>
+
+      <div class="op-field">
+        <label>🎬 Product Video (optional)</label>
+        <label class="op-file-drop" for="opVideoFile">
+          <input type="file" id="opVideoFile" accept="video/*">
+          <div class="op-file-hint">Click karke ek chota product video select karein</div>
+        </label>
+        <video class="op-video-preview" id="opVideoPreview" controls></video>
+        <div class="op-upload-progress" id="opVidProgress">Uploading video…</div>
+      </div>
+
+      <div class="op-field"><label>📘 Facebook Video Link (optional)</label><input type="url" id="opFbLink" placeholder="https://facebook.com/.../videos/..."></div>
+
+      <div class="op-field"><label>📝 Description</label><textarea required id="opDesc"></textarea></div>
+      <div class="op-two-col">
+        <div class="op-field"><label>✅ Pros (comma se separate)</label><input type="text" id="opPros" placeholder="Fast delivery, Cash on delivery"></div>
+        <div class="op-field"><label>⚠️ Cons (comma se separate)</label><input type="text" id="opCons" placeholder="Limited stock"></div>
+      </div>
+
+      <div class="op-field">
+        <label>🔍 Tags (SEO ke liye)</label>
+        <input type="text" id="opTags" placeholder="e.g. best power bank pakistan, budget earbuds under 1000">
+        <div class="op-tags-hint">Google par jo top-searched related terms hain wahi comma se yahan daalein — search visibility behtar hogi.</div>
+      </div>
+
+      <button type="submit" class="btn btn-solid" style="width:100%; justify-content:center; border-radius:10px; margin-top:6px;">Product Add Karein</button>
     </form>
   </div>
 </div>
@@ -1402,6 +1482,37 @@ let db = null;
     }, 2400);
   }
 
+  function fileToBase64(file){
+    return new Promise(function(resolve, reject){
+      const reader = new FileReader();
+      reader.onload = function(){ resolve(reader.result.split(',')[1]); };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function uploadToImgbb(file){
+    return fileToBase64(file).then(function(base64){
+      return fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({
+          secret: APPS_SCRIPT_SECRET,
+          action: 'uploadImage',
+          imageBase64: base64
+        })
+      });
+    })
+    .then(function(res){ return res.json(); })
+    .then(function(data){
+      if (!data.ok) {
+        var msg = typeof data.error === 'string' ? data.error : JSON.stringify(data.error || 'Unknown error');
+        throw new Error(msg);
+      }
+      return data.url;
+    });
+  }
+
   // ================================================================
   // ===== ALL 10 FEATURES - INTEGRATED WITH SHORT CODE =============
   // ================================================================
@@ -1438,7 +1549,7 @@ let db = null;
     }
   ];
 
-  function buildProductCard(p, pidx){
+ function buildProductCard(p, pidx){
     const isOwn = p.source === 'own';
     const article = document.createElement('article');
     article.className = 'card' + (isOwn ? ' card-own' : '');
@@ -1537,6 +1648,18 @@ let db = null;
     reviewLink.target = '_blank';
     reviewLink.textContent = 'Read full review →';
     article.appendChild(reviewLink);
+
+    // ---- NEW: Facebook video link (agar product ke saath diya gaya ho) ----
+    if (p.fbVideoLink){
+      const fbVidLink = document.createElement('a');
+      fbVidLink.className = 'full-review-link';
+      fbVidLink.href = p.fbVideoLink;
+      fbVidLink.target = '_blank';
+      fbVidLink.rel = 'noopener';
+      fbVidLink.style.color = 'var(--violet)';
+      fbVidLink.textContent = '▶ Facebook video dekhein';
+      article.appendChild(fbVidLink);
+    }
 
     const foot = document.createElement('div');
     foot.className = 'card-foot';
@@ -1800,71 +1923,136 @@ let db = null;
     }
   };
 
-  // ---- Add Own Product (admin only) ----
-  (function initAddOwnProduct(){
-    const overlay = document.getElementById('opOverlay');
-    const closeBtn = document.getElementById('opClose');
-    const form = document.getElementById('opForm');
-    if (!overlay || !form) return;
+// ---- Add Own Product (admin only) ----
+(function initAddOwnProduct(){
+  const overlay = document.getElementById('opOverlay');
+  const closeBtn = document.getElementById('opClose');
+  const form = document.getElementById('opForm');
+  if (!overlay || !form) return;
 
-    const WHATSAPP_NUMBER = "923186313178";
+  const WHATSAPP_NUMBER = "923186313178";
 
-    function open(){ overlay.classList.add('open'); }
-    function close(){ overlay.classList.remove('open'); }
+  let uploadedImages = [];   // [{ url }]
+  let coverIndex = 0;
 
-    document.addEventListener('click', function(e){
-      if (e.target.closest('.add-own-trigger')){
-        e.preventDefault();
-        open();
-      }
+  const imgInput = document.getElementById('opImages');
+  const gallery = document.getElementById('opGallery');
+  const imgProgress = document.getElementById('opImgProgress');
+
+  function renderGallery(){
+    gallery.innerHTML = '';
+    uploadedImages.forEach(function(img, i){
+      const thumb = document.createElement('div');
+      thumb.className = 'op-thumb' + (i === coverIndex ? ' cover' : '');
+      thumb.innerHTML = '<img src="' + img.url + '" alt="">' +
+        (i === coverIndex ? '<span class="op-cover-tag">Cover</span>' : '') +
+        '<button type="button" class="op-thumb-remove">✕</button>';
+      thumb.querySelector('img').addEventListener('click', function(){
+        coverIndex = i;
+        renderGallery();
+      });
+      thumb.querySelector('.op-thumb-remove').addEventListener('click', function(e){
+        e.stopPropagation();
+        uploadedImages.splice(i, 1);
+        if (coverIndex >= uploadedImages.length) coverIndex = Math.max(0, uploadedImages.length - 1);
+        renderGallery();
+      });
+      gallery.appendChild(thumb);
     });
-    if (closeBtn) closeBtn.addEventListener('click', close);
-    overlay.addEventListener('click', function(e){ if (e.target === overlay) close(); });
+  }
 
-    form.addEventListener('submit', function(e){
-      e.preventDefault();
-      if (!db){ showToast('Firebase available nahi — product save nahi ho saka.'); return; }
-
-      const name = document.getElementById('opName').value.trim();
-      const category = document.getElementById('opCategory').value.trim();
-      const price = Number(document.getElementById('opPrice').value) || 0;
-      const rating = Number(document.getElementById('opRating').value) || 5;
-      const image = document.getElementById('opImage').value.trim();
-      const desc = document.getElementById('opDesc').value.trim();
-      const pros = document.getElementById('opPros').value.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
-      const cons = document.getElementById('opCons').value.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
-
-      if (!name || !category || !image || !desc){ showToast('Sab required fields bharein.'); return; }
-
-      const waMessage = "Hi, mujhe yeh product order karna hai: " + name + "\nPrice: Rs. " + price + "\nModel/Category: " + category;
-      const affLink = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(waMessage);
-
-      const productObj = {
-        name: name, category: category, price: price, rating: rating, image: image,
-        desc: desc, pros: pros, cons: cons, affLink: affLink, source: 'own',
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      };
-
-      db.collection('products').add(productObj).then(function(){
-        showToast('Apna product add ho gaya ✅');
-        form.reset();
-        document.getElementById('opRating').value = 5;
-        close();
-        const pidx = allProducts.length;
-        const localCopy = Object.assign({}, productObj, { createdAt: null });
-        allProducts.push(localCopy);
-        const grid = document.getElementById('productGrid');
-        if (grid) grid.appendChild(buildProductCard(localCopy, pidx));
-        window.dispatchEvent(new CustomEvent('ps:gridUpdated'));
-        window.dispatchEvent(new CustomEvent('ps:productsLoaded', { detail: allProducts }));
-
-        postOwnProductToFacebook({ name: name, price: price, desc: desc, image: image });
+  if (imgInput){
+    imgInput.addEventListener('change', function(){
+      const files = Array.from(imgInput.files || []);
+      if (!files.length) return;
+      imgProgress.style.display = 'block';
+      const uploads = files.map(function(file){
+        return uploadToImgbb(file).then(function(url){
+          uploadedImages.push({ url: url });
+        });
+      });
+      Promise.all(uploads).then(function(){
+        imgProgress.style.display = 'none';
+        renderGallery();
+        imgInput.value = '';
       }).catch(function(err){
-        console.warn('Own product save fail:', err);
-        showToast('Save nahi ho saka — dobara try karein.');
+        imgProgress.style.display = 'none';
+        showToast('Image upload fail: ' + err.message);
       });
     });
-  })();
+  }
+
+  function resetUploads(){
+    uploadedImages = [];
+    coverIndex = 0;
+    renderGallery();
+  }
+
+  function open(){ overlay.classList.add('open'); }
+  function close(){ overlay.classList.remove('open'); }
+
+  document.addEventListener('click', function(e){
+    if (e.target.closest('.add-own-trigger')){
+      e.preventDefault();
+      open();
+    }
+  });
+  if (closeBtn) closeBtn.addEventListener('click', close);
+  overlay.addEventListener('click', function(e){ if (e.target === overlay) close(); });
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    if (!db){ showToast('Firebase available nahi — product save nahi ho saka.'); return; }
+
+    const name = document.getElementById('opName').value.trim();
+    const category = document.getElementById('opCategory').value.trim();
+    const price = Number(document.getElementById('opPrice').value) || 0;
+    const rating = Number(document.getElementById('opRating').value) || 5;
+    const desc = document.getElementById('opDesc').value.trim();
+    const pros = document.getElementById('opPros').value.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+    const cons = document.getElementById('opCons').value.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+    const tags = document.getElementById('opTags').value.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+    const fbLink = document.getElementById('opFbLink').value.trim();
+    const videoUrl = document.getElementById('opVideoUrl').value.trim();
+
+    if (!name || !category || !desc){ showToast('Sab required fields bharein.'); return; }
+    if (!uploadedImages.length){ showToast('Kam az kam ek image upload karein.'); return; }
+
+    const imageUrls = uploadedImages.map(function(i){ return i.url; });
+    const coverImage = imageUrls[coverIndex] || imageUrls[0];
+
+    const waMessage = "Hi, mujhe yeh product order karna hai: " + name + "\nPrice: Rs. " + price + "\nModel/Category: " + category;
+    const affLink = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(waMessage);
+
+    const productObj = {
+      name: name, category: category, price: price, rating: rating,
+      image: coverImage, images: imageUrls, video: videoUrl, fbVideoLink: fbLink,
+      desc: desc, pros: pros, cons: cons, tags: tags,
+      affLink: affLink, source: 'own',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    db.collection('products').add(productObj).then(function(){
+      showToast('Apna product add ho gaya ✅');
+      form.reset();
+      document.getElementById('opRating').value = 5;
+      resetUploads();
+      close();
+      const pidx = allProducts.length;
+      const localCopy = Object.assign({}, productObj, { createdAt: null });
+      allProducts.push(localCopy);
+      const grid = document.getElementById('productGrid');
+      if (grid) grid.appendChild(buildProductCard(localCopy, pidx));
+      window.dispatchEvent(new CustomEvent('ps:gridUpdated'));
+      window.dispatchEvent(new CustomEvent('ps:productsLoaded', { detail: allProducts }));
+
+      postOwnProductToFacebook({ name: name, price: price, desc: desc, image: coverImage });
+    }).catch(function(err){
+      console.warn('Own product save fail:', err);
+      showToast('Save nahi ho saka — dobara try karein.');
+    });
+  });
+})();
 
   // ---- Compare Tool (below navbar) ----
   (function initCompareTool(){
