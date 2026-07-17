@@ -1961,23 +1961,33 @@ let db = null;
     });
   }
 
-  if (imgInput){
+ if (imgInput){
     imgInput.addEventListener('change', function(){
       const files = Array.from(imgInput.files || []);
       if (!files.length) return;
       imgProgress.style.display = 'block';
-      const uploads = files.map(function(file){
-        return uploadToImgbb(file).then(function(url){
-          uploadedImages.push({ url: url });
+
+      // Ek-ek karke upload karein (parallel nahi) — ImgBB block na kare
+      let chain = Promise.resolve();
+      let failCount = 0;
+      files.forEach(function(file){
+        chain = chain.then(function(){
+          return uploadToImgbb(file).then(function(url){
+            uploadedImages.push({ url: url });
+            renderGallery();
+          }).catch(function(err){
+            failCount++;
+            console.warn('Ek image upload fail hui:', err.message);
+          });
         });
       });
-      Promise.all(uploads).then(function(){
+
+      chain.then(function(){
         imgProgress.style.display = 'none';
-        renderGallery();
         imgInput.value = '';
-      }).catch(function(err){
-        imgProgress.style.display = 'none';
-        showToast('Image upload fail: ' + err.message);
+        if (failCount > 0){
+          showToast(failCount + ' image(s) upload nahi ho saki — dobara try karein.');
+        }
       });
     });
   }
