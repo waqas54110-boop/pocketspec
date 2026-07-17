@@ -964,6 +964,10 @@
   background:#fff; border-radius:10px; padding:2px; box-shadow:0 4px 14px rgba(0,0,0,0.3);
   transform-origin:left top;
 }
+  .reels-mute-btn{
+  width:44px; height:44px; border-radius:50%; background:rgba(255,255,255,0.12);
+  border:1px solid rgba(255,255,255,0.25); color:#fff; font-size:1.15rem; cursor:pointer;
+}
   .reels-comment-btn, .reels-share-btn{
   width:44px; height:44px; border-radius:50%; background:rgba(255,255,255,0.12);
   border:1px solid rgba(255,255,255,0.25); color:#fff; font-size:1.15rem; cursor:pointer;
@@ -2220,10 +2224,11 @@ article.appendChild(mid);
       const p = allProducts[pidx];
       if (p) open(p);
     });
-    if (closeBtn) closeBtn.addEventListener('click', close);
-    overlay.addEventListener('click', function(e){ if (e.target === overlay) close(); });
-    document.addEventListener('keydown', function(e){ if (e.key === 'Escape') close(); });
-  })();
+   if (closeBtn) closeBtn.addEventListener('click', function(){
+    overlay.classList.remove('open');
+    track.querySelectorAll('video').forEach(function(v){ v.pause(); });
+    document.getElementById('top').scrollIntoView({ behavior: 'auto' });
+});
   // Add review function (used in quick view)
   window.addReview = function(name) {
     const inp = document.getElementById('revInput');
@@ -3114,6 +3119,7 @@ function waitForFB(cb, tries){
       '<button class="reels-like-btn' + (liked ? ' liked' : '') + '" data-name="' + itemName.replace(/"/g,'') + '">❤<span class="reels-like-count"></span></button>' +
       '<button class="reels-comment-btn" data-name="' + itemName.replace(/"/g,'') + '">💬</button>' +
       '<button class="reels-share-btn" data-name="' + itemName.replace(/"/g,'') + '" data-url="' + shareUrl + '">↗</button>' +
+      '<button class="reels-mute-btn">🔇</button>' +
       '<a class="reels-follow-btn" href="' + FB_PAGE_URL + '" target="_blank" rel="noopener">＋Follow</a>';
     return box;
   }
@@ -3246,6 +3252,16 @@ function waitForFB(cb, tries){
         navigator.share({ title: 'pocketspec', url: url }).catch(function(){});
       } else {
         navigator.clipboard.writeText(url).then(function(){ showToast('✓ Link copy ho gaya'); });
+      }
+      return;
+    }
+    var muteBtn = e.target.closest('.reels-mute-btn');
+    if (muteBtn){
+      var slide = muteBtn.closest('.reels-slide');
+      var vid = slide ? slide.querySelector('video') : null;
+      if (vid){
+        vid.muted = !vid.muted;
+        muteBtn.textContent = vid.muted ? '🔇' : '🔊';
       }
       return;
     }
