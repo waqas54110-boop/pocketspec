@@ -3171,7 +3171,7 @@ function waitForFB(cb, tries){
       if (fbReels && fbReels.length){
         fbReels.forEach(function(r){ frag.appendChild(buildFbReelSlide(r)); });
       }
-      var pool = allProducts.filter(function(p){ return p.image || p.video; });
+      var pool = allProducts.filter(function(p){ return p.video; });
       pool.forEach(function(p){ frag.appendChild(buildProductSlide(p)); });
 
       if (!frag.children.length){
