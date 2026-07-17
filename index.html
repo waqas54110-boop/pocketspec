@@ -814,6 +814,130 @@
       padding:10px 14px; border-radius:999px; font-family:var(--body); font-size:0.85rem;
     }
   }
+
+  /* ================= NEW FEATURES CSS ================= */
+
+/* Trending strip */
+.trending-strip{display:flex; gap:14px; overflow-x:auto; padding:6px 2px 14px; -webkit-overflow-scrolling:touch;}
+.trending-item{
+  flex-shrink:0; width:150px; background:var(--surface); border:1px solid var(--line);
+  border-radius:var(--radius); padding:10px; cursor:pointer; transition:transform .18s var(--ease), border-color .18s;
+}
+.trending-item:hover{transform:translateY(-3px); border-color:var(--violet);}
+.trending-item img{width:100%; height:80px; object-fit:contain; background:var(--surface-2); border-radius:8px; margin-bottom:8px;}
+.trending-item .tr-name{font-family:var(--display); font-size:0.8rem; font-weight:700; line-height:1.25; margin-bottom:4px;}
+.trending-badge{
+  display:inline-flex; align-items:center; gap:4px; font-family:var(--mono); font-size:0.62rem; font-weight:700;
+  background:var(--red); color:#fff; padding:2px 8px; border-radius:20px; margin-bottom:6px;
+}
+.trending-empty{font-family:var(--mono); font-size:0.78rem; color:var(--ink-faint); padding:8px 2px;}
+
+/* Personalization banner */
+.personal-banner{
+  display:none; align-items:center; gap:10px; background:rgba(108,92,231,0.08); border:1px solid rgba(108,92,231,0.3);
+  color:var(--violet-dark); font-family:var(--body); font-size:0.86rem; font-weight:600;
+  padding:12px 16px; border-radius:var(--radius); margin-bottom:18px;
+}
+.personal-banner.show{display:flex;}
+.personal-banner .pb-clear{
+  margin-left:auto; font-family:var(--mono); font-size:0.7rem; font-weight:600; color:var(--ink-soft);
+  background:var(--surface); border:1px solid var(--line); padding:4px 10px; border-radius:20px; cursor:pointer;
+}
+
+/* Referral panel */
+.referral-panel{
+  background:var(--bg-alt); border:1px solid var(--line); border-radius:var(--radius-lg);
+  padding:26px; display:grid; grid-template-columns:1.1fr 0.9fr; gap:26px; align-items:center; margin:0 0 0;
+}
+.referral-panel h3{font-family:var(--display); font-size:1.3rem; margin-bottom:8px;}
+.referral-panel p{color:var(--ink-soft); font-size:0.88rem; max-width:42ch;}
+.ref-code-box{
+  display:flex; align-items:center; gap:10px; background:var(--surface); border:1px solid var(--line);
+  border-radius:999px; padding:8px 8px 8px 18px; margin-top:14px; max-width:340px;
+}
+.ref-code-box span{font-family:var(--mono); font-weight:700; font-size:0.9rem; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.ref-copy-btn{
+  font-family:var(--body); font-weight:700; font-size:0.78rem; background:var(--violet); color:#fff;
+  border:none; padding:9px 16px; border-radius:999px; cursor:pointer; transition:background .15s;
+}
+.ref-copy-btn:hover{background:var(--violet-dark);}
+.ref-stats{display:flex; gap:18px; margin-top:16px;}
+.ref-stat b{display:block; font-family:var(--display); font-size:1.6rem; color:var(--violet);}
+.ref-stat span{font-family:var(--mono); font-size:0.68rem; color:var(--ink-faint); text-transform:uppercase; letter-spacing:0.05em;}
+
+/* Points pill (header) */
+.points-pill{
+  font-family:var(--mono); font-size:0.72rem; font-weight:700; background:var(--surface-2); border:1px solid var(--line);
+  color:var(--amber-ink); padding:7px 12px; border-radius:999px; display:flex; align-items:center; gap:5px; flex-shrink:0;
+}
+
+/* Share & Earn button on cards */
+.share-earn-btn{
+  flex:1; font-family:var(--mono); font-size:0.66rem; text-transform:uppercase; letter-spacing:0.04em;
+  padding:7px 8px; border-radius:8px; border:1px solid var(--line); background:var(--surface-2);
+  color:var(--ink-soft); cursor:pointer; text-align:center; transition:all .15s;
+}
+.share-earn-btn:hover{border-color:var(--amber); color:var(--ink);}
+
+/* Reels FAB + overlay */
+.reels-fab{
+  position:fixed; right:22px; bottom:86px; z-index:65; width:56px; height:56px; border-radius:50%;
+  background:linear-gradient(135deg, var(--violet), var(--cyan)); color:#fff; border:none; cursor:pointer;
+  box-shadow:var(--shadow-lg); font-size:1.3rem; display:flex; align-items:center; justify-content:center;
+  transition:transform .18s var(--ease);
+}
+.reels-fab:hover{transform:scale(1.08);}
+.reels-overlay{
+  position:fixed; inset:0; z-index:120; background:#0B0F18; display:none; flex-direction:column;
+}
+.reels-overlay.open{display:flex;}
+.reels-close{
+  position:absolute; top:16px; right:16px; z-index:5; width:36px; height:36px; border-radius:50%;
+  background:rgba(255,255,255,0.12); color:#fff; border:1px solid rgba(255,255,255,0.25); cursor:pointer; font-size:1rem;
+}
+.reels-track{flex:1; overflow-y:auto; scroll-snap-type:y mandatory; -webkit-overflow-scrolling:touch;}
+.reels-slide{
+  scroll-snap-align:start; height:100%; min-height:100%; position:relative; display:flex; align-items:center; justify-content:center;
+  color:#fff; overflow:hidden;
+}
+.reels-slide img, .reels-slide video{width:100%; height:100%; object-fit:cover; position:absolute; inset:0;}
+.reels-slide::after{content:''; position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,0.05), rgba(0,0,0,0.75) 80%);}
+.reels-info{position:absolute; left:18px; right:90px; bottom:100px; z-index:2;}
+.reels-info .rn{font-family:var(--display); font-weight:700; font-size:1.15rem; margin-bottom:6px;}
+.reels-info .rp{font-family:var(--mono); font-size:0.95rem; color:var(--amber);}
+.reels-buy-card{
+  position:absolute; left:18px; right:18px; bottom:26px; z-index:3; background:rgba(20,21,29,0.7); backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,0.18); border-radius:16px; padding:12px 14px; display:flex; align-items:center; gap:12px;
+}
+.reels-buy-card a{
+  margin-left:auto; background:var(--amber); color:#1B1300; font-weight:700; font-size:0.8rem; padding:10px 18px;
+  border-radius:999px; white-space:nowrap;
+}
+.reels-side-actions{position:absolute; right:14px; bottom:130px; z-index:3; display:flex; flex-direction:column; gap:18px; align-items:center;}
+.reels-like-btn{
+  width:44px; height:44px; border-radius:50%; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.25);
+  color:#fff; font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:transform .15s;
+}
+.reels-like-btn.liked{color:var(--red); transform:scale(1.1);}
+.reels-like-count{font-family:var(--mono); font-size:0.68rem; color:#fff; text-align:center;}
+.reels-empty{color:#fff; text-align:center; padding:40px; font-family:var(--body);}
+
+/* Live coupon countdown banner */
+.coupon-banner{
+  display:none; align-items:center; gap:16px; flex-wrap:wrap; justify-content:space-between;
+  background:linear-gradient(90deg, rgba(255,176,32,0.14), rgba(108,92,231,0.10));
+  border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:14px 0;
+}
+.coupon-banner.show{display:flex;}
+.coupon-banner .cb-left{display:flex; align-items:center; gap:12px; flex-wrap:wrap;}
+.coupon-banner .cb-text{font-family:var(--body); font-weight:700; font-size:0.9rem; color:var(--ink);}
+.coupon-code{
+  font-family:var(--mono); font-weight:700; background:var(--surface); border:1px dashed var(--amber-dark);
+  color:var(--amber-ink); padding:6px 12px; border-radius:8px; cursor:pointer;
+}
+.coupon-timer{
+  font-family:var(--mono); font-weight:700; font-size:0.9rem; background:var(--ink); color:#fff; padding:6px 12px; border-radius:8px;
+}
 </style>
 </head>
 <body>
@@ -843,6 +967,7 @@
     <button class="icon-btn" id="notifyBtn" aria-label="Enable notifications" title="Enable notifications">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
     </button>
+    <span class="points-pill" id="pointsPill" title="Aapke Share &amp; Earn points">🏅 <span id="pointsCount">0</span> pts</span>
     <a class="nav-cta" href="#subscribe">Get weekly picks →</a>
     <button class="burger" id="burgerBtn" aria-label="Menu"><span></span></button>
   </div>
@@ -858,6 +983,15 @@
     <button class="urdu-toggle" id="langToggleMobile" style="margin-top:8px;">🇵🇰 اردو</button>
     <input id="navSearchMobile" type="text" placeholder="Search products…" autocomplete="off">
   </div>
+  <div class="coupon-banner" id="couponBanner">
+  <div class="wrap cb-left" style="width:100%; display:flex; align-items:center; gap:16px; flex-wrap:wrap; justify-content:space-between;">
+    <div class="cb-left">
+      <span class="cb-text" id="couponText">⏳ Live deal running now</span>
+      <span class="coupon-code" id="couponCode" title="Tap to copy">CODE</span>
+    </div>
+    <span class="coupon-timer" id="couponTimer">00:00:00</span>
+  </div>
+</div>
 </header>
 
 <!-- ===== FACEBOOK AD VIDEO STRIP — shows the same video you're running as a Facebook ad, right below the navbar ===== -->
@@ -985,6 +1119,15 @@
     </div>
   </div>
 
+  <section class="sec" id="trending" style="padding:44px 0 0;">
+  <div class="wrap">
+    <div class="sec-head" style="border:none; padding-bottom:0; margin-bottom:16px;">
+      <div><h2>🔥 Trending Near You</h2><p>Real click data from the last few days — not a guess.</p></div>
+    </div>
+    <div class="trending-strip" id="trendingStrip"><div class="trending-empty">Loading trending picks…</div></div>
+  </div>
+</section>
+
   <section class="sec" id="reviews">
     <div class="wrap">
       <div class="sec-head">
@@ -993,6 +1136,10 @@
           <p>Sourced from Daraz's own sales rank and buyer reviews, checked against the spec sheet.</p>
         </div>
       </div>
+      <div class="personal-banner" id="personalBanner">
+  <span id="personalBannerText"></span>
+  <button class="pb-clear" id="personalBannerClear">Reset</button>
+</div>
 
       <div class="reviews-layout">
         <aside class="cat-sidebar" id="catSidebar" aria-label="Filter by category">
@@ -1032,6 +1179,7 @@
               <div class="card-mid-actions">
                 <button class="quickview-btn">Quick view</button>
                 <button class="compare-chip">+ Compare</button>
+                <button class="share-earn-btn">📢 Share &amp; Earn</button>
               </div>
               <a class="full-review-link" href="reviews/u39-wireless-gaming-earbuds.html">Read full review →</a>
               <div class="card-foot"><span class="price">Rs. 1,039</span><a class="buy" href="https://go.urtrackinglink.com/aff_c?offer_id=164&aff_id=170889&url=https%3A%2F%2Fwww.daraz.pk%2Fproducts%2Fu39-wireless-gaming-earbuds_bluetooth-headphones-headset_enc-noise-cancelling-bluetooth-earphones_latest-53-bluethoot-chip-powerful-performance-fast-transmission_long-battery-true-stereo-earbuds-i1958928865.html%3Fsub_id1%3D{transaction_id}%26sub_aff_id%3D{affiliate_id}" rel="sponsored nofollow" target="_blank" data-product="U39 Wireless Earbuds" data-slot="grid" onclick="trackClick(this)">View deal →</a></div>
@@ -1141,6 +1289,25 @@
       </table>
     </div>
   </section>
+
+  <section class="sec" id="referral" style="padding-top:0;">
+  <div class="wrap">
+    <div class="referral-panel">
+      <div>
+        <h3>🤝 Refer a friend, both of you win</h3>
+        <p>Share your link. When someone visits through it, it's logged — no guessing, real referral data.</p>
+        <div class="ref-code-box">
+          <span id="refLinkDisplay">Loading…</span>
+          <button class="ref-copy-btn" id="refCopyBtn">Copy link</button>
+        </div>
+      </div>
+      <div class="ref-stats">
+        <div class="ref-stat"><b id="refCount">0</b><span>Referrals</span></div>
+        <div class="ref-stat"><b id="refPoints">0</b><span>Points earned</span></div>
+      </div>
+    </div>
+  </div>
+</section>
 
   <section class="cta-band" id="subscribe">
     <div class="wrap">
@@ -1663,16 +1830,19 @@ let db = null;
     pc.appendChild(prosDiv); pc.appendChild(consDiv);
     article.appendChild(pc);
 
-    const mid = document.createElement('div');
-    mid.className = 'card-mid-actions';
-    const qvBtn = document.createElement('button');
-    qvBtn.className = 'quickview-btn';
-    qvBtn.textContent = 'Quick view';
-    const cmpBtn = document.createElement('button');
-    cmpBtn.className = 'compare-chip';
-    cmpBtn.textContent = '+ Compare';
-    mid.appendChild(qvBtn); mid.appendChild(cmpBtn);
-    article.appendChild(mid);
+  const mid = document.createElement('div');
+  mid.className = 'card-mid-actions';
+  const qvBtn = document.createElement('button');
+  qvBtn.className = 'quickview-btn';
+  qvBtn.textContent = 'Quick view';
+  const cmpBtn = document.createElement('button');
+ cmpBtn.className = 'compare-chip';
+cmpBtn.textContent = '+ Compare';
+const shareBtn = document.createElement('button');
+shareBtn.className = 'share-earn-btn';
+shareBtn.textContent = '📢 Share';
+mid.appendChild(qvBtn); mid.appendChild(cmpBtn); mid.appendChild(shareBtn);
+article.appendChild(mid);
 
     const reviewLink = document.createElement('a');
     reviewLink.className = 'full-review-link';
@@ -2583,7 +2753,289 @@ if (imgInput){
     document.getElementById('email').value = '';
     return false;
   }
+
+  // ================= NEW FEATURES JS ================= //
+
+// ---- Shared points helper (Share & Earn + Referral both add to this) ----
+function addPoints(n, reasonMsg){
+  var pts = Number(localStorage.getItem('ps_points') || '0') + n;
+  localStorage.setItem('ps_points', String(pts));
+  var el = document.getElementById('pointsCount');
+  if (el) el.textContent = pts;
+  var refPtsEl = document.getElementById('refPoints');
+  if (refPtsEl) refPtsEl.textContent = pts;
+  if (reasonMsg) showToast(reasonMsg);
+}
+(function initPointsPill(){
+  var el = document.getElementById('pointsCount');
+  if (el) el.textContent = localStorage.getItem('ps_points') || '0';
+  var refPtsEl = document.getElementById('refPoints');
+  if (refPtsEl) refPtsEl.textContent = localStorage.getItem('ps_points') || '0';
+})();
+
+// ---- 1) Trending Near You (built from real Firestore `clicks`) ----
+(function initTrending(){
+  var strip = document.getElementById('trendingStrip');
+  if (!strip || !db) return;
+  db.collection('clicks').orderBy('timestamp', 'desc').limit(300).get().then(function(snap){
+    var counts = {};
+    snap.forEach(function(doc){
+      var d = doc.data();
+      if (!d.product || d.product === 'unknown') return;
+      counts[d.product] = (counts[d.product] || 0) + 1;
+    });
+    var ranked = Object.keys(counts).map(function(name){ return { name: name, count: counts[name] }; })
+      .sort(function(a,b){ return b.count - a.count; }).slice(0, 8);
+
+    if (!ranked.length){ strip.innerHTML = '<div class="trending-empty">Not enough click data yet — check back soon.</div>'; return; }
+
+    strip.innerHTML = '';
+    ranked.forEach(function(r){
+      var p = allProducts.find(function(x){ return x.name === r.name; });
+      var item = document.createElement('div');
+      item.className = 'trending-item';
+      item.innerHTML =
+        '<span class="trending-badge">🔥 ' + r.count + ' clicks</span>' +
+        '<img src="' + (p ? p.image : '') + '" alt="' + r.name + '">' +
+        '<div class="tr-name">' + r.name + '</div>' +
+        (p ? '<div style="font-family:var(--mono); font-size:0.72rem; color:var(--ink-soft);">Rs. ' + p.price + '</div>' : '');
+      if (p){ item.addEventListener('click', function(){ window.qvOpen && window.qvOpen(p); }); }
+      strip.appendChild(item);
+    });
+  }).catch(function(e){
+    console.warn('Trending load fail:', e);
+    strip.innerHTML = '<div class="trending-empty">Trending data unavailable right now.</div>';
+  });
+})();
+
+// ---- 2) Smart Homepage personalization (from real localStorage behaviour, not fake AI) ----
+(function initPersonalization(){
+  var TALLY_KEY = 'ps_cat_tally';
+  function getTally(){ try { return JSON.parse(localStorage.getItem(TALLY_KEY) || '{}'); } catch(e){ return {}; } }
+  function saveTally(t){ localStorage.setItem(TALLY_KEY, JSON.stringify(t)); }
+  function bump(cat){
+    if (!cat) return;
+    var t = getTally();
+    t[cat] = (t[cat] || 0) + 1;
+    saveTally(t);
+  }
+  // Count a real interaction whenever someone opens quick view or clicks buy/full-review on a card
+  document.addEventListener('click', function(e){
+    var card = e.target.closest('.card');
+    if (!card) return;
+    if (e.target.closest('.quickview-btn') || e.target.closest('.buy') || e.target.closest('.full-review-link')){
+      bump(card.getAttribute('data-category'));
+    }
+  });
+
+  function topCategory(){
+    var t = getTally();
+    var keys = Object.keys(t).filter(function(k){ return t[k] >= 3; });
+    if (!keys.length) return null;
+    keys.sort(function(a,b){ return t[b] - t[a]; });
+    return keys[0];
+  }
+
+  function applyPersonalization(){
+    var cat = topCategory();
+    var banner = document.getElementById('personalBanner');
+    var text = document.getElementById('personalBannerText');
+    if (!cat){ if (banner) banner.classList.remove('show'); return; }
+    if (banner && text){
+      text.textContent = '👋 Based on what you\'ve been browsing, we\'ve highlighted ' + cat + ' picks for you.';
+      banner.classList.add('show');
+    }
+    var chip = document.querySelector('.filter-chip[data-filter="' + cat + '"]');
+    if (chip) chip.click();
+  }
+
+  var clearBtn = document.getElementById('personalBannerClear');
+  if (clearBtn){
+    clearBtn.addEventListener('click', function(){
+      localStorage.removeItem(TALLY_KEY);
+      var banner = document.getElementById('personalBanner');
+      if (banner) banner.classList.remove('show');
+      var allChip = document.querySelector('.filter-chip[data-filter="all"]');
+      if (allChip) allChip.click();
+    });
+  }
+
+  window.addEventListener('ps:gridUpdated', applyPersonalization);
+  setTimeout(applyPersonalization, 800); // run once after initial products load
+})();
+
+// ---- 3) Referral system (real Firestore-backed) ----
+(function initReferral(){
+  if (!db) return;
+  var CODE_KEY = 'ps_ref_code';
+  var code = localStorage.getItem(CODE_KEY);
+  if (!code){
+    code = 'PS' + Math.random().toString(36).slice(2, 8).toUpperCase();
+    localStorage.setItem(CODE_KEY, code);
+  }
+
+  var link = window.location.origin + window.location.pathname + '?ref=' + code;
+  var linkDisplay = document.getElementById('refLinkDisplay');
+  if (linkDisplay) linkDisplay.textContent = link;
+
+  var copyBtn = document.getElementById('refCopyBtn');
+  if (copyBtn){
+    copyBtn.addEventListener('click', function(){
+      navigator.clipboard.writeText(link).then(function(){
+        showToast('✓ Referral link copy ho gaya!');
+      }).catch(function(){ showToast(link); });
+    });
+  }
+
+  // Live count of people who came through this code
+  db.collection('referrals').where('ref', '==', code).get().then(function(snap){
+    var el = document.getElementById('refCount');
+    if (el) el.textContent = snap.size;
+  }).catch(function(e){ console.warn('Referral count fail:', e); });
+
+  // If THIS visit arrived via someone else's ?ref=, log it once per session
+  var params = new URLSearchParams(window.location.search);
+  var incomingRef = params.get('ref');
+  if (incomingRef && incomingRef !== code && !sessionStorage.getItem('ps_ref_logged')){
+    db.collection('referrals').add({
+      ref: incomingRef,
+      visitedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      page: window.location.pathname
+    }).then(function(){
+      sessionStorage.setItem('ps_ref_logged', 'true');
+    }).catch(function(e){ console.warn('Referral log fail:', e); });
+  }
+})();
+
+// ---- 4) Share & Earn (Social Challenge) ----
+(function initShareEarn(){
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest('.share-earn-btn');
+    if (!btn) return;
+    var card = btn.closest('.card');
+    var pidx = card ? card.getAttribute('data-pidx') : null;
+    var p = pidx != null ? allProducts[pidx] : null;
+    if (!p) return;
+
+    var code = localStorage.getItem('ps_ref_code') || '';
+    var shareUrl = window.location.origin + window.location.pathname + '?ref=' + code;
+    var shareText = 'Check this out on pocketspec: ' + p.name + ' — Rs. ' + p.price;
+
+    function logShare(){
+      if (db){
+        db.collection('shares').add({
+          product: p.name, ref: code, sharedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).catch(function(err){ console.warn('Share log fail:', err); });
+      }
+      addPoints(5, '✓ Shared! +5 points earned.');
+    }
+
+    if (navigator.share){
+      navigator.share({ title: p.name, text: shareText, url: shareUrl }).then(logShare).catch(function(){});
+    } else {
+      navigator.clipboard.writeText(shareText + ' ' + shareUrl).then(function(){
+        showToast('Link copy ho gaya — kahin bhi paste karke share karein.');
+        logShare();
+      }).catch(function(){});
+    }
+  });
+})();
+
+// ---- 5) Reels — short video feed from real product videos ----
+(function initReels(){
+  var fab = document.getElementById('reelsFab');
+  var overlay = document.getElementById('reelsOverlay');
+  var track = document.getElementById('reelsTrack');
+  var closeBtn = document.getElementById('reelsClose');
+  if (!fab || !overlay || !track) return;
+
+  function likeKey(name){ return 'ps_like_' + name; }
+
+  function buildSlide(p){
+    var slide = document.createElement('div');
+    slide.className = 'reels-slide';
+    var mediaHtml = p.video
+      ? '<video src="' + p.video + '" autoplay muted loop playsinline></video>'
+      : '<img src="' + (p.image || '') + '" alt="' + (p.name || '') + '">';
+    var liked = localStorage.getItem(likeKey(p.name)) === 'true';
+    slide.innerHTML =
+      mediaHtml +
+      '<div class="reels-info"><div class="rn">' + (p.name || '') + '</div><div class="rp">Rs. ' + (p.price != null ? p.price : '—') + '</div></div>' +
+      '<div class="reels-side-actions">' +
+        '<button class="reels-like-btn' + (liked ? ' liked' : '') + '" data-name="' + (p.name||'').replace(/"/g,'') + '">❤</button>' +
+      '</div>' +
+      '<div class="reels-buy-card"><span>' + (p.name || '') + '</span><a href="' + (p.affLink || '#') + '" target="_blank" rel="' + (p.source==='own' ? 'noopener' : 'sponsored nofollow') + '" data-product="' + (p.name||'unknown') + '" data-slot="reels" onclick="trackClick(this)">Buy Now →</a></div>';
+    return slide;
+  }
+
+  function buildFeed(){
+    track.innerHTML = '';
+    var pool = allProducts.filter(function(p){ return p.image || p.video; });
+    if (!pool.length){ track.innerHTML = '<div class="reels-empty">No product videos yet — add some from Add Product.</div>'; return; }
+    pool.forEach(function(p){ track.appendChild(buildSlide(p)); });
+  }
+
+  fab.addEventListener('click', function(){
+    buildFeed();
+    overlay.classList.add('open');
+  });
+  if (closeBtn) closeBtn.addEventListener('click', function(){ overlay.classList.remove('open'); });
+
+  track.addEventListener('click', function(e){
+    var likeBtn = e.target.closest('.reels-like-btn');
+    if (!likeBtn) return;
+    var name = likeBtn.getAttribute('data-name');
+    var key = likeKey(name);
+    var already = localStorage.getItem(key) === 'true';
+    localStorage.setItem(key, already ? 'false' : 'true');
+    likeBtn.classList.toggle('liked', !already);
+    if (db){
+      db.collection('likes').add({ product: name, likedAt: firebase.firestore.FieldValue.serverTimestamp() })
+        .catch(function(err){ console.warn('Like log fail:', err); });
+    }
+  });
+})();
+
+// ---- 6) Live Coupon Countdown (Firestore-driven, same pattern as your fbAdVideo sync) ----
+(function initLiveCoupon(){
+  var banner = document.getElementById('couponBanner');
+  if (!banner || !db) return;
+
+  db.collection('site_config').doc('liveCoupon').get().then(function(doc){
+    if (!doc.exists) return;
+    var d = doc.data();
+    if (!d || !d.expiresAt || !d.code) return;
+
+    var expires = d.expiresAt.toDate ? d.expiresAt.toDate() : new Date(d.expiresAt);
+    if (expires <= new Date()) return; // already expired, don't show
+
+    document.getElementById('couponText').textContent = d.text || '⏳ Live deal running now';
+    var codeEl = document.getElementById('couponCode');
+    codeEl.textContent = d.code;
+    codeEl.addEventListener('click', function(){
+      navigator.clipboard.writeText(d.code).then(function(){ showToast('✓ Coupon code copy ho gaya: ' + d.code); });
+    });
+    banner.classList.add('show');
+
+    var timerEl = document.getElementById('couponTimer');
+    function tick(){
+      var diff = expires - new Date();
+      if (diff <= 0){ banner.classList.remove('show'); clearInterval(iv); return; }
+      var h = Math.floor(diff / 3600000);
+      var m = Math.floor((diff % 3600000) / 60000);
+      var s = Math.floor((diff % 60000) / 1000);
+      timerEl.textContent = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+    }
+    tick();
+    var iv = setInterval(tick, 1000);
+  }).catch(function(e){ console.warn('Live coupon fetch fail:', e); });
+})();
 </script>
+  <button class="reels-fab" id="reelsFab" title="Watch product reels">🎬</button>
+<div class="reels-overlay" id="reelsOverlay">
+  <button class="reels-close" id="reelsClose">✕</button>
+  <div class="reels-track" id="reelsTrack"></div>
+</div>
 
 </body>
 </html>
