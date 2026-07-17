@@ -909,9 +909,21 @@
 }
 .reels-overlay.open{display:flex;}
 .reels-close{
-  position:absolute; top:16px; right:16px; z-index:5; width:36px; height:36px; border-radius:50%;
+  position:absolute; top:16px; right:16px; z-index:50; width:36px; height:36px; border-radius:50%;
   background:rgba(255,255,255,0.12); color:#fff; border:1px solid rgba(255,255,255,0.25); cursor:pointer; font-size:1rem;
 }
+ .reels-topbar{
+  position:absolute; top:0; left:0; right:0; z-index:6;
+  padding:12px 16px;
+  background:linear-gradient(180deg, rgba(0,0,0,0.55), transparent);
+  pointer-events:none;   /* NAYA — is se topbar ki khali jagah click block nahi karegi */
+}
+.reels-topbar .fb-page-wrap{
+  pointer-events:auto;   /* NAYA — sirf FB widget khud clickable rahe */
+  background:#fff; border-radius:10px; padding:2px; box-shadow:0 4px 14px rgba(0,0,0,0.3);
+  transform-origin:left top;
+}
+  
 .reels-track{flex:1; overflow-y:auto; scroll-snap-type:y mandatory; -webkit-overflow-scrolling:touch;}
 .reels-slide{
   scroll-snap-align:start; height:100%; min-height:100%; position:relative; display:flex; align-items:center; justify-content:center;
@@ -955,11 +967,7 @@
 .coupon-timer{
   font-family:var(--mono); font-weight:700; font-size:0.9rem; background:var(--ink); color:#fff; padding:6px 12px; border-radius:8px;
 }
-  .reels-topbar{
-  position:absolute; top:0; left:0; right:0; z-index:6; padding:12px 16px;
-  display:flex; align-items:center;
-  background:linear-gradient(180deg, rgba(0,0,0,0.55), transparent);
-}
+
 .reels-topbar .fb-page-wrap{
   background:#fff; border-radius:10px; padding:2px; box-shadow:0 4px 14px rgba(0,0,0,0.3);
   transform-origin:left top;
@@ -3128,9 +3136,9 @@ function waitForFB(cb, tries){
   function buildProductSlide(p){
     var slide = document.createElement('div');
     slide.className = 'reels-slide';
-    var mediaHtml = p.video
-      ? '<video src="' + p.video + '" muted loop playsinline></video>'
-      : '<img src="' + (p.image || '') + '" alt="' + (p.name || '') + '">';
+  var mediaHtml = p.video
+  ? '<video src="' + p.video + '" muted loop playsinline webkit-playsinline preload="metadata"></video>'
+  : '<img src="' + (p.image || '') + '" alt="' + (p.name || '') + '">';
     slide.appendChild(buildTopBar());
     slide.innerHTML +=
       mediaHtml +
@@ -3144,8 +3152,8 @@ function waitForFB(cb, tries){
     var slide = document.createElement('div');
     slide.className = 'reels-slide';
     slide.appendChild(buildTopBar());
-    slide.innerHTML +=
-      '<video src="' + r.src + '" poster="' + (r.poster || '') + '" muted loop playsinline></video>' +
+   slide.innerHTML +=
+  '<video src="' + r.src + '" poster="' + (r.poster || '') + '" muted loop playsinline webkit-playsinline preload="metadata"></video>' +
       '<div class="reels-info"><div class="rn">' + (r.title || 'From our Facebook page') + '</div></div>' +
       '<div class="reels-buy-card"><span>See it on Facebook</span><a href="' + (r.pageUrl || FB_PAGE_URL) + '" target="_blank" rel="noopener">Open →</a></div>';
     slide.appendChild(buildSideActions(r.title || 'fb-reel', r.pageUrl || FB_PAGE_URL, 'fb'));
@@ -3256,16 +3264,21 @@ function waitForFB(cb, tries){
       }
       return;
     }
-    var muteBtn = e.target.closest('.reels-mute-btn');
-    if (muteBtn){
-      var slide = muteBtn.closest('.reels-slide');
-      var vid = slide ? slide.querySelector('video') : null;
-      if (vid){
-        vid.muted = !vid.muted;
-        muteBtn.textContent = vid.muted ? '🔇' : '🔊';
-      }
-      return;
+   var muteBtn = e.target.closest('.reels-mute-btn');
+if (muteBtn){
+  var slide = muteBtn.closest('.reels-slide');
+  var vid = slide ? slide.querySelector('video') : null;
+  if (vid){
+    vid.muted = !vid.muted;
+    vid.volume = 1;
+    muteBtn.textContent = vid.muted ? '🔇' : '🔊';
+    if (!vid.muted){
+      var pr = vid.play();
+      if (pr && pr.catch) pr.catch(function(){});
     }
+  }
+  return;
+}
   });
 })();
 </script>
