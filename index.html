@@ -1961,23 +1961,36 @@ let db = null;
     });
   }
 
- if (imgInput){
+if (imgInput){
     imgInput.addEventListener('change', function(){
       const files = Array.from(imgInput.files || []);
       if (!files.length) return;
       imgProgress.style.display = 'block';
 
-      // Ek-ek karke upload karein (parallel nahi) — ImgBB block na kare
+      function delay(ms){ return new Promise(function(res){ setTimeout(res, ms); }); }
+
+      function uploadWithRetry(file, attempt){
+        return uploadToImgbb(file).catch(function(err){
+          if (attempt < 3){
+            const wait = 3000 * (attempt + 1); // 3s, 6s, 9s
+            return delay(wait).then(function(){ return uploadWithRetry(file, attempt + 1); });
+          }
+          throw err;
+        });
+      }
+
       let chain = Promise.resolve();
       let failCount = 0;
       files.forEach(function(file){
         chain = chain.then(function(){
-          return uploadToImgbb(file).then(function(url){
+          return uploadWithRetry(file, 0).then(function(url){
             uploadedImages.push({ url: url });
             renderGallery();
           }).catch(function(err){
             failCount++;
             console.warn('Ek image upload fail hui:', err.message);
+          }).then(function(){
+            return delay(4000); // agli image se pehle 4 second ka gap
           });
         });
       });
@@ -1986,7 +1999,7 @@ let db = null;
         imgProgress.style.display = 'none';
         imgInput.value = '';
         if (failCount > 0){
-          showToast(failCount + ' image(s) upload nahi ho saki — dobara try karein.');
+          showToast(failCount + ' image(s) upload nahi ho saki — thodi der baad dobara try karein.');
         }
       });
     });
