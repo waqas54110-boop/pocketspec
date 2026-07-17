@@ -938,10 +938,24 @@
 .coupon-timer{
   font-family:var(--mono); font-weight:700; font-size:0.9rem; background:var(--ink); color:#fff; padding:6px 12px; border-radius:8px;
 }
+  .reels-topbar{
+  position:absolute; top:0; left:0; right:0; z-index:6; padding:12px 16px;
+  display:flex; align-items:center;
+  background:linear-gradient(180deg, rgba(0,0,0,0.55), transparent);
+}
+.reels-topbar .fb-page-wrap{
+  background:#fff; border-radius:10px; padding:2px; box-shadow:0 4px 14px rgba(0,0,0,0.3);
+  transform-origin:left top;
+}
+  
 </style>
 </head>
 <body>
-
+  
+<div id="fb-root"></div>
+<script async defer crossorigin="anonymous"
+  src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v19.0&appId=138974016363588">
+</script>
 <header>
   <div class="wrap nav">
     <a class="logo" href="#top">pocketspec<span>/tech</span></a>
@@ -2942,6 +2956,10 @@ function addPoints(n, reasonMsg){
 })();
 
 // ---- 5) Reels — short video feed from real product videos ----
+// ================= FINAL REELS BLOCK (paste this whole thing, replacing any earlier Reels JS) =================
+
+var FB_PAGE_URL = "https://www.facebook.com/profile.php?id=61591784042737";
+
 (function initReels(){
   var fab = document.getElementById('reelsFab');
   var overlay = document.getElementById('reelsOverlay');
@@ -2951,28 +2969,87 @@ function addPoints(n, reasonMsg){
 
   function likeKey(name){ return 'ps_like_' + name; }
 
-  function buildSlide(p){
+  // Real Facebook Page Plugin — Facebook renders this itself, so the Follow/Like
+  // button that appears is genuine (clicking it really follows/likes your page).
+  function buildTopBar(){
+    var bar = document.createElement('div');
+    bar.className = 'reels-topbar';
+    bar.innerHTML =
+      '<div class="fb-page-wrap">' +
+        '<div class="fb-page" ' +
+          'data-href="' + FB_PAGE_URL + '" ' +
+          'data-tabs="" ' +
+          'data-width="280" ' +
+          'data-small-header="true" ' +
+          'data-adapt-container-width="true" ' +
+          'data-hide-cover="true" ' +
+          'data-show-facepile="false">' +
+        '</div>' +
+      '</div>';
+    return bar;
+  }
+
+  function buildProductSlide(p){
     var slide = document.createElement('div');
     slide.className = 'reels-slide';
     var mediaHtml = p.video
       ? '<video src="' + p.video + '" autoplay muted loop playsinline></video>'
       : '<img src="' + (p.image || '') + '" alt="' + (p.name || '') + '">';
     var liked = localStorage.getItem(likeKey(p.name)) === 'true';
-    slide.innerHTML =
+    slide.appendChild(buildTopBar());
+    slide.innerHTML +=
       mediaHtml +
       '<div class="reels-info"><div class="rn">' + (p.name || '') + '</div><div class="rp">Rs. ' + (p.price != null ? p.price : '—') + '</div></div>' +
-      '<div class="reels-side-actions">' +
-        '<button class="reels-like-btn' + (liked ? ' liked' : '') + '" data-name="' + (p.name||'').replace(/"/g,'') + '">❤</button>' +
-      '</div>' +
+      '<div class="reels-side-actions"><button class="reels-like-btn' + (liked ? ' liked' : '') + '" data-name="' + (p.name||'').replace(/"/g,'') + '">❤</button></div>' +
       '<div class="reels-buy-card"><span>' + (p.name || '') + '</span><a href="' + (p.affLink || '#') + '" target="_blank" rel="' + (p.source==='own' ? 'noopener' : 'sponsored nofollow') + '" data-product="' + (p.name||'unknown') + '" data-slot="reels" onclick="trackClick(this)">Buy Now →</a></div>';
+    return slide;
+  }
+
+  function buildFbReelSlide(r){
+    // r = { src, poster, title, pageUrl } -- from your Facebook page, synced via Apps Script
+    var slide = document.createElement('div');
+    slide.className = 'reels-slide';
+    slide.appendChild(buildTopBar());
+    slide.innerHTML +=
+      '<video src="' + r.src + '" poster="' + (r.poster || '') + '" autoplay muted loop playsinline></video>' +
+      '<div class="reels-info"><div class="rn">' + (r.title || 'From our Facebook page') + '</div></div>' +
+      '<div class="reels-buy-card"><span>See it on Facebook</span><a href="' + (r.pageUrl || FB_PAGE_URL) + '" target="_blank" rel="noopener">Open →</a></div>';
     return slide;
   }
 
   function buildFeed(){
     track.innerHTML = '';
-    var pool = allProducts.filter(function(p){ return p.image || p.video; });
-    if (!pool.length){ track.innerHTML = '<div class="reels-empty">No product videos yet — add some from Add Product.</div>'; return; }
-    pool.forEach(function(p){ track.appendChild(buildSlide(p)); });
+    var frag = document.createDocumentFragment();
+
+    function afterFbReels(fbReels){
+      if (fbReels && fbReels.length){
+        fbReels.forEach(function(r){ frag.appendChild(buildFbReelSlide(r)); });
+      }
+      var pool = allProducts.filter(function(p){ return p.image || p.video; });
+      pool.forEach(function(p){ frag.appendChild(buildProductSlide(p)); });
+      if (!frag.children.length){
+        track.innerHTML = '<div class="reels-empty">No reels yet — add a product video or connect your Facebook videos.</div>';
+      } else {
+        track.appendChild(frag);
+      }
+      // Re-scan so Facebook actually renders its real button inside the new slides
+      if (window.FB && window.FB.XFBML) {
+        window.FB.XFBML.parse(track);
+      }
+    }
+
+    if (db){
+      db.collection('fb_reels').orderBy('postedAt', 'desc').limit(15).get().then(function(snap){
+        var list = [];
+        snap.forEach(function(doc){ list.push(doc.data()); });
+        afterFbReels(list);
+      }).catch(function(e){
+        console.warn('fb_reels load fail (falling back to product videos only):', e);
+        afterFbReels([]);
+      });
+    } else {
+      afterFbReels([]);
+    }
   }
 
   fab.addEventListener('click', function(){
