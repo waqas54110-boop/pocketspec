@@ -1992,18 +1992,18 @@ article.appendChild(mid);
 
   // ---- Description toggle ----
   (function initDescToggle(){
-    document.addEventListener('click', function(e){
-      const btn = e.target.closest('.desc-toggle');
+   document.addEventListener('click', function(e){
+      const btn = e.target.closest('.quickview-btn');
       if (!btn) return;
       const card = btn.closest('.card');
-      const desc = card ? card.querySelector('p.desc') : null;
-      if (!desc) return;
-      const willShow = !desc.classList.contains('show');
-      desc.classList.toggle('show', willShow);
-      btn.classList.toggle('active', willShow);
-      btn.setAttribute('aria-label', willShow ? 'Hide description' : 'Show description');
-      btn.setAttribute('title', willShow ? 'Hide description' : 'Show description');
+      const pidx = card.getAttribute('data-pidx');
+      const p = allProducts[pidx];
+      if (p) open(p);
     });
+    function close(){ overlay.classList.remove('open'); }
+    if (closeBtn) closeBtn.addEventListener('click', close);
+    overlay.addEventListener('click', function(e){ if (e.target === overlay) close(); });
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape') close(); });
   })();
 
   // ---- Wishlist ----
@@ -2224,11 +2224,11 @@ article.appendChild(mid);
       const p = allProducts[pidx];
       if (p) open(p);
     });
-   if (closeBtn) closeBtn.addEventListener('click', function(){
+if (closeBtn) closeBtn.addEventListener('click', function(){
     overlay.classList.remove('open');
     track.querySelectorAll('video').forEach(function(v){ v.pause(); });
     document.getElementById('top').scrollIntoView({ behavior: 'auto' });
-});
+  });
   // Add review function (used in quick view)
   window.addReview = function(name) {
     const inp = document.getElementById('revInput');
