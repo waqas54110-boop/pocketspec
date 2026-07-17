@@ -964,6 +964,14 @@
   background:#fff; border-radius:10px; padding:2px; box-shadow:0 4px 14px rgba(0,0,0,0.3);
   transform-origin:left top;
 }
+  .reels-comment-btn, .reels-share-btn{
+  width:44px; height:44px; border-radius:50%; background:rgba(255,255,255,0.12);
+  border:1px solid rgba(255,255,255,0.25); color:#fff; font-size:1.15rem; cursor:pointer;
+}
+.reels-follow-btn{
+  display:block; text-align:center; font-family:var(--body); font-size:0.68rem; font-weight:700;
+  background:var(--violet); color:#fff; padding:6px 4px; border-radius:8px; margin-top:2px;
+}
   
 </style>
 </head>
@@ -3061,7 +3069,15 @@ function buildShareBlock(){
 // ---- 5) Reels — short video feed from real product videos ----
 // ================= FINAL REELS BLOCK (paste this whole thing, replacing any earlier Reels JS) =================
 
+// ================= FIXED REELS BLOCK =================
 var FB_PAGE_URL = "https://www.facebook.com/profile.php?id=61591784042737";
+
+function waitForFB(cb, tries){
+  tries = tries || 0;
+  if (window.FB && window.FB.XFBML){ cb(); return; }
+  if (tries > 40){ return; } // ~10s max wait
+  setTimeout(function(){ waitForFB(cb, tries + 1); }, 250);
+}
 
 (function initReels(){
   var fab = document.getElementById('reelsFab');
@@ -3072,8 +3088,6 @@ var FB_PAGE_URL = "https://www.facebook.com/profile.php?id=61591784042737";
 
   function likeKey(name){ return 'ps_like_' + name; }
 
-  // Real Facebook Page Plugin — Facebook renders this itself, so the Follow/Like
-  // button that appears is genuine (clicking it really follows/likes your page).
   function buildTopBar(){
     var bar = document.createElement('div');
     bar.className = 'reels-topbar';
@@ -3092,66 +3106,96 @@ var FB_PAGE_URL = "https://www.facebook.com/profile.php?id=61591784042737";
     return bar;
   }
 
+  function buildSideActions(itemName, shareUrl, kind){
+    var liked = localStorage.getItem(likeKey(itemName)) === 'true';
+    var box = document.createElement('div');
+    box.className = 'reels-side-actions';
+    box.innerHTML =
+      '<button class="reels-like-btn' + (liked ? ' liked' : '') + '" data-name="' + itemName.replace(/"/g,'') + '">❤<span class="reels-like-count"></span></button>' +
+      '<button class="reels-comment-btn" data-name="' + itemName.replace(/"/g,'') + '">💬</button>' +
+      '<button class="reels-share-btn" data-name="' + itemName.replace(/"/g,'') + '" data-url="' + shareUrl + '">↗</button>' +
+      '<a class="reels-follow-btn" href="' + FB_PAGE_URL + '" target="_blank" rel="noopener">＋Follow</a>';
+    return box;
+  }
+
   function buildProductSlide(p){
     var slide = document.createElement('div');
     slide.className = 'reels-slide';
     var mediaHtml = p.video
-      ? '<video src="' + p.video + '" autoplay muted loop playsinline></video>'
+      ? '<video src="' + p.video + '" muted loop playsinline></video>'
       : '<img src="' + (p.image || '') + '" alt="' + (p.name || '') + '">';
-    var liked = localStorage.getItem(likeKey(p.name)) === 'true';
     slide.appendChild(buildTopBar());
     slide.innerHTML +=
       mediaHtml +
       '<div class="reels-info"><div class="rn">' + (p.name || '') + '</div><div class="rp">Rs. ' + (p.price != null ? p.price : '—') + '</div></div>' +
-      '<div class="reels-side-actions"><button class="reels-like-btn' + (liked ? ' liked' : '') + '" data-name="' + (p.name||'').replace(/"/g,'') + '">❤</button></div>' +
       '<div class="reels-buy-card"><span>' + (p.name || '') + '</span><a href="' + (p.affLink || '#') + '" target="_blank" rel="' + (p.source==='own' ? 'noopener' : 'sponsored nofollow') + '" data-product="' + (p.name||'unknown') + '" data-slot="reels" onclick="trackClick(this)">Buy Now →</a></div>';
+    slide.appendChild(buildSideActions(p.name, window.location.href, 'product'));
     return slide;
   }
 
   function buildFbReelSlide(r){
-    // r = { src, poster, title, pageUrl } -- from your Facebook page, synced via Apps Script
     var slide = document.createElement('div');
     slide.className = 'reels-slide';
     slide.appendChild(buildTopBar());
     slide.innerHTML +=
-      '<video src="' + r.src + '" poster="' + (r.poster || '') + '" autoplay muted loop playsinline></video>' +
+      '<video src="' + r.src + '" poster="' + (r.poster || '') + '" muted loop playsinline></video>' +
       '<div class="reels-info"><div class="rn">' + (r.title || 'From our Facebook page') + '</div></div>' +
       '<div class="reels-buy-card"><span>See it on Facebook</span><a href="' + (r.pageUrl || FB_PAGE_URL) + '" target="_blank" rel="noopener">Open →</a></div>';
+    slide.appendChild(buildSideActions(r.title || 'fb-reel', r.pageUrl || FB_PAGE_URL, 'fb'));
     return slide;
   }
 
-  function buildFeed(){
-    track.innerHTML = '';
-    var frag = document.createDocumentFragment();
+  function attachVideoAutoplay(){
+    var videos = track.querySelectorAll('video');
+    if (!('IntersectionObserver' in window)){
+      videos.forEach(function(v){ v.play().catch(function(){}); });
+      return;
+    }
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        var v = entry.target;
+        if (entry.isIntersecting) v.play().catch(function(){});
+        else v.pause();
+      });
+    }, { threshold: 0.6 });
+    videos.forEach(function(v){ io.observe(v); });
+  }
 
-    function afterFbReels(fbReels){
+  function buildFeed(){
+    track.innerHTML = '<div class="reels-empty">Loading reels…</div>';
+
+    function render(fbReels){
+      track.innerHTML = '';
+      var frag = document.createDocumentFragment();
+
       if (fbReels && fbReels.length){
         fbReels.forEach(function(r){ frag.appendChild(buildFbReelSlide(r)); });
       }
       var pool = allProducts.filter(function(p){ return p.image || p.video; });
       pool.forEach(function(p){ frag.appendChild(buildProductSlide(p)); });
+
       if (!frag.children.length){
-        track.innerHTML = '<div class="reels-empty">No reels yet — add a product video or connect your Facebook videos.</div>';
-      } else {
-        track.appendChild(frag);
+        track.innerHTML = '<div class="reels-empty">Abhi koi reel nahi — Facebook page se video sync hone ka intezar karein.</div>';
+        return;
       }
-      // Re-scan so Facebook actually renders its real button inside the new slides
-      if (window.FB && window.FB.XFBML) {
-        window.FB.XFBML.parse(track);
-      }
+      track.appendChild(frag);
+      attachVideoAutoplay();
+
+      // Facebook Page Plugin ko render karne ke liye SDK ka wait karein, phir parse
+      waitForFB(function(){ window.FB.XFBML.parse(track); });
     }
 
     if (db){
       db.collection('fb_reels').orderBy('postedAt', 'desc').limit(15).get().then(function(snap){
         var list = [];
         snap.forEach(function(doc){ list.push(doc.data()); });
-        afterFbReels(list);
+        render(list);
       }).catch(function(e){
-        console.warn('fb_reels load fail (falling back to product videos only):', e);
-        afterFbReels([]);
+        console.warn('fb_reels load fail:', e);
+        render([]);
       });
     } else {
-      afterFbReels([]);
+      render([]);
     }
   }
 
@@ -3159,56 +3203,53 @@ var FB_PAGE_URL = "https://www.facebook.com/profile.php?id=61591784042737";
     buildFeed();
     overlay.classList.add('open');
   });
-  if (closeBtn) closeBtn.addEventListener('click', function(){ overlay.classList.remove('open'); });
+  if (closeBtn) closeBtn.addEventListener('click', function(){
+    overlay.classList.remove('open');
+    track.querySelectorAll('video').forEach(function(v){ v.pause(); });
+  });
 
+  // Like / Comment / Share clicks
   track.addEventListener('click', function(e){
     var likeBtn = e.target.closest('.reels-like-btn');
-    if (!likeBtn) return;
-    var name = likeBtn.getAttribute('data-name');
-    var key = likeKey(name);
-    var already = localStorage.getItem(key) === 'true';
-    localStorage.setItem(key, already ? 'false' : 'true');
-    likeBtn.classList.toggle('liked', !already);
-    if (db){
-      db.collection('likes').add({ product: name, likedAt: firebase.firestore.FieldValue.serverTimestamp() })
-        .catch(function(err){ console.warn('Like log fail:', err); });
+    var commentBtn = e.target.closest('.reels-comment-btn');
+    var shareBtn = e.target.closest('.reels-share-btn');
+
+    if (likeBtn){
+      var name = likeBtn.getAttribute('data-name');
+      var key = likeKey(name);
+      var already = localStorage.getItem(key) === 'true';
+      localStorage.setItem(key, already ? 'false' : 'true');
+      likeBtn.classList.toggle('liked', !already);
+      if (db){
+        db.collection('likes').add({ product: name, likedAt: firebase.firestore.FieldValue.serverTimestamp() })
+          .catch(function(err){ console.warn('Like log fail:', err); });
+      }
+      return;
+    }
+
+    if (commentBtn){
+      var itemName = commentBtn.getAttribute('data-name');
+      var text = prompt('Comment likhein:');
+      if (text && text.trim() && db){
+        db.collection('reel_comments').add({
+          item: itemName, text: text.trim(),
+          postedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(function(){ showToast('✓ Comment post ho gaya'); })
+          .catch(function(err){ console.warn('Comment fail:', err); });
+      }
+      return;
+    }
+
+    if (shareBtn){
+      var url = shareBtn.getAttribute('data-url');
+      if (navigator.share){
+        navigator.share({ title: 'pocketspec', url: url }).catch(function(){});
+      } else {
+        navigator.clipboard.writeText(url).then(function(){ showToast('✓ Link copy ho gaya'); });
+      }
+      return;
     }
   });
-})();
-
-// ---- 6) Live Coupon Countdown (Firestore-driven, same pattern as your fbAdVideo sync) ----
-(function initLiveCoupon(){
-  var banner = document.getElementById('couponBanner');
-  if (!banner || !db) return;
-
-  db.collection('site_config').doc('liveCoupon').get().then(function(doc){
-    if (!doc.exists) return;
-    var d = doc.data();
-    if (!d || !d.expiresAt || !d.code) return;
-
-    var expires = d.expiresAt.toDate ? d.expiresAt.toDate() : new Date(d.expiresAt);
-    if (expires <= new Date()) return; // already expired, don't show
-
-    document.getElementById('couponText').textContent = d.text || '⏳ Live deal running now';
-    var codeEl = document.getElementById('couponCode');
-    codeEl.textContent = d.code;
-    codeEl.addEventListener('click', function(){
-      navigator.clipboard.writeText(d.code).then(function(){ showToast('✓ Coupon code copy ho gaya: ' + d.code); });
-    });
-    banner.classList.add('show');
-
-    var timerEl = document.getElementById('couponTimer');
-    function tick(){
-      var diff = expires - new Date();
-      if (diff <= 0){ banner.classList.remove('show'); clearInterval(iv); return; }
-      var h = Math.floor(diff / 3600000);
-      var m = Math.floor((diff % 3600000) / 60000);
-      var s = Math.floor((diff % 60000) / 1000);
-      timerEl.textContent = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
-    }
-    tick();
-    var iv = setInterval(tick, 1000);
-  }).catch(function(e){ console.warn('Live coupon fetch fail:', e); });
 })();
 </script>
  
