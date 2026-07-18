@@ -2999,8 +2999,8 @@
                 `<div class="bs-name">${p.name || ''}</div>` +
                 `<div class="bs-price">Rs. ${p.price || '—'}</div>` +
                 `<div class="bs-rating">${starsStr} (${p.rating || '—'})</div>` +
-                // `<a class="bs-btn" href="buildOrderLink(p)">Shop now →</a>`;
-
+                 <a class="bs-btn" href="${buildOrderLink(p)}">Shop now →</a>
+ 
             return div;
         }
 
