@@ -35,6 +35,19 @@
             width: 100%;
             max-width: 100vw;
         }
+        /* Admin-only nav items — hidden by default */
+      .admin-only {
+       display: none !important;
+      }
+      body.is-admin .admin-only {
+      display: inline-flex !important;
+      }
+     .mobile-panel .admin-only {
+     display: none !important;
+     }
+     body.is-admin .mobile-panel .admin-only {
+      display: block !important;
+    }
         a {
             color: inherit;
             text-decoration: none;
