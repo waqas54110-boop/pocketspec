@@ -2448,7 +2448,6 @@
                 <a href="#reviews">Reviews</a>
                 <a href="#about">About</a>
                 <a class="admin-only admin-link" href="dashboard.html">Dashboard</a>
-                <a class="admin-only admin-link" href="add-product.html">Add Product</a>
                 <a class="admin-only admin-link add-own-trigger" href="javascript:void(0)">+ Create</a>
             </nav>
 
@@ -2477,7 +2476,6 @@
             <a href="#reviews">Reviews</a>
             <a href="#about">About</a>
             <a class="admin-only" href="dashboard.html">Dashboard</a>
-            <a class="admin-only" href="add-product.html">Add Product</a>
             <a class="admin-only add-own-trigger" href="javascript:void(0)">+ Create Product</a>
             <button class="nav-quiz-btn" id="navQuizBtnMobile">🎯 Quiz</button>
             <input id="navSearchMobile" type="text" placeholder="Search products…" autocomplete="off" />
@@ -2965,12 +2963,12 @@
             const price = document.createElement('span');
             price.className = 'price';
             price.textContent = 'Rs. ' + (p.price || '—');
-            const buy = document.createElement('a');
-            buy.className = 'buy';
-            buy.href = p.affLink || '#';
-            buy.target = '_blank';
-            buy.rel = isOwn ? 'noopener' : 'sponsored nofollow';
-            buy.textContent = isOwn ? 'Order now →' : 'View deal →';
+           const buy = document.createElement('a');
+           buy.className = 'buy';
+          buy.href = buildOrderLink(p);
+          buy.target = '_blank';
+          buy.rel = 'noopener';
+           buy.textContent = 'Order now →';
             buy.setAttribute('data-product', p.name || 'unknown');
             buy.setAttribute('data-slot', isOwn ? 'grid-own' : 'grid-dynamic');
             buy.onclick = function() { trackClick(buy); };
@@ -3004,6 +3002,14 @@
                 `<a class="bs-btn" href="${p.affLink || '#'}" target="_blank" rel="${p.source === 'own' ? 'noopener' : 'sponsored nofollow'}" data-product="${p.name || 'unknown'}" data-slot="banner" onclick="trackClick(this)">Shop now →</a>`;
             return div;
         }
+
+       function buildOrderLink(p) {
+    if (p.source === 'own') return p.affLink; // already a WhatsApp link
+    const msg = "Hi, mujhe yeh product order karna hai: " + (p.name || '') +
+        "\nPrice: Rs. " + (p.price != null ? p.price : '') +
+        "\nCategory: " + (p.category || '');
+    return "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(msg);
+}
 
         function injectProductSchema() {
         document.querySelectorAll('#productSchemaScript').forEach(el => el.remove());
@@ -3763,6 +3769,7 @@
         // REELS
         // ============================================================
         const FB_PAGE_URL = "https://www.facebook.com/profile.php?id=61591784042737";
+       const WHATSAPP_NUMBER = "923186313168"; 
 
         function initReels() {
             const fab = document.getElementById('reelsFab');
