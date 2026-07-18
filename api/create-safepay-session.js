@@ -28,20 +28,12 @@ module.exports = async (req, res) => {
       metadata: { order_id: orderId }
     });
 
-    // Debug: poora response log karo taake pata chale token kahan hai
-    console.log('SAFEPAY RESPONSE:', JSON.stringify(response));
+    const token = response.data.tracker.token;
 
-    res.status(200).json({ 
-      success: true, 
-      orderId, 
-      rawResponse: response 
-    });
+    res.status(200).json({ token, orderId });
 
   } catch (err) {
     console.error('SAFEPAY ERROR:', err);
-    res.status(500).json({ 
-      error: 'Payment session creation failed', 
-      details: err.message || String(err) 
-    });
+    res.status(500).json({ error: 'Payment session creation failed' });
   }
 };
