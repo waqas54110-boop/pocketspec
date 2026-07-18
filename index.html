@@ -3283,7 +3283,7 @@
                 btn.classList.toggle('active', list.indexOf(p.name) !== -1);
                 updateWishlistBadge();
             });
-            window.addEventListener('ps:gridUpdated', injectProductSchema function() {
+            window.addEventListener('ps:gridUpdated', function() {
                 const list = getWishlist();
                 document.querySelectorAll('.card').forEach(card => {
                     const pidx = Number(card.getAttribute('data-pidx'));
