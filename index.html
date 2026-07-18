@@ -2978,31 +2978,18 @@ PAYMENT MODAL
                 article.appendChild(fbVid);
             }
 
-           const foot = document.createElement('div');
+          const foot = document.createElement('div');
             foot.className = 'card-foot';
             const price = document.createElement('span');
             price.className = 'price';
             price.textContent = 'Rs. ' + (p.price || '—');
-            let buy;
-            if (isOwn) {
-                buy = document.createElement('button');
-                buy.type = 'button';
-                buy.className = 'buy';
-                buy.textContent = 'Order now →';
-                buy.setAttribute('data-product', p.name || 'unknown');
-                buy.setAttribute('data-slot', 'grid-own');
-                buy.onclick = function() { openPaymentModal(p); };
-            } else {
-                buy = document.createElement('a');
-                buy.className = 'buy';
-                buy.href = buildOrderLink(p);
-                buy.target = '_blank';
-                buy.rel = 'sponsored nofollow';
-                buy.textContent = 'Order now →';
-                buy.setAttribute('data-product', p.name || 'unknown');
-                buy.setAttribute('data-slot', 'grid-dynamic');
-                buy.onclick = function() { trackClick(buy); };
-            }
+            const buy = document.createElement('button');
+            buy.type = 'button';
+            buy.className = 'buy';
+            buy.textContent = 'Order now →';
+            buy.setAttribute('data-product', p.name || 'unknown');
+            buy.setAttribute('data-slot', isOwn ? 'grid-own' : 'grid-dynamic');
+            buy.onclick = function() { openPaymentModal(p); };
             foot.appendChild(price);
             foot.appendChild(buy);
             article.appendChild(foot);
@@ -3013,27 +3000,26 @@ PAYMENT MODAL
         // ============================================================
         // BUILD BANNER SLIDE
         // ============================================================
-        function buildBannerSlide(p) {
-            const div = document.createElement('div');
-            div.className = 'banner-slide';
-            const filled = Math.round(Number(p.rating) || 0);
-            const starsStr = '★★★★★'.slice(0, filled) + '☆☆☆☆☆'.slice(0, 5 - filled);
-            let ribbonHtml = '';
-            if (p.price && p.price < 1000) ribbonHtml =
-                '<span class="bs-ribbon gold">Best Value</span>';
-            else if (p.price && p.price > 3000) ribbonHtml =
-            '<span class="bs-ribbon">Premium</span>';
-            div.innerHTML =
-                `<span class="bs-badge">${p.category || 'Gadget'}</span>` +
-                ribbonHtml +
-                `<img class="bs-img" src="${p.image || ''}" alt="${p.name || ''}" />` +
-                `<div class="bs-name">${p.name || ''}</div>` +
-                `<div class="bs-price">Rs. ${p.price || '—'}</div>` +
-                `<div class="bs-rating">${starsStr} (${p.rating || '—'})</div>` +
-                `<a class="bs-btn" href="${buildOrderLink(p)}">Shop now →</a>`
- 
-            return div;
-        }
+       function buildBannerSlide(p) {
+    const div = document.createElement('div');
+    div.className = 'banner-slide';
+    const filled = Math.round(Number(p.rating) || 0);
+    const starsStr = '★★★★★'.slice(0, filled) + '☆☆☆☆☆'.slice(0, 5 - filled);
+    let ribbonHtml = '';
+    if (p.price && p.price < 1000) ribbonHtml =
+        '<span class="bs-ribbon gold">Best Value</span>';
+    else if (p.price && p.price > 3000) ribbonHtml =
+    '<span class="bs-ribbon">Premium</span>';
+    div.innerHTML =
+        `<span class="bs-badge">${p.category || 'Gadget'}</span>` +
+        ribbonHtml +
+        `<img class="bs-img" src="${p.image || ''}" alt="${p.name || ''}" />` +
+        `<div class="bs-name">${p.name || ''}</div>` +
+        `<div class="bs-price">Rs. ${p.price || '—'}</div>` +
+        `<div class="bs-rating">${starsStr} (${p.rating || '—'})</div>`;
+
+    return div;
+}
 
        function buildOrderLink(p) {
     if (p.source === 'own') return p.affLink; // already a WhatsApp link
