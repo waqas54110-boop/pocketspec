@@ -2978,12 +2978,12 @@ PAYMENT MODAL
                 article.appendChild(fbVid);
             }
 
-            const foot = document.createElement('div');
+           const foot = document.createElement('div');
             foot.className = 'card-foot';
             const price = document.createElement('span');
             price.className = 'price';
             price.textContent = 'Rs. ' + (p.price || '—');
-          let buy;
+            let buy;
             if (isOwn) {
                 buy = document.createElement('button');
                 buy.type = 'button';
@@ -3003,6 +3003,12 @@ PAYMENT MODAL
                 buy.setAttribute('data-slot', 'grid-dynamic');
                 buy.onclick = function() { trackClick(buy); };
             }
+            foot.appendChild(price);
+            foot.appendChild(buy);
+            article.appendChild(foot);
+
+            return article;
+        }
 
         // ============================================================
         // BUILD BANNER SLIDE
