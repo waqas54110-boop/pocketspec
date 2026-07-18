@@ -3328,39 +3328,38 @@
                     '';
                 const videoHtml = buildProductVideoHtml(p, 140);
 
-                body.innerHTML =
-                    '<div><img id="qvMainImg" src="' + (images[coverIdx] || '') + '" alt="' + (p.name || '') +
-                    '">' + thumbsHtml + '</div>' +
-                    '<div>' +
-                    '<span class="qv-cat"' + (isOwn ? ' style="color:var(--gold);background:var(--gold-light);"' :
-                        '') + '>' + (p.category || 'Gadget') + '</span>' +
-                    (isOwn ? ' <span class="ribbon ribbon-own" style="margin-left:3px;font-size:0.45rem;">Not on Daraz</span>' :
-                        '') +
-                    tagsHtml +
-                    '<h3>' + (p.name || '') + '</h3>' +
-                    '<div class="qv-stars">' + starsStr + ' <span style="color:var(--ink-soft);font-size:0.6rem;">(' +
-                    (p.rating || '—') + ')</span></div>' +
-                    '<p class="qv-desc">' + (p.desc || '') + '</p>' +
-                    '<div class="qv-pc">' +
-                    '<div class="pros"><div class="lbl" style="color:var(--green)">Pros</div><ul>' + prosHtml +
-                    '</ul></div>' +
-                    '<div class="cons"><div class="lbl" style="color:#e5484d">Cons</div><ul>' + consHtml +
-                    '</ul></div>' +
-                    '</div>' +
-                    '<div id="userReviews" style="margin:6px 0;"><div class="review-item">⭐ ' + p.name +
-                    ' - Best value!</div><div class="review-item">✅ Good battery</div></div>' +
-                    '<div style="display:flex;gap:3px;margin-bottom:6px;"><input id="revInput" placeholder="Apni review..." style="flex:1;background:var(--surface-2);border:1px solid var(--line);padding:3px 8px;border-radius:4px;font-size:0.65rem;color:var(--ink);"><button onclick="addReview(\'' +
-                    p.name + '\')" class="btn btn-solid" style="padding:3px 10px;font-size:0.55rem;">Post</button></div>' +
-                    videoHtml +
-                    '<div class="qv-price">' +
-                    '<span class="amt">Rs. ' + (p.price != null ? p.price : '—') + '</span>' +
-                    '<a href="' + (p.affLink || '#') + '" target="_blank" rel="' + (isOwn ? 'noopener' :
-                        'sponsored nofollow') + '" data-product="' + (p.name || 'unknown') +
-                    '" data-slot="quickview" onclick="trackClick(this)"' + (isOwn ?
-                        ' style="background:var(--green);color:#fff;"' : '') + '>' + (isOwn ?
-                        'Order now →' : 'Check price →') + '</a>' +
-                    '</div>' +
-                    '</div>';
+              body.innerHTML =
+              '<div><img id="qvMainImg" src="' + (images[coverIdx] || '') + '" alt="' + (p.name || '') +
+              '">' + thumbsHtml + videoHtml + '</div>' +
+             '<div>' +
+         '<span class="qv-cat"' + (isOwn ? ' style="color:var(--gold);background:var(--gold-light);"' :
+        '') + '>' + (p.category || 'Gadget') + '</span>' +
+        (isOwn ? ' <span class="ribbon ribbon-own" style="margin-left:3px;font-size:0.45rem;">Not on Daraz</span>' :
+        '') +
+    tagsHtml +
+    '<h3>' + (p.name || '') + '</h3>' +
+    '<div class="qv-stars">' + starsStr + ' <span style="color:var(--ink-soft);font-size:0.6rem;">(' +
+    (p.rating || '—') + ')</span></div>' +
+    '<p class="qv-desc">' + (p.desc || '') + '</p>' +
+    '<div class="qv-pc">' +
+    '<div class="pros"><div class="lbl" style="color:var(--green)">Pros</div><ul>' + prosHtml +
+    '</ul></div>' +
+    '<div class="cons"><div class="lbl" style="color:#e5484d">Cons</div><ul>' + consHtml +
+    '</ul></div>' +
+    '</div>' +
+    '<div id="userReviews" style="margin:6px 0;"><div class="review-item">⭐ ' + p.name +
+    ' - Best value!</div><div class="review-item">✅ Good battery</div></div>' +
+    '<div style="display:flex;gap:3px;margin-bottom:6px;"><input id="revInput" placeholder="Apni review..." style="flex:1;background:var(--surface-2);border:1px solid var(--line);padding:3px 8px;border-radius:4px;font-size:0.65rem;color:var(--ink);"><button onclick="addReview(\'' +
+    p.name + '\')" class="btn btn-solid" style="padding:3px 10px;font-size:0.55rem;">Post</button></div>' +
+    '<div class="qv-price">' +
+    '<span class="amt">Rs. ' + (p.price != null ? p.price : '—') + '</span>' +
+    '<a href="' + (p.affLink || '#') + '" target="_blank" rel="' + (isOwn ? 'noopener' :
+        'sponsored nofollow') + '" data-product="' + (p.name || 'unknown') +
+    '" data-slot="quickview" onclick="trackClick(this)"' + (isOwn ?
+        ' style="background:var(--green);color:#fff;"' : '') + '>' + (isOwn ?
+        'Order now →' : 'Check price →') + '</a>' +
+    '</div>' +
+    '</div>';
 
                 overlay.classList.add('open');
 
