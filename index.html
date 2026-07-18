@@ -1671,10 +1671,15 @@
             transform-origin: left top;
         }
         .reels-track {
-            flex: 1;
-            overflow-y: auto;
-            scroll-snap-type: y mandatory;
+             flex: 1;
+             overflow-y: auto;
+             scroll-snap-type: y mandatory;
             -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;        
+           -ms-overflow-style: none;     
+            }
+       .reels-track::-webkit-scrollbar {
+        display: none;               
         }
         .reels-slide {
             scroll-snap-align: start;
