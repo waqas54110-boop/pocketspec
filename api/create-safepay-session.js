@@ -25,7 +25,7 @@ module.exports = async (req, res) => {
       mode: 'payment',
       currency: 'PKR',
       amount: Math.round(amount * 100),
-      metadata: { order_id: orderId, customer: customerName || '' }
+     metadata: { order_id: orderId }
     });
 
     res.status(200).json({ token: response.tracker.token, orderId });
