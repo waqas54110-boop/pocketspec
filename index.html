@@ -3875,12 +3875,16 @@
                 } else { render([]); }
             }
 
-            fab.addEventListener('click', function() { buildFeed();
-                overlay.classList.add('open'); });
-            closeBtn.addEventListener('click', function() {
-                overlay.classList.remove('open');
-                track.querySelectorAll('video').forEach(v => v.pause());
-            });
+          fab.addEventListener('click', function() {
+          buildFeed();
+         overlay.classList.add('open');
+         document.body.style.overflow = 'hidden';   // <-- background scroll lock
+          });
+        closeBtn.addEventListener('click', function() {
+        overlay.classList.remove('open');
+        document.body.style.overflow = '';          // <-- background scroll unlock
+        track.querySelectorAll('video').forEach(v => v.pause());
+         });
 
             track.addEventListener('click', function(e) {
                 const likeBtn = e.target.closest('.reels-like-btn');
