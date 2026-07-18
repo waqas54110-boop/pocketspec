@@ -3846,7 +3846,7 @@ function initPaymentModal() {
             const data = await res.json();
             if (!data.token) throw new Error('No token received');
 
-            const checkoutUrl = "https://sandbox.api.getsafepay.com/checkout?" +
+            const checkoutUrl = "https://sandbox.api.getsafepay.com/components?" +
                 "beacon=" + data.token +
                 "&env=sandbox" +
                 "&source=custom" +
@@ -3865,7 +3865,6 @@ function initPaymentModal() {
         }
     });
 }
-
         function initReels() {
             const fab = document.getElementById('reelsFab');
             const overlay = document.getElementById('reelsOverlay');
