@@ -25,12 +25,23 @@ module.exports = async (req, res) => {
       mode: 'payment',
       currency: 'PKR',
       amount: Math.round(amount * 100),
-     metadata: { order_id: orderId }
+      metadata: { order_id: orderId }
     });
 
-    res.status(200).json({ token: response.tracker.token, orderId });
+    // Debug: poora response log karo taake pata chale token kahan hai
+    console.log('SAFEPAY RESPONSE:', JSON.stringify(response));
+
+    res.status(200).json({ 
+      success: true, 
+      orderId, 
+      rawResponse: response 
+    });
+
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Payment session creation failed' });
+    console.error('SAFEPAY ERROR:', err);
+    res.status(500).json({ 
+      error: 'Payment session creation failed', 
+      details: err.message || String(err) 
+    });
   }
 };
