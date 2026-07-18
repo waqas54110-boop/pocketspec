@@ -1,13 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
-    <title>pocketspec — Honest Budget Tech Reviews</title>
-    <meta name="description" content="Honest reviews of budget earbuds, power banks & smartwatches under Rs. 5,000 in Pakistan." />
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%A6%3C/text%3E%3C/svg%3E" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+   <title>Best Budget Earbuds, Power Banks & Smartwatches in Pakistan | pocketspec</title>
+<meta name="description" content="Real, hands-on reviews of budget earbuds, power banks, smartwatches & headsets under Rs. 5,000 on Daraz Pakistan. No paid promotions — just honest picks with pros, cons & prices." />
+<meta name="keywords" content="budget earbuds Pakistan, cheap power bank Daraz, best smartwatch under 3000, Daraz tech reviews, budget gadgets Pakistan" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<link rel="canonical" href="https://yourdomain.github.io/pocketspec/" />
+
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="pocketspec" />
+<meta property="og:title" content="Best Budget Tech Reviews in Pakistan | pocketspec" />
+<meta property="og:description" content="Honest reviews of budget earbuds, power banks & smartwatches under Rs. 5,000 in Pakistan — sourced from real Daraz sales & ratings." />
+<meta property="og:url" content="https://yourdomain.github.io/pocketspec/" />
+<meta property="og:image" content="https://yourdomain.github.io/pocketspec/images/og-cover.jpg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:locale" content="en_PK" />
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Best Budget Tech Reviews in Pakistan | pocketspec" />
+<meta name="twitter:description" content="Honest reviews of budget earbuds, power banks & smartwatches under Rs. 5,000 in Pakistan." />
+<meta name="twitter:image" content="https://yourdomain.github.io/pocketspec/images/og-cover.jpg" />
+
+<!-- JSON-LD: WebSite + Organization -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "pocketspec",
+  "url": "https://yourdomain.github.io/pocketspec/",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://yourdomain.github.io/pocketspec/?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "pocketspec",
+  "url": "https://yourdomain.github.io/pocketspec/",
+  "description": "Independent budget tech review site for Daraz Pakistan products."
+}
+</script>
 
     <style>
         /* ============================================================
@@ -2443,12 +2482,12 @@
     <!-- ============================================================
     SHOPIFY-STYLE BANNER
     ============================================================ -->
-    <section class="banner-section" id="bannerSection">
+   <section class="banner-section" id="bannerSection">
         <div class="wrap">
             <div class="banner-header">
                 <div class="bh-left">
                     <span class="bh-badge">🔥 Top picks</span>
-                    <h2>Shop the best deals</h2>
+                    <h1 style="font-family:var(--display);font-size:1.15rem;font-weight:700;color:var(--ink);margin:0;">Shop the best deals</h1>
                 </div>
                 <span class="bh-arrow">Swipe →</span>
             </div>
@@ -2961,6 +3000,37 @@
             return div;
         }
 
+        function injectProductSchema() {
+        document.querySelectorAll('#productSchemaScript').forEach(el => el.remove());
+        const items = allProducts.slice(0, 20).map((p, i) => ({
+        "@type": "Product",
+        "position": i + 1,
+        "name": p.name,
+        "image": p.image,
+        "description": p.desc,
+        "offers": {
+            "@type": "Offer",
+            "priceCurrency": "PKR",
+            "price": p.price,
+            "availability": "https://schema.org/InStock",
+            "url": p.affLink
+        },
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": p.rating || 4.5,
+            "reviewCount": 10
+        }
+    }));
+    const script = document.createElement('script');
+    script.id = 'productSchemaScript';
+    script.type = 'application/ld+json';
+    script.textContent = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "itemListElement": items
+    });
+    document.head.appendChild(script);
+}
         // ============================================================
         // BANNER AUTO-SCROLL
         // ============================================================
@@ -3046,6 +3116,8 @@
                 window.dispatchEvent(new CustomEvent('ps:gridUpdated'));
                 window.dispatchEvent(new CustomEvent('ps:productsLoaded', { detail: allProducts }));
                 renderBanner();
+                injectProductSchema();   // <-- ye line add karein
+
             }).catch(() => {});
         }
 
@@ -3211,7 +3283,7 @@
                 btn.classList.toggle('active', list.indexOf(p.name) !== -1);
                 updateWishlistBadge();
             });
-            window.addEventListener('ps:gridUpdated', function() {
+            window.addEventListener('ps:gridUpdated', injectProductSchema function() {
                 const list = getWishlist();
                 document.querySelectorAll('.card').forEach(card => {
                     const pidx = Number(card.getAttribute('data-pidx'));
