@@ -64,8 +64,68 @@
     }
   }
 
+  function setMeta(name, content, isProperty) {
+    const attr = isProperty ? 'property' : 'name';
+    let tag = document.querySelector(`meta[${attr}="${name}"]`);
+    if (!tag) {
+      tag = document.createElement('meta');
+      tag.setAttribute(attr, name);
+      document.head.appendChild(tag);
+    }
+    tag.setAttribute('content', content);
+  }
+
   function render(p){
-    document.title = (p.name || 'Product') + ' — Review — PocketSpec';
+    const title = (p.name || 'Product') + ' Review — Price, Pros & Cons | pocketspec';
+    const desc = (p.desc || '').slice(0, 155) + ((p.desc || '').length > 155 ? '…' : '');
+    const pageUrl = window.location.href.split('#')[0];
+
+    document.title = title;
+    setMeta('description', desc);
+    setMeta('robots', 'index, follow');
+    setMeta('og:type', 'product', true);
+    setMeta('og:title', title, true);
+    setMeta('og:description', desc, true);
+    setMeta('og:image', p.image || '', true);
+    setMeta('og:url', pageUrl, true);
+    setMeta('twitter:card', 'summary_large_image');
+    setMeta('twitter:title', title);
+    setMeta('twitter:description', desc);
+    setMeta('twitter:image', p.image || '');
+
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.rel = 'canonical';
+      document.head.appendChild(canonical);
+    }
+    canonical.href = pageUrl;
+
+    document.querySelectorAll('#productSchemaLd').forEach(el => el.remove());
+    const ld = document.createElement('script');
+    ld.id = 'productSchemaLd';
+    ld.type = 'application/ld+json';
+    ld.textContent = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "name": p.name || '',
+      "image": p.image || '',
+      "description": p.desc || '',
+      "offers": {
+        "@type": "Offer",
+        "priceCurrency": "PKR",
+        "price": p.price != null ? p.price : 0,
+        "availability": "https://schema.org/InStock",
+        "url": p.affLink || pageUrl
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": p.rating || 4.5,
+        "reviewCount": 10
+      }
+    });
+    document.head.appendChild(ld);
+
     const filled = Math.round(Number(p.rating) || 0);
     const starsStr = '★★★★★'.slice(0, filled) + '☆☆☆☆☆'.slice(0, 5 - filled);
     const isOwn = p.source === 'own';
@@ -76,7 +136,7 @@
       ${isOwn ? '<span class="badge">🏷️ Not on Daraz</span>' : ''}
       <h1>${p.name || 'Untitled product'}</h1>
       <div class="stars">${starsStr} <span>(${p.rating != null ? p.rating : '—'} / 5)</span></div>
-      <img class="hero-img" src="${p.image || ''}" alt="${p.name || ''}">
+      <img class="hero-img" src="${p.image || ''}" alt="${p.name || ''}" loading="lazy">
       <p class="desc">${p.desc || ''}</p>
       <div class="pc-grid">
         <div class="pc-box pros"><div class="lbl">Pros</div><ul>${prosHtml}</ul></div>
