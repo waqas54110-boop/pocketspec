@@ -2646,6 +2646,26 @@
         <div class="reels-track" id="reelsTrack"></div>
     </div>
 
+   <!-- ============================================================
+PAYMENT MODAL
+============================================================ -->
+<div class="op-overlay" id="payOverlay">
+    <div class="op-modal">
+        <button class="qv-close" id="payClose">✕</button>
+        <h3>💳 Complete Payment</h3>
+        <p class="op-note" id="payProductName"></p>
+        <div class="op-field">
+            <label>Your Name</label>
+            <input type="text" id="payCustomerName" placeholder="Full name" />
+        </div>
+        <div class="qv-price" style="border-top:none;padding-top:0;">
+            <span class="amt">Rs. <span id="payAmount">0</span></span>
+        </div>
+        <button type="button" class="btn btn-solid" id="payConfirmBtn" style="width:100%;justify-content:center;border-radius:var(--radius-sm);margin-top:10px;">Pay Now</button>
+        <p id="payError" style="color:#e5484d;font-size:0.7rem;margin-top:6px;display:none;"></p>
+    </div>
+</div>
+
     <!-- ============================================================
     ADD OWN PRODUCT MODAL
     ============================================================ -->
@@ -2963,21 +2983,26 @@
             const price = document.createElement('span');
             price.className = 'price';
             price.textContent = 'Rs. ' + (p.price || '—');
-           const buy = document.createElement('a');
-           buy.className = 'buy';
-          buy.href = buildOrderLink(p);
-          buy.target = '_blank';
-          buy.rel = 'noopener';
-           buy.textContent = 'Order now →';
-            buy.setAttribute('data-product', p.name || 'unknown');
-            buy.setAttribute('data-slot', isOwn ? 'grid-own' : 'grid-dynamic');
-            buy.onclick = function() { trackClick(buy); };
-            foot.appendChild(price);
-            foot.appendChild(buy);
-            article.appendChild(foot);
-
-            return article;
-        }
+          let buy;
+            if (isOwn) {
+                buy = document.createElement('button');
+                buy.type = 'button';
+                buy.className = 'buy';
+                buy.textContent = 'Order now →';
+                buy.setAttribute('data-product', p.name || 'unknown');
+                buy.setAttribute('data-slot', 'grid-own');
+                buy.onclick = function() { openPaymentModal(p); };
+            } else {
+                buy = document.createElement('a');
+                buy.className = 'buy';
+                buy.href = buildOrderLink(p);
+                buy.target = '_blank';
+                buy.rel = 'sponsored nofollow';
+                buy.textContent = 'Order now →';
+                buy.setAttribute('data-product', p.name || 'unknown');
+                buy.setAttribute('data-slot', 'grid-dynamic');
+                buy.onclick = function() { trackClick(buy); };
+            }
 
         // ============================================================
         // BUILD BANNER SLIDE
@@ -3247,6 +3272,8 @@
 
             // Reels
             initReels();
+           // Payment
+            initPaymentModal();
 
             // Re-run banner on resize
             let resizeTimer;
@@ -3771,6 +3798,67 @@
         // ============================================================
         const FB_PAGE_URL = "https://www.facebook.com/profile.php?id=61591784042737";
        const WHATSAPP_NUMBER = "923186313168"; 
+
+       // ============================================================
+// SAFEPAY PAYMENT
+// ============================================================
+const SAFEPAY_FUNCTION_URL = "https://pocketspec.vercel.app/api/create-safepay-session";
+let currentPayProduct = null;
+
+function openPaymentModal(p) {
+    currentPayProduct = p;
+    document.getElementById('payProductName').textContent = p.name || '';
+    document.getElementById('payAmount').textContent = p.price != null ? p.price : '0';
+    document.getElementById('payError').style.display = 'none';
+    document.getElementById('payCustomerName').value = '';
+    document.getElementById('payOverlay').classList.add('open');
+}
+
+function initPaymentModal() {
+    const overlay = document.getElementById('payOverlay');
+    const closeBtn = document.getElementById('payClose');
+    const confirmBtn = document.getElementById('payConfirmBtn');
+    if (!overlay || !confirmBtn) return;
+
+    closeBtn.addEventListener('click', () => overlay.classList.remove('open'));
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('open'); });
+
+    confirmBtn.addEventListener('click', async function() {
+        if (!currentPayProduct) return;
+        const customerName = document.getElementById('payCustomerName').value.trim();
+        const errorEl = document.getElementById('payError');
+        errorEl.style.display = 'none';
+        confirmBtn.textContent = 'Processing…';
+        confirmBtn.disabled = true;
+
+        try {
+            const res = await fetch(SAFEPAY_FUNCTION_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount: currentPayProduct.price, customerName })
+            });
+            const data = await res.json();
+            if (!data.token) throw new Error('No token received');
+
+            const checkoutUrl = "https://sandbox.api.getsafepay.com/checkout?" +
+                "beacon=" + data.token +
+                "&env=sandbox" +
+                "&source=custom" +
+                "&order_id=" + data.orderId +
+                "&redirect_url=" + encodeURIComponent(window.location.origin + window.location.pathname) +
+                "&cancel_url=" + encodeURIComponent(window.location.origin + window.location.pathname);
+
+            window.location.href = checkoutUrl;
+
+        } catch (err) {
+            console.error(err);
+            errorEl.textContent = 'Payment session start nahi ho saka. Dobara try karein.';
+            errorEl.style.display = 'block';
+            confirmBtn.textContent = 'Pay Now';
+            confirmBtn.disabled = false;
+        }
+    });
+}
 
         function initReels() {
             const fab = document.getElementById('reelsFab');
