@@ -3854,7 +3854,9 @@ function initPaymentModal() {
                 "&redirect_url=" + encodeURIComponent(window.location.origin + window.location.pathname) +
                 "&cancel_url=" + encodeURIComponent(window.location.origin + window.location.pathname);
 
-            window.location.href = checkoutUrl;
+           console.log('CHECKOUT URL:', checkoutUrl);
+           alert(checkoutUrl);
+           window.location.href = checkoutUrl;
 
         } catch (err) {
             console.error(err);
