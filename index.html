@@ -2999,7 +2999,6 @@
                 `<div class="bs-name">${p.name || ''}</div>` +
                 `<div class="bs-price">Rs. ${p.price || '—'}</div>` +
                 `<div class="bs-rating">${starsStr} (${p.rating || '—'})</div>` +
-                `<a class="bs-btn" href="${p.affLink || '#'}" target="_blank" rel="${p.source === 'own' ? 'noopener' : 'sponsored nofollow'}" data-product="${p.name || 'unknown'}" data-slot="banner" onclick="trackClick(this)">Shop now →</a>`;
             return div;
         }
 
