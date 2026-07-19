@@ -2661,19 +2661,10 @@ PAYMENT MODAL
         <div class="qv-price" style="border-top:none;padding-top:0;">
             <span class="amt">Rs. <span id="payAmount">0</span></span>
         </div>
-
-        <div style="background:var(--surface-2);border-radius:var(--radius-sm);padding:12px;margin-top:10px;">
-            <p style="font-weight:700;font-size:0.8rem;margin-bottom:6px;">📲 Bank Transfer Instructions</p>
-            <p style="font-size:0.75rem;color:var(--ink-soft);margin-bottom:4px;">JazzCash / Easypaisa Number: <strong style="color:var(--ink);">Easypaisa:0318-6313178</br>Jazzcash:03056488673</strong></p>
-            <p style="font-size:0.75rem;color:var(--ink-soft);margin-bottom:4px;">Account Title: <strong style="color:var(--ink);">Muhammad Waqas</strong></p>
-            <p style="font-size:0.72rem;color:var(--ink-faint);margin-top:6px;">Upar diye gaye number par payment bhejein, phir neeche button dabayein — WhatsApp khulega jahan screenshot bhej k order confirm karwayein.</p>
-        </div>
-
-        <button type="button" class="btn btn-solid" id="payConfirmBtn" style="width:100%;justify-content:center;border-radius:var(--radius-sm);margin-top:10px;">Maine Payment Bhej Di ✅</button>
+        <button type="button" class="btn btn-solid" id="payConfirmBtn" style="width:100%;justify-content:center;border-radius:var(--radius-sm);margin-top:10px;">Pay Now</button>
         <p id="payError" style="color:#e5484d;font-size:0.7rem;margin-top:6px;display:none;"></p>
     </div>
 </div>
-
     <!-- ============================================================
     ADD OWN PRODUCT MODAL
     ============================================================ -->
@@ -3823,29 +3814,44 @@ function initPaymentModal() {
     closeBtn.addEventListener('click', () => overlay.classList.remove('open'));
     overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('open'); });
 
-    confirmBtn.addEventListener('click', function() {
+    confirmBtn.addEventListener('click', async function() {
         if (!currentPayProduct) return;
         const customerName = document.getElementById('payCustomerName').value.trim();
         const errorEl = document.getElementById('payError');
-
-        if (!customerName) {
-            errorEl.textContent = 'Pehle apna naam likhein.';
-            errorEl.style.display = 'block';
-            return;
-        }
         errorEl.style.display = 'none';
+        confirmBtn.textContent = 'Processing…';
+        confirmBtn.disabled = true;
 
-        const msg = "Hi, maine payment bhej di hai is order ki:\n" +
-            "Product: " + currentPayProduct.name + "\n" +
-            "Amount: Rs. " + currentPayProduct.price + "\n" +
-            "Name: " + customerName + "\n" +
-            "Screenshot attach kar raha/rahi hun.";
+        try {
+            const res = await fetch(SAFEPAY_FUNCTION_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount: currentPayProduct.price, customerName })
+            });
+            const data = await res.json();
+            if (!data.token) throw new Error('No token received');
 
-        const waUrl = "https://wa.me/923186313178?text=" + encodeURIComponent(msg);
-        window.open(waUrl, '_blank');
-        overlay.classList.remove('open');
+            const checkoutUrl = "https://sandbox.api.getsafepay.com/components?" +
+                "beacon=" + data.token +
+                "&env=sandbox" +
+                "&source=custom" +
+                "&order_id=" + data.orderId +
+                "&redirect_url=" + encodeURIComponent(window.location.origin + window.location.pathname) +
+                "&cancel_url=" + encodeURIComponent(window.location.origin + window.location.pathname);
+
+            window.location.href = checkoutUrl;
+
+        } catch (err) {
+            console.error(err);
+            errorEl.textContent = 'Payment session start nahi ho saka. Dobara try karein.';
+            errorEl.style.display = 'block';
+            confirmBtn.textContent = 'Pay Now';
+            confirmBtn.disabled = false;
+        }
     });
-}        function initReels() {
+}
+       
+       function initReels() {
             const fab = document.getElementById('reelsFab');
             const overlay = document.getElementById('reelsOverlay');
             const track = document.getElementById('reelsTrack');
