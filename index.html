@@ -4981,17 +4981,17 @@ function initPaymentModal() {
     let scActiveIdx = 0;
 
     function renderBattingTable(inn) {
-        const bat = (inn.batsmen || []);
+        const bat = (inn.batsman || []);
         let rows = bat.map(function (b) {
-            const dismissal = b.outDesc || "not out";
-            return "<tr><td class='name-col'>" + (b.name || b.batName || "") +
-                (b.isCaptain ? " (c)" : "") + (b.isKeeper ? " †" : "") +
+            const dismissal = b.outdec || "not out";
+            return "<tr><td class='name-col'>" + (b.name || "") +
+                (b.iscaptain ? " (c)" : "") + (b.iskeeper ? " †" : "") +
                 "<div class='dismissal'>" + dismissal + "</div></td>" +
                 "<td>" + (b.runs != null ? b.runs : "-") + "</td>" +
                 "<td>" + (b.balls != null ? b.balls : "-") + "</td>" +
                 "<td>" + (b.fours != null ? b.fours : "-") + "</td>" +
                 "<td>" + (b.sixes != null ? b.sixes : "-") + "</td>" +
-                "<td>" + (b.strkRate || b.strikeRate || "-") + "</td></tr>";
+                "<td>" + (b.strkrate || "-") + "</td></tr>";
         }).join("");
         return "<div class='cric-sc-table-wrap'><table class='cric-sc-table'>" +
             "<tr><th class='name-col'>Batter</th><th>R</th><th>B</th><th>4s</th><th>6s</th><th>SR</th></tr>" +
@@ -4999,9 +4999,9 @@ function initPaymentModal() {
     }
 
     function renderBowlingTable(inn) {
-        const bowl = (inn.bowlers || []);
+        const bowl = (inn.bowler || []);
         let rows = bowl.map(function (b) {
-            return "<tr><td class='name-col'>" + (b.name || b.bowlName || "") + "</td>" +
+            return "<tr><td class='name-col'>" + (b.name || "") + "</td>" +
                 "<td>" + (b.overs != null ? b.overs : "-") + "</td>" +
                 "<td>" + (b.maidens != null ? b.maidens : "-") + "</td>" +
                 "<td>" + (b.runs != null ? b.runs : "-") + "</td>" +
@@ -5019,7 +5019,7 @@ function initPaymentModal() {
         const inn = scInningsData[idx];
         const extras = inn.extras || {};
         const extrasTotal = extras.total != null ? extras.total :
-            ((extras.wides||0)+(extras.noBalls||0)+(extras.byes||0)+(extras.legByes||0));
+            ((extras.wides||0)+(extras.noballs||0)+(extras.byes||0)+(extras.legbyes||0));
         body.innerHTML =
             "<div class='cric-sc-section-title'>Batting</div>" +
             renderBattingTable(inn) +
@@ -5035,7 +5035,7 @@ function initPaymentModal() {
         const tabs = document.getElementById("cricScTabs");
         if (!tabs) return;
         tabs.innerHTML = scInningsData.map(function (inn, i) {
-            const label = inn.batTeamName || inn.batTeamShortName || ("Innings " + (i + 1));
+            const label = inn.batteamsname || inn.batteamname || ("Innings " + (i + 1));
             return "<button class='cric-sc-tab" + (i === scActiveIdx ? " active" : "") +
                 "' data-i='" + i + "'>" + label + "</button>";
         }).join("");
@@ -5043,12 +5043,12 @@ function initPaymentModal() {
 
     function fetchScorecard(matchId) {
         cricFetch("/mcenter/v1/" + matchId + "/hscard").then(function (data) {
-            if (!data || !data.scoreCard) {
+            if (!data || !data.scorecard || !data.scorecard.length) {
                 document.getElementById("cricScBody").innerHTML =
                     "<div style='padding:10px;text-align:center;color:var(--ink-faint);font-size:0.72rem;'>Scorecard abhi available nahi.</div>";
                 return;
             }
-            scInningsData = data.scoreCard;
+            scInningsData = data.scorecard;
             scActiveIdx = scInningsData.length - 1;
             renderScTabs();
             renderScInnings(scActiveIdx);
@@ -5057,7 +5057,6 @@ function initPaymentModal() {
                 "<div style='padding:10px;text-align:center;color:var(--ink-faint);font-size:0.72rem;'>Load nahi ho saka.</div>";
         });
     }
-
     function toggleScorecard() {
         const card = document.getElementById("cricScCard");
         const commCard = document.getElementById("cricCommCard");
