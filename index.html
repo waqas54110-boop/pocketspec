@@ -2431,23 +2431,27 @@
                 padding: 8px 0;
             }
         }
-       /* ===== CRICKET LIVE TICKER ===== */
-.cric-ticker-bar{background:linear-gradient(90deg,var(--green),#0a5c2c);width:100%;overflow:hidden;position:relative;}
-.cric-ticker-inner{display:flex;align-items:center;gap:10px;padding:7px 20px;max-width:1280px;margin:0 auto;cursor:pointer;}
-.cric-live-dot{width:7px;height:7px;border-radius:50%;background:#ff4d4d;flex-shrink:0;animation:cricPulse 1.2s infinite;}
+     /* ===== CRICKET SCORE CARD (navbar ke neeche) ===== */
+.cric-ticker-bar{background:var(--surface-2);width:100%;overflow:hidden;position:relative;border-bottom:1px solid var(--line);display:none;}
+.cric-card-outer{max-width:1280px;margin:0 auto;padding:10px 20px;display:flex;justify-content:center;}
+.cric-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);box-shadow:var(--shadow-sm);padding:10px 16px;width:100%;max-width:380px;cursor:pointer;transition:box-shadow 0.2s var(--ease),transform 0.2s var(--ease);}
+.cric-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);}
+.cric-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.cric-card-desc{font-size:0.68rem;color:var(--ink-soft);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:270px;}
+.cric-card-badge{font-family:var(--mono);font-size:0.55rem;font-weight:700;padding:2px 9px;border-radius:var(--radius-full);flex-shrink:0;}
+.cric-card-badge.live{background:#fdeaea;color:#e5484d;}
+.cric-card-badge.live .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#e5484d;margin-right:4px;animation:cricPulse 1.2s infinite;}
+.cric-card-badge.upcoming{background:var(--gold-light);color:var(--gold);}
 @keyframes cricPulse{0%,100%{opacity:1}50%{opacity:.3}}
-.cric-live-label{font-family:var(--mono);font-size:0.55rem;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.06em;flex-shrink:0;}
-.cric-ticker-text{color:#fff;font-size:0.75rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;}
-.cric-ticker-text b{color:var(--gold-light);}
-.cric-ticker-arrow{color:rgba(255,255,255,0.7);font-size:0.65rem;flex-shrink:0;font-family:var(--mono);}
-.cric-scorecard-body{padding:4px;}
-.cric-scorecard-body h3{font-family:var(--display);font-size:1rem;margin-bottom:8px;}
-.cric-sc-live{font-family:var(--mono);font-size:0.7rem;color:var(--green);background:var(--green-light);padding:3px 10px;border-radius:var(--radius-full);display:inline-block;margin-bottom:8px;}
-.cric-sc-update{font-size:0.8rem;color:var(--ink-soft);margin-bottom:12px;}
-.cric-sc-table{width:100%;border-collapse:collapse;font-size:0.78rem;margin-bottom:10px;}
-.cric-sc-table th{text-align:left;font-family:var(--mono);font-size:0.55rem;text-transform:uppercase;color:var(--ink-faint);padding:4px 6px;border-bottom:1px solid var(--line);}
-.cric-sc-table td{padding:5px 6px;border-bottom:1px solid var(--line);}
-@media (max-width:860px){.cric-ticker-text{font-size:0.68rem;}}
+.cric-team-row{display:flex;align-items:center;justify-content:space-between;padding:4px 0;}
+.cric-team-left{display:flex;align-items:center;gap:8px;min-width:0;}
+.cric-team-flag{width:24px;height:24px;border-radius:50%;background:var(--green);color:#fff;font-family:var(--display);font-weight:800;font-size:0.6rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.cric-team-name{font-size:0.82rem;font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.cric-team-score{font-family:var(--mono);font-size:0.82rem;font-weight:700;color:var(--ink);flex-shrink:0;}
+.cric-team-score span{color:var(--ink-faint);font-weight:500;font-size:0.7rem;}
+.cric-card-status{font-size:0.72rem;color:var(--green);font-weight:600;margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);}
+.cric-card-status.upcoming-status{color:var(--gold);}
+@media (max-width:860px){.cric-card{max-width:100%;}.cric-card-desc{max-width:180px;}}
     </style>
 </head>
 <body>
@@ -2499,17 +2503,14 @@
         </div>
     </header>
 
-   <!-- CRICKET LIVE TICKER -->
-<div class="cric-ticker-bar" id="cricTickerBar" style="display:none;">
-    <div class="cric-ticker-inner" id="cricTickerInner">
-        <span class="cric-live-dot"></span>
-        <span class="cric-live-label">Live</span>
-        <span class="cric-ticker-text" id="cricTickerText">Loading scores…</span>
-        <span class="cric-ticker-arrow">Tap for scorecard ›</span>
+<!-- CRICKET LIVE SCORE CARD -->
+<div class="cric-ticker-bar" id="cricTickerBar">
+    <div class="cric-card-outer">
+        <div class="cric-card" id="cricCard"><!-- injected by JS --></div>
     </div>
 </div>
 
-<!-- CRICKET SCORECARD MODAL (reuses qv-overlay style) -->
+<!-- CRICKET DETAIL MODAL -->
 <div class="qv-overlay" id="cricOverlay">
     <div class="qv-modal" style="max-width:480px;">
         <button class="qv-close" id="cricClose">✕</button>
@@ -4337,27 +4338,53 @@ function initPaymentModal() {
         return (mi.team1.teamSName || mi.team1.teamName) + " vs " + (mi.team2.teamSName || mi.team2.teamName) + " · " + (mi.matchDesc || "");
     }
 
-    function renderCricTicker() {
+   function renderCricTicker() {
         const m = cricMatches[cricIndex];
-        const el = document.getElementById("cricTickerText");
-        const label = document.querySelector(".cric-live-label");
-        const dot = document.querySelector(".cric-live-dot");
-        const arrow = document.querySelector(".cric-ticker-arrow");
-        if (!m || !el) return;
+        const card = document.getElementById("cricCard");
+        if (!m || !card) return;
+        const mi = m.matchInfo;
+
+        function initials(team) {
+            return (team.teamSName || team.teamName || "??").slice(0, 3).toUpperCase();
+        }
+
+        function teamRow(teamObj, scoreObj) {
+            let scoreHtml = "<span>Yet to bat</span>";
+            if (scoreObj) {
+                const inns = Object.keys(scoreObj);
+                scoreHtml = inns.map(function (inn) {
+                    const s = scoreObj[inn];
+                    return s.runs + "/" + s.wickets + " <span>(" + s.overs + " ov)</span>";
+                }).join(" & ");
+            }
+            return '<div class="cric-team-row">' +
+                '<div class="cric-team-left"><div class="cric-team-flag">' + initials(teamObj) + '</div>' +
+                '<div class="cric-team-name">' + teamObj.teamName + '</div></div>' +
+                '<div class="cric-team-score">' + scoreHtml + '</div></div>';
+        }
 
         if (cricMode === "live") {
-            if (label) label.textContent = "Live";
-            if (dot) dot.style.display = "inline-block";
-            if (arrow) arrow.textContent = "Tap for details ›";
-            el.innerHTML = "<b>" + matchTitle(m) + "</b> — " + scoreLine(m) + (m.matchInfo.status ? " · " + m.matchInfo.status : "");
+            const ms = m.matchScore || {};
+            card.innerHTML =
+                '<div class="cric-card-head">' +
+                '<span class="cric-card-desc">' + (mi.matchDesc || "") + " · " + (mi.seriesName || "") + '</span>' +
+                '<span class="cric-card-badge live"><span class="dot"></span>' + (mi.matchFormat || "") + '</span>' +
+                '</div>' +
+                teamRow(mi.team1, ms.team1Score) +
+                teamRow(mi.team2, ms.team2Score) +
+                '<div class="cric-card-status">' + (mi.status || "") + '</div>';
         } else {
-            if (label) label.textContent = "Upcoming";
-            if (dot) dot.style.display = "none";
-            if (arrow) arrow.textContent = "";
-            const start = Number(m.matchInfo.startDate);
-            const dateStr = start ? new Date(start).toDateString() : "";
-            const place = m.matchInfo.venueInfo ? (m.matchInfo.venueInfo.ground + ", " + m.matchInfo.venueInfo.city) : "";
-            el.innerHTML = "<b>" + matchTitle(m) + "</b> — " + dateStr + " · " + place;
+            const start = Number(mi.startDate);
+            const dateStr = start ? new Date(start).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : "";
+            const place = mi.venueInfo ? mi.venueInfo.ground + ", " + mi.venueInfo.city : "";
+            card.innerHTML =
+                '<div class="cric-card-head">' +
+                '<span class="cric-card-desc">' + (mi.matchDesc || "") + " · " + (mi.seriesName || "") + '</span>' +
+                '<span class="cric-card-badge upcoming">' + (mi.matchFormat || "") + '</span>' +
+                '</div>' +
+                teamRow(mi.team1, null) +
+                teamRow(mi.team2, null) +
+                '<div class="cric-card-status upcoming-status">📅 ' + dateStr + ' · 📍 ' + place + '</div>';
         }
     }
 
@@ -4398,7 +4425,7 @@ function initPaymentModal() {
         loadCricData();
         setInterval(loadCricData, 15 * 60 * 1000); // har 15 minute check (quota bachane ke liye)
 
-        const inner = document.getElementById("cricTickerInner");
+        const inner = document.getElementById("cricCard");
         if (inner) inner.addEventListener("click", function () {
             const m = cricMatches[cricIndex];
             if (m) openCricDetail(m);
