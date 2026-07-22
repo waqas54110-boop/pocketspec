@@ -1108,6 +1108,134 @@
             .mobile-panel { padding: 10px 16px 16px; }
             .mobile-panel a { font-size: 0.8rem; padding: 8px 0; }
         }
+
+        /* ===== SQUAD / PLAYING XI SECTION ===== */
+.cric-squad-wrap {
+    max-width: 540px;
+    margin: 16px auto 0;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    box-shadow: var(--shadow-sm);
+}
+.cric-squad-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+.cric-squad-title {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--ink);
+}
+.cric-squad-tabs {
+    display: flex;
+    gap: 6px;
+}
+.cric-squad-tab {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 4px 14px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--line);
+    background: var(--surface-2);
+    color: var(--ink-soft);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+}
+.cric-squad-tab.active {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+    box-shadow: 0 4px 16px var(--green-glow);
+}
+.cric-squad-tab:hover:not(.active) {
+    border-color: var(--green);
+    color: var(--ink);
+}
+.cric-squad-body {
+    max-height: 340px;
+    overflow-y: auto;
+}
+.cric-squad-group-title {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-faint);
+    margin: 10px 0 8px;
+}
+.cric-squad-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 8px;
+}
+.cric-squad-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    padding: 7px 10px;
+    transition: all 0.2s var(--ease);
+}
+.cric-squad-chip:hover {
+    border-color: var(--gold);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-2px);
+}
+.csc-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--green);
+    color: #fff;
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.csc-info { min-width: 0; }
+.csc-name {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.csc-role {
+    font-family: var(--mono);
+    font-size: 0.55rem;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    margin-top: 1px;
+}
+.csc-tag {
+    font-size: 0.5rem;
+    font-weight: 800;
+    padding: 1px 5px;
+    border-radius: var(--radius-full);
+    margin-left: 3px;
+}
+.csc-tag.cap { background: var(--gold-light); color: var(--gold); }
+.csc-tag.wk { background: var(--green-light); color: var(--green); }
+
+@media (max-width: 480px) {
+    .cric-squad-wrap { margin: 12px 4px 0; padding: 12px 14px; }
+    .cric-squad-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+}
     </style>
 </head>
 <body>
@@ -1177,6 +1305,13 @@
                 </div>
                 <button class="cric-nav-btn" id="cricNextBtn">›</button>
             </div>
+            <div class="cric-squad-wrap" id="cricSquadWrap">
+    <div class="cric-squad-head">
+        <span class="cric-squad-title">👥 Playing XI</span>
+        <div class="cric-squad-tabs" id="cricSquadTabs"></div>
+    </div>
+    <div class="cric-squad-body" id="cricSquadBody">Loading…</div>
+</div>
 
             <div class="cric-btn-row">
                 <button class="cric-comm-btn" id="cricCommBtn">🏏 Commentary</button>
@@ -1313,6 +1448,85 @@
         let cricMatches = [], cricMode = "live", cricIndex = 0, cricRotateTimer = null, cricPaused = false;
         let commRefreshTimer = null, commLastBallNbr = null;
         let scInningsData = [], scActiveIdx = 0;
+
+        let squadCache = {};
+let squadActiveTeam = 1;
+
+function playerInitials(name) {
+    return (name || "??").split(" ").filter(Boolean).map(w => w[0]).join("").slice(0, 2).toUpperCase();
+}
+
+function roleShort(role) {
+    const r = (role || "").toLowerCase();
+    if (r.indexOf("wk") !== -1) return "WK-Bat";
+    if (r.indexOf("all") !== -1) return "All-rounder";
+    if (r.indexOf("bowl") !== -1) return "Bowler";
+    return "Batter";
+}
+
+function renderSquadTabs(m) {
+    const tabs = document.getElementById("cricSquadTabs");
+    if (!tabs) return;
+    const mi = m.matchInfo;
+    tabs.innerHTML =
+        "<button class='cric-squad-tab" + (squadActiveTeam === 1 ? " active" : "") + "' data-team='1'>" +
+        (mi.team1.teamSName || mi.team1.teamName) + "</button>" +
+        "<button class='cric-squad-tab" + (squadActiveTeam === 2 ? " active" : "") + "' data-team='2'>" +
+        (mi.team2.teamSName || mi.team2.teamName) + "</button>";
+}
+
+function renderSquadBody(data) {
+    const body = document.getElementById("cricSquadBody");
+    if (!body) return;
+    if (!data || !data.player || !data.player.length) {
+        body.innerHTML = "<div style='padding:14px;text-align:center;color:var(--ink-faint);font-size:0.72rem;'>Squad abhi announce nahi hui.</div>";
+        return;
+    }
+    let html = "";
+    data.player.forEach(group => {
+        const label = (group.category || "").toLowerCase().indexOf("bench") !== -1 ? "🪑 Bench" : "🏏 Playing XI";
+        html += "<div class='cric-squad-group-title'>" + label + "</div><div class='cric-squad-grid'>";
+        (group.player || []).forEach(p => {
+            html +=
+                "<div class='cric-squad-chip'>" +
+                "<div class='csc-avatar'>" + playerInitials(p.name) + "</div>" +
+                "<div class='csc-info'>" +
+                "<div class='csc-name'>" + p.name +
+                (p.captain ? "<span class='csc-tag cap'>C</span>" : "") +
+                (p.keeper ? "<span class='csc-tag wk'>WK</span>" : "") +
+                "</div>" +
+                "<div class='csc-role'>" + roleShort(p.role) + "</div>" +
+                "</div></div>";
+        });
+        html += "</div>";
+    });
+    body.innerHTML = html;
+}
+
+function loadSquad(matchId, teamId) {
+    const body = document.getElementById("cricSquadBody");
+    if (!matchId || !teamId) { if (body) body.innerHTML = "<div style='padding:14px;text-align:center;color:var(--ink-faint);font-size:0.72rem;'>Squad abhi available nahi.</div>"; return; }
+    if (body) body.textContent = "Loading…";
+    const cacheKey = matchId + "_" + teamId;
+    if (squadCache[cacheKey]) { renderSquadBody(squadCache[cacheKey]); return; }
+    cricFetch("/mcenter/v1/" + matchId + "/team/" + teamId).then(data => {
+        squadCache[cacheKey] = data;
+        renderSquadBody(data);
+    }).catch(() => {
+        if (body) body.innerHTML = "<div style='padding:14px;text-align:center;color:var(--ink-faint);font-size:0.72rem;'>Load nahi ho saka.</div>";
+    });
+}
+
+function refreshSquadSection() {
+    const m = cricMatches[cricIndex];
+    const wrap = document.getElementById("cricSquadWrap");
+    if (!m || !wrap) return;
+    const mi = m.matchInfo;
+    renderSquadTabs(m);
+    const matchId = getCurrentMatchId();
+    const teamId = squadActiveTeam === 1 ? mi.team1.teamId : mi.team2.teamId;
+    loadSquad(matchId, teamId);
+}
 
         function flattenMatches(data) {
             let all = [];
@@ -1466,6 +1680,7 @@
         function goToCric(i) {
             cricIndex = (i + cricMatches.length) % cricMatches.length;
             renderCricTicker();
+            squadActiveTeam = 1;
             renderCricDots();
             markActiveListItem();
             document.getElementById("cricCommCard").classList.remove("open");
@@ -1492,6 +1707,7 @@
                     '<div class="cric-team-left"><div class="cric-team-flag">' + initials(teamObj) + '</div>' +
                     '<div class="cric-team-name">' + teamObj.teamName + '</div></div>' +
                     '<div class="cric-team-score">' + scoreHtml + '</div></div>';
+                
             }
 
             if (cricMode === "live") {
@@ -1517,6 +1733,7 @@
                     teamRow(mi.team2, null) +
                     '<div class="cric-card-status upcoming-status">📅 ' + dateStr + ' · 📍 ' + place + '</div>';
             }
+                   refreshSquadSection();
         }
 
         // === COMMENTARY ===
@@ -1758,6 +1975,13 @@
 
             document.getElementById("cricScBtn").addEventListener("click", toggleScorecard);
             document.getElementById("cricScCardClose").addEventListener("click", closeScorecardCard);
+
+            document.getElementById("cricSquadTabs").addEventListener("click", function(e) {
+    const tab = e.target.closest(".cric-squad-tab");
+    if (!tab) return;
+    squadActiveTeam = Number(tab.dataset.team);
+    refreshSquadSection();
+});
 
             document.getElementById("cricScTabs").addEventListener("click", function(e) {
                 const tab = e.target.closest(".cric-sc-tab");
