@@ -1478,11 +1478,11 @@
         const RAPIDAPI_KEY = "6f9ac27d54msha0f1c4baff68c42p148191jsn84052a372fb1";
         const RAPIDAPI_HOST = "cricbuzz-cricket.p.rapidapi.com";
 
-        function cricFetch(path) {
-            return fetch("https://" + RAPIDAPI_HOST + path, {
-                headers: { "x-rapidapi-host": RAPIDAPI_HOST, "x-rapidapi-key": RAPIDAPI_KEY }
-            }).then(r => r.json()).catch(() => null);
-        }
+       function cricFetch(path) {
+    return fetch("https://" + RAPIDAPI_HOST + path, {
+        headers: { "x-rapidapi-host": RAPIDAPI_HOST, "x-rapidapi-key": RAPIDAPI_KEY }
+    }).then(r => r.json()).catch(() => null);
+}
 
         let cricMatches = [], cricMode = "live", cricIndex = 0, cricRotateTimer = null, cricPaused = false;
         let commRefreshTimer = null, commLastBallNbr = null;
