@@ -2669,6 +2669,64 @@
     .cric-card-status { font-size: 0.62rem; }
     .cric-nav-btn { width: 22px; height: 22px; font-size: 0.6rem; }
 }
+  /* COMMENTARY BUTTON + PANEL */
+.cric-comm-btn {
+    display: block;
+    width: 100%;
+    margin-top: 6px;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    font-weight: 700;
+    background: var(--green-light);
+    color: var(--green);
+    border: 1px solid var(--green);
+    padding: 5px 10px;
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.cric-comm-btn:hover { background: var(--green); color: #fff; }
+
+.cric-comm-list {
+    max-height: 60vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 8px;
+}
+.cric-comm-item {
+    background: var(--surface-2);
+    border-left: 3px solid var(--line);
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: 0.75rem;
+    line-height: 1.4;
+}
+.cric-comm-item .cco-over {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    color: var(--ink-faint);
+    margin-right: 6px;
+}
+.cric-comm-item.wicket {
+    border-left-color: #e5484d;
+    background: #fdeaea;
+    font-weight: 700;
+}
+.cric-comm-item.boundary {
+    border-left-color: var(--gold);
+    background: var(--gold-light);
+    font-weight: 700;
+}
+.cric-comm-live-tag {
+    font-family: var(--mono);
+    font-size: 0.55rem;
+    color: var(--ink-faint);
+    text-align: center;
+    margin-top: 6px;
+}     
     </style>
 </head>
 <body>
@@ -2727,6 +2785,7 @@
     <div style="flex:1;max-width:380px;">
         <div class="cric-card" id="cricCard"></div>
         <div class="cric-dots-row" id="cricDotsRow"></div>
+        <button class="cric-comm-btn" id="cricCommBtn">🏏 Ball-by-ball Commentary</button>
     </div>
     <button class="cric-nav-btn" id="cricNextBtn">›</button>
 </div>
@@ -2736,6 +2795,14 @@
     <div class="qv-modal" style="max-width:480px;">
         <button class="qv-close" id="cricClose">✕</button>
         <div class="cric-scorecard-body" id="cricScorecardBody">Loading…</div>
+    </div>
+</div>
+   <div class="qv-overlay" id="cricCommOverlay">
+    <div class="qv-modal" style="max-width:480px;">
+        <button class="qv-close" id="cricCommClose">✕</button>
+        <div id="cricCommHeader" style="margin-bottom:4px;"></div>
+        <div class="cric-comm-list" id="cricCommList">Loading…</div>
+        <div class="cric-comm-live-tag" id="cricCommLiveTag"></div>
     </div>
 </div>
 
@@ -4661,6 +4728,98 @@ function initPaymentModal() {
         body.innerHTML = html;
         overlay.classList.add("open");
     }
+   // ============================================================
+    // BALL-BY-BALL COMMENTARY
+    // ============================================================
+    let commRefreshTimer = null;
+    let commLastBallNbr = null;
+
+    function getCurrentMatchId() {
+        const m = cricMatches[cricIndex];
+        return m && m.matchInfo ? m.matchInfo.matchId : null;
+    }
+
+    function classifyComm(c) {
+        const txt = (c.commtxt || "").toLowerCase();
+        if (c.eventtype === "WICKET") return "wicket";
+        if (txt.indexOf(" six") !== -1 || txt.indexOf(" four") !== -1) return "boundary";
+        return "";
+    }
+
+    function renderCommList(items, append) {
+        const list = document.getElementById("cricCommList");
+        if (!list) return;
+        if (!append) list.innerHTML = "";
+        if (!items || !items.length) {
+            if (!append) list.innerHTML = "<div style='padding:10px;text-align:center;color:var(--ink-faint);font-size:0.75rem;'>Commentary abhi available nahi.</div>";
+            return;
+        }
+        const frag = document.createDocumentFragment();
+        items.forEach(function (wrap) {
+            const c = wrap.commentary;
+            if (!c || !c.commtxt) return;
+            const div = document.createElement("div");
+            const cls = classifyComm(c);
+            div.className = "cric-comm-item" + (cls ? " " + cls : "");
+            const overLabel = c.overnum ? c.overnum + " ov" : "";
+            div.innerHTML = "<span class='cco-over'>" + overLabel + "</span>" + c.commtxt;
+            frag.appendChild(div);
+        });
+        // naye ball sabse upar dikhayein (jaisa API return karta hai — latest first)
+        if (append) list.insertBefore(frag, list.firstChild);
+        else list.appendChild(frag);
+    }
+
+    function fetchCommentary(matchId, isRefresh) {
+        cricFetch("/mcenter/v1/" + matchId + "/comm").then(function (data) {
+            if (!data || !data.comwrapper) return;
+            const items = data.comwrapper;
+            if (isRefresh) {
+                // sirf naye balls jo pehle nahi dikhaye
+                const newItems = [];
+                for (var i = 0; i < items.length; i++) {
+                    const bn = items[i].commentary && items[i].commentary.ballnbr;
+                    if (commLastBallNbr != null && bn <= commLastBallNbr) break;
+                    newItems.push(items[i]);
+                }
+                if (newItems.length) renderCommList(newItems, true);
+            } else {
+                renderCommList(items, false);
+            }
+            if (items[0] && items[0].commentary) {
+                commLastBallNbr = items[0].commentary.ballnbr || commLastBallNbr;
+            }
+            const tag = document.getElementById("cricCommLiveTag");
+            if (tag) tag.textContent = "Last updated: " + new Date().toLocaleTimeString();
+        }).catch(function () {
+            if (!isRefresh) renderCommList(null, false);
+        });
+    }
+
+    function openCommentary() {
+        const matchId = getCurrentMatchId();
+        const overlay = document.getElementById("cricCommOverlay");
+        const header = document.getElementById("cricCommHeader");
+        if (!matchId || !overlay) return;
+        const m = cricMatches[cricIndex];
+        if (header) header.innerHTML = "<h3 style='font-family:var(--display);font-size:1rem;'>" + matchTitle(m) + "</h3>";
+        commLastBallNbr = null;
+        renderCommList(null, false);
+        document.getElementById("cricCommList").textContent = "Loading…";
+        fetchCommentary(matchId, false);
+        overlay.classList.add("open");
+
+        if (commRefreshTimer) clearInterval(commRefreshTimer);
+        commRefreshTimer = setInterval(function () {
+            if (cricMode === "live") fetchCommentary(matchId, true);
+        }, 60000); // har 60 sec refresh — quota bachane ke liye
+    }
+
+    function closeCommentary() {
+        const overlay = document.getElementById("cricCommOverlay");
+        if (overlay) overlay.classList.remove("open");
+        if (commRefreshTimer) { clearInterval(commRefreshTimer); commRefreshTimer = null; }
+    }
 
     document.addEventListener("DOMContentLoaded", function () {
         loadCricData();
@@ -4687,6 +4846,16 @@ function initPaymentModal() {
         if (dotsRow) dotsRow.addEventListener("click", function (e) {
             const dot = e.target.closest(".cric-dot");
             if (dot) goToCric(Number(dot.getAttribute("data-i")));
+        });
+
+       const commBtn = document.getElementById("cricCommBtn");
+        if (commBtn) commBtn.addEventListener("click", openCommentary);
+
+        const commCloseBtn = document.getElementById("cricCommClose");
+        const commOverlay = document.getElementById("cricCommOverlay");
+        if (commCloseBtn) commCloseBtn.addEventListener("click", closeCommentary);
+        if (commOverlay) commOverlay.addEventListener("click", function (e) {
+            if (e.target === commOverlay) closeCommentary();
         });
 
         const closeBtn = document.getElementById("cricClose");
