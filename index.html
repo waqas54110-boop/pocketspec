@@ -4221,52 +4221,113 @@ function initPaymentModal() {
         window.addEventListener('ps:productsLoaded', function() {
             renderBanner();
         });
-
        // ============================================================
-// CRICKET LIVE TICKER (unofficial Cricbuzz scraper API)
+// CRICKET TICKER — Live score (agar chal raha ho) warna agle 10 din ke matches
 // ============================================================
 (function () {
     const CRIC_BASE = "https://cricbuzz-live.vercel.app";
     let cricMatches = [];
+    let cricMode = "live"; // 'live' ya 'upcoming'
     let cricIndex = 0;
     let cricRotateTimer = null;
 
     function cricFetch(path) {
         return fetch(CRIC_BASE + path)
             .then(r => r.json())
-            .then(d => (d && d.data && d.data.matches) ? d.data.matches : []);
+            .then(d => (d && d.data && d.data.matches) ? d.data.matches : [])
+            .catch(() => []);
     }
 
-    function loadLiveMatches() {
+    // "Today", "25 Jul", "Sun, 26 Jul" jaisi strings ko rough date mein convert karta hai
+    function parseCricDate(str) {
+        if (!str) return null;
+        const s = str.trim();
+        if (/today/i.test(s)) return new Date();
+        if (/tomorrow/i.test(s)) { const d = new Date(); d.setDate(d.getDate() + 1); return d; }
+        const cleaned = s.replace(/^[A-Za-z]+,\s*/, ""); // "Sun, 26 Jul" -> "26 Jul"
+        const withYear = /\d{4}/.test(cleaned) ? cleaned : cleaned + " " + new Date().getFullYear();
+        const d = new Date(withYear);
+        return isNaN(d.getTime()) ? null : d;
+    }
+
+    function within10Days(m) {
+        const d = parseCricDate(m.timeAndPlace && m.timeAndPlace.date);
+        if (!d) return true; // date samajh na aaye to bhi list mein rehne do
+        const now = new Date();
+        const diffDays = (d - now) / (1000 * 60 * 60 * 24);
+        return diffDays >= -1 && diffDays <= 10;
+    }
+
+    function loadCricData() {
         Promise.allSettled([
             cricFetch("/v1/matches/live?type=international"),
             cricFetch("/v1/matches/live?type=league")
         ]).then(results => {
-            let list = [];
-            results.forEach(r => { if (r.status === "fulfilled") list = list.concat(r.value); });
-            cricMatches = list.slice(0, 8);
-            const bar = document.getElementById("cricTickerBar");
-            if (!cricMatches.length) { if (bar) bar.style.display = "none"; return; }
-            if (bar) bar.style.display = "block";
-            cricIndex = 0;
-            renderCricTicker();
-            if (cricRotateTimer) clearInterval(cricRotateTimer);
-            cricRotateTimer = setInterval(function () {
-                cricIndex = (cricIndex + 1) % cricMatches.length;
-                renderCricTicker();
-            }, 6000);
-        }).catch(() => {
-            const bar = document.getElementById("cricTickerBar");
-            if (bar) bar.style.display = "none";
+            let liveList = [];
+            results.forEach(r => { if (r.status === "fulfilled") liveList = liveList.concat(r.value); });
+
+            if (liveList.length) {
+                cricMode = "live";
+                cricMatches = liveList.slice(0, 8);
+                startCricTicker();
+                return;
+            }
+
+            // Koi live match nahi — ab agle 10 din ke upcoming matches lao
+            Promise.allSettled([
+                cricFetch("/v1/matches/upcoming?type=international"),
+                cricFetch("/v1/matches/upcoming?type=league")
+            ]).then(upResults => {
+                let upList = [];
+                upResults.forEach(r => { if (r.status === "fulfilled") upList = upList.concat(r.value); });
+                upList = upList.filter(within10Days).slice(0, 10);
+
+                if (upList.length) {
+                    cricMode = "upcoming";
+                    cricMatches = upList;
+                    startCricTicker();
+                } else {
+                    const bar = document.getElementById("cricTickerBar");
+                    if (bar) bar.style.display = "none";
+                }
+            });
         });
+    }
+
+    function startCricTicker() {
+        const bar = document.getElementById("cricTickerBar");
+        if (bar) bar.style.display = "block";
+        cricIndex = 0;
+        renderCricTicker();
+        if (cricRotateTimer) clearInterval(cricRotateTimer);
+        cricRotateTimer = setInterval(function () {
+            cricIndex = (cricIndex + 1) % cricMatches.length;
+            renderCricTicker();
+        }, 6000);
     }
 
     function renderCricTicker() {
         const m = cricMatches[cricIndex];
         const el = document.getElementById("cricTickerText");
+        const label = document.querySelector(".cric-live-label");
+        const dot = document.querySelector(".cric-live-dot");
+        const arrow = document.querySelector(".cric-ticker-arrow");
         if (!m || !el) return;
-        const teams = (m.teams || []).map(t => "<b>" + (t.team || "") + "</b> " + (t.run || "")).join("  vs  ");
-        el.innerHTML = (m.title || "Match") + " — " + teams + (m.overview ? " · " + m.overview : "");
+
+        if (cricMode === "live") {
+            if (label) label.textContent = "Live";
+            if (dot) dot.style.display = "inline-block";
+            if (arrow) arrow.textContent = "Tap for scorecard ›";
+            const teams = (m.teams || []).map(t => "<b>" + (t.team || "") + "</b> " + (t.run || "")).join("  vs  ");
+            el.innerHTML = (m.title || "Match") + " — " + teams + (m.overview ? " · " + m.overview : "");
+        } else {
+            if (label) label.textContent = "Upcoming";
+            if (dot) dot.style.display = "none";
+            if (arrow) arrow.textContent = "";
+            const place = (m.timeAndPlace && m.timeAndPlace.place) ? m.timeAndPlace.place : "";
+            const date = (m.timeAndPlace && m.timeAndPlace.date) ? m.timeAndPlace.date : "";
+            el.innerHTML = (m.title || "Match") + " — <b>" + date + "</b> " + place;
+        }
     }
 
     function openCricScorecard(matchId) {
@@ -4296,14 +4357,30 @@ function initPaymentModal() {
             .catch(() => { body.innerHTML = "Score fetch nahi ho saka."; });
     }
 
+    function openCricUpcomingInfo(m) {
+        const overlay = document.getElementById("cricOverlay");
+        const body = document.getElementById("cricScorecardBody");
+        if (!overlay || !body) return;
+        const place = (m.timeAndPlace && m.timeAndPlace.place) ? m.timeAndPlace.place : "";
+        const date = (m.timeAndPlace && m.timeAndPlace.date) ? m.timeAndPlace.date : "";
+        const teams = (m.teams || []).map(t => t.team).join(" vs ");
+        body.innerHTML =
+            "<h3>" + (m.title || teams) + "</h3>" +
+            "<span class='cric-sc-live' style='color:var(--gold);background:var(--gold-light);'>Upcoming</span>" +
+            "<div class='cric-sc-update'>📅 " + date + "<br>📍 " + place + "</div>";
+        overlay.classList.add("open");
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
-        loadLiveMatches();
-        setInterval(loadLiveMatches, 90000); // har 90 sec list refresh
+        loadCricData();
+        setInterval(loadCricData, 90000); // har 90 sec dobara check
 
         const inner = document.getElementById("cricTickerInner");
         if (inner) inner.addEventListener("click", function () {
             const m = cricMatches[cricIndex];
-            if (m && m.id) openCricScorecard(m.id);
+            if (!m) return;
+            if (cricMode === "live" && m.id) openCricScorecard(m.id);
+            else openCricUpcomingInfo(m);
         });
 
         const closeBtn = document.getElementById("cricClose");
@@ -4312,7 +4389,8 @@ function initPaymentModal() {
         if (overlay) overlay.addEventListener("click", function (e) { if (e.target === overlay) overlay.classList.remove("open"); });
     });
 })();
-    </script>
+
+     </script>
 
 </body>
 </html>
