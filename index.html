@@ -2431,27 +2431,244 @@
                 padding: 8px 0;
             }
         }
-     /* ===== CRICKET SCORE CARD (navbar ke neeche) ===== */
-.cric-ticker-bar{background:var(--surface-2);width:100%;overflow:hidden;position:relative;border-bottom:1px solid var(--line);display:none;}
-.cric-card-outer{max-width:1280px;margin:0 auto;padding:10px 20px;display:flex;justify-content:center;}
-.cric-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);box-shadow:var(--shadow-sm);padding:10px 16px;width:100%;max-width:380px;cursor:pointer;transition:box-shadow 0.2s var(--ease),transform 0.2s var(--ease);}
-.cric-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);}
-.cric-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
-.cric-card-desc{font-size:0.68rem;color:var(--ink-soft);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:270px;}
-.cric-card-badge{font-family:var(--mono);font-size:0.55rem;font-weight:700;padding:2px 9px;border-radius:var(--radius-full);flex-shrink:0;}
-.cric-card-badge.live{background:#fdeaea;color:#e5484d;}
-.cric-card-badge.live .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#e5484d;margin-right:4px;animation:cricPulse 1.2s infinite;}
-.cric-card-badge.upcoming{background:var(--gold-light);color:var(--gold);}
-@keyframes cricPulse{0%,100%{opacity:1}50%{opacity:.3}}
-.cric-team-row{display:flex;align-items:center;justify-content:space-between;padding:4px 0;}
-.cric-team-left{display:flex;align-items:center;gap:8px;min-width:0;}
-.cric-team-flag{width:24px;height:24px;border-radius:50%;background:var(--green);color:#fff;font-family:var(--display);font-weight:800;font-size:0.6rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.cric-team-name{font-size:0.82rem;font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.cric-team-score{font-family:var(--mono);font-size:0.82rem;font-weight:700;color:var(--ink);flex-shrink:0;}
-.cric-team-score span{color:var(--ink-faint);font-weight:500;font-size:0.7rem;}
-.cric-card-status{font-size:0.72rem;color:var(--green);font-weight:600;margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);}
-.cric-card-status.upcoming-status{color:var(--gold);}
-@media (max-width:860px){.cric-card{max-width:100%;}.cric-card-desc{max-width:180px;}}
+/* ============================================================
+   CRICKET LIVE SCORE CARD
+   ============================================================ */
+.cric-ticker-bar {
+    background: var(--surface-2);
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    border-bottom: 1px solid var(--line);
+    display: none;
+}
+.cric-card-outer {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+/* Nav arrows */
+.cric-nav-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: all 0.15s var(--ease);
+    font-size: 0.7rem;
+}
+.cric-nav-btn:hover {
+    border-color: var(--green);
+    color: var(--green);
+}
+.cric-nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+/* Card */
+.cric-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-sm);
+    padding: 10px 16px;
+    width: 100%;
+    max-width: 380px;
+    cursor: pointer;
+    transition: box-shadow 0.2s var(--ease), transform 0.2s var(--ease);
+}
+.cric-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.cric-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+.cric-card-desc {
+    font-size: 0.68rem;
+    color: var(--ink-soft);
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 270px;
+}
+.cric-card-badge {
+    font-family: var(--mono);
+    font-size: 0.55rem;
+    font-weight: 700;
+    padding: 2px 9px;
+    border-radius: var(--radius-full);
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+.cric-card-badge.live {
+    background: #fdeaea;
+    color: #e5484d;
+}
+.cric-card-badge.live .dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #e5484d;
+    margin-right: 4px;
+    animation: cricPulse 1.2s infinite;
+}
+.cric-card-badge.upcoming {
+    background: var(--gold-light);
+    color: var(--gold);
+}
+@keyframes cricPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+/* Team rows */
+.cric-team-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 4px 0;
+}
+.cric-team-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+.cric-team-flag {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--green);
+    color: #fff;
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.cric-team-name {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--ink);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.cric-team-score {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--ink);
+    flex-shrink: 0;
+    text-align: right;
+    white-space: nowrap;
+}
+.cric-team-score span {
+    color: var(--ink-faint);
+    font-weight: 500;
+    font-size: 0.7rem;
+}
+
+.cric-card-status {
+    font-size: 0.72rem;
+    color: var(--green);
+    font-weight: 600;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed var(--line);
+}
+.cric-card-status.upcoming-status {
+    color: var(--gold);
+}
+
+/* Dots + counter */
+.cric-dots-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 6px;
+}
+.cric-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--line);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+.cric-dot.active {
+    background: var(--green);
+    transform: scale(1.4);
+}
+.cric-count-label {
+    font-family: var(--mono);
+    font-size: 0.5rem;
+    color: var(--ink-faint);
+    margin-left: 6px;
+}
+
+/* Modal (reuses qv-modal, extra bits for scorecard body) */
+.cric-scorecard-body { padding: 4px; }
+.cric-scorecard-body h3 { font-family: var(--display); font-size: 1rem; margin-bottom: 8px; }
+.cric-sc-live {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--green);
+    background: var(--green-light);
+    padding: 3px 10px;
+    border-radius: var(--radius-full);
+    display: inline-block;
+    margin-bottom: 8px;
+}
+.cric-sc-update { font-size: 0.8rem; color: var(--ink-soft); margin-bottom: 12px; }
+.cric-sc-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; margin-bottom: 10px; }
+.cric-sc-table th {
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 0.55rem;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding: 4px 6px;
+    border-bottom: 1px solid var(--line);
+}
+.cric-sc-table td { padding: 5px 6px; border-bottom: 1px solid var(--line); }
+
+/* Mobile */
+@media (max-width: 860px) {
+    .cric-card-outer { padding: 8px 12px; gap: 4px; }
+    .cric-card { max-width: 100%; padding: 8px 12px; }
+    .cric-card-desc { max-width: 150px; font-size: 0.6rem; }
+    .cric-card-badge { font-size: 0.48rem; padding: 2px 7px; }
+    .cric-team-name { font-size: 0.72rem; }
+    .cric-team-score { font-size: 0.72rem; }
+    .cric-team-flag { width: 20px; height: 20px; font-size: 0.5rem; }
+    .cric-card-status { font-size: 0.62rem; }
+    .cric-nav-btn { width: 22px; height: 22px; font-size: 0.6rem; }
+}
     </style>
 </head>
 <body>
@@ -2505,9 +2722,13 @@
 
 <!-- CRICKET LIVE SCORE CARD -->
 <div class="cric-ticker-bar" id="cricTickerBar">
-    <div class="cric-card-outer">
-        <div class="cric-card" id="cricCard"><!-- injected by JS --></div>
+   <div class="cric-card-outer">
+    <button class="cric-nav-btn" id="cricPrevBtn">‹</button>
+    <div style="flex:1;max-width:380px;">
+        <div class="cric-card" id="cricCard"></div>
+        <div class="cric-dots-row" id="cricDotsRow"></div>
     </div>
+    <button class="cric-nav-btn" id="cricNextBtn">›</button>
 </div>
 
 <!-- CRICKET DETAIL MODAL -->
@@ -4304,18 +4525,38 @@ function initPaymentModal() {
         });
     }
 
+   let cricPaused = false;
+
     function startCricTicker() {
         const bar = document.getElementById("cricTickerBar");
         if (bar) bar.style.display = "block";
         cricIndex = 0;
         renderCricTicker();
+        renderCricDots();
         if (cricRotateTimer) clearInterval(cricRotateTimer);
         cricRotateTimer = setInterval(function () {
+            if (cricPaused) return;
             cricIndex = (cricIndex + 1) % cricMatches.length;
             renderCricTicker();
+            renderCricDots();
         }, 6000);
     }
 
+    function renderCricDots() {
+        const row = document.getElementById("cricDotsRow");
+        if (!row) return;
+        if (cricMatches.length <= 1) { row.innerHTML = ""; return; }
+        row.innerHTML = cricMatches.map(function (_, i) {
+            return '<span class="cric-dot' + (i === cricIndex ? ' active' : '') + '" data-i="' + i + '"></span>';
+        }).join("") + '<span class="cric-count-label">' + (cricIndex + 1) + '/' + cricMatches.length + '</span>';
+    }
+
+    function goToCric(i) {
+        cricIndex = (i + cricMatches.length) % cricMatches.length;
+        renderCricTicker();
+        renderCricDots();
+    }
+   
     function scoreLine(m) {
         const ms = m.matchScore;
         if (!ms) return (m.matchInfo && m.matchInfo.status) || "";
@@ -4429,6 +4670,23 @@ function initPaymentModal() {
         if (inner) inner.addEventListener("click", function () {
             const m = cricMatches[cricIndex];
             if (m) openCricDetail(m);
+        });
+       
+       const prevBtn = document.getElementById("cricPrevBtn");
+        const nextBtn = document.getElementById("cricNextBtn");
+        if (prevBtn) prevBtn.addEventListener("click", function () { goToCric(cricIndex - 1); });
+        if (nextBtn) nextBtn.addEventListener("click", function () { goToCric(cricIndex + 1); });
+
+        const bar = document.getElementById("cricTickerBar");
+        if (bar) {
+            bar.addEventListener("mouseenter", function () { cricPaused = true; });
+            bar.addEventListener("mouseleave", function () { cricPaused = false; });
+        }
+
+        const dotsRow = document.getElementById("cricDotsRow");
+        if (dotsRow) dotsRow.addEventListener("click", function (e) {
+            const dot = e.target.closest(".cric-dot");
+            if (dot) goToCric(Number(dot.getAttribute("data-i")));
         });
 
         const closeBtn = document.getElementById("cricClose");
