@@ -2726,7 +2726,122 @@
     color: var(--ink-faint);
     text-align: center;
     margin-top: 6px;
-}     
+}  
+       /* SCORECARD — STANDALONE CARD */
+.cric-btn-row { display: flex; gap: 6px; }
+.cric-comm-btn, .cric-sc-btn { flex: 1; margin-top: 0; }
+.cric-sc-btn {
+    display: block;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    font-weight: 700;
+    background: var(--gold-light);
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    padding: 5px 10px;
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.cric-sc-btn:hover { background: var(--gold); color: #1a1a2e; }
+
+.cric-comm-card, .cric-sc-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-sm);
+    padding: 12px 14px;
+    margin-top: 8px;
+    max-width: 380px;
+    width: 100%;
+    display: none;
+}
+.cric-comm-card.open, .cric-sc-card.open { display: block; }
+
+.cric-comm-card-head, .cric-sc-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    gap: 8px;
+}
+.cric-comm-card-title, .cric-sc-card-title {
+    font-family: var(--display);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--ink);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.cric-card-close-btn {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: var(--surface-2);
+    color: var(--ink-soft);
+    font-size: 0.7rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.cric-card-close-btn:hover { border-color: #e5484d; color: #e5484d; }
+
+.cric-sc-innings-tabs { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 8px; }
+.cric-sc-tab {
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--line);
+    background: var(--surface-2);
+    color: var(--ink-soft);
+    cursor: pointer;
+    white-space: nowrap;
+}
+.cric-sc-tab.active { background: var(--green); border-color: var(--green); color: #fff; }
+.cric-sc-body { max-height: 50vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.cric-sc-section-title {
+    font-family: var(--display);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 8px 0 4px;
+}
+.cric-sc-table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.cric-sc-table { width: 100%; min-width: 340px; border-collapse: collapse; font-size: 0.68rem; }
+.cric-sc-table th {
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 0.5rem;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding: 4px 5px;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+}
+.cric-sc-table td { padding: 4px 5px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.cric-sc-table td.name-col, .cric-sc-table th.name-col { white-space: normal; min-width: 100px; }
+.cric-sc-table td.dismissal { color: var(--ink-faint); font-size: 0.6rem; }
+.cric-sc-extras, .cric-sc-total { font-size: 0.7rem; font-weight: 600; padding: 5px 0; }
+.cric-sc-total { color: var(--green); }
+
+@media (max-width: 860px) {
+    .cric-sc-body { max-height: 45vh; }
+    .cric-sc-table { font-size: 0.62rem; min-width: 300px; }
+    .cric-sc-tab { font-size: 0.52rem; padding: 4px 8px; }
+    .cric-comm-card, .cric-sc-card { max-width: 100%; }
+}
+@media (max-width: 480px) {
+    .cric-comm-btn, .cric-sc-btn { font-size: 0.5rem; padding: 4px 4px; }
+    .cric-sc-table { font-size: 0.58rem; min-width: 260px; }
+    .cric-comm-card, .cric-sc-card { padding: 10px 10px; }
+}
     </style>
 </head>
 <body>
@@ -2778,34 +2893,46 @@
         </div>
     </header>
 
-<!-- CRICKET LIVE SCORE CARD -->
 <div class="cric-ticker-bar" id="cricTickerBar">
    <div class="cric-card-outer">
     <button class="cric-nav-btn" id="cricPrevBtn">‹</button>
     <div style="flex:1;max-width:380px;">
         <div class="cric-card" id="cricCard"></div>
         <div class="cric-dots-row" id="cricDotsRow"></div>
-        <button class="cric-comm-btn" id="cricCommBtn">🏏 Ball-by-ball Commentary</button>
+
+        <div class="cric-btn-row">
+            <button class="cric-comm-btn" id="cricCommBtn">🏏 Commentary</button>
+            <button class="cric-sc-btn" id="cricScBtn">📊 Scorecard</button>
+        </div>
+
+        <div class="cric-comm-card" id="cricCommCard">
+            <div class="cric-comm-card-head">
+                <span class="cric-comm-card-title" id="cricCommTitle"></span>
+                <button class="cric-card-close-btn" id="cricCommCardClose">✕</button>
+            </div>
+            <div class="cric-comm-list" id="cricCommList">Loading…</div>
+            <div class="cric-comm-live-tag" id="cricCommLiveTag"></div>
+        </div>
+
+        <div class="cric-sc-card" id="cricScCard">
+            <div class="cric-sc-card-head">
+                <span class="cric-sc-card-title" id="cricScTitle"></span>
+                <button class="cric-card-close-btn" id="cricScCardClose">✕</button>
+            </div>
+            <div class="cric-sc-innings-tabs" id="cricScTabs"></div>
+            <div class="cric-sc-body" id="cricScBody">Loading…</div>
+        </div>
     </div>
     <button class="cric-nav-btn" id="cricNextBtn">›</button>
 </div>
 
-<!-- CRICKET DETAIL MODAL -->
+<!-- CRICKET DETAIL MODAL (match summary click pe) -->
 <div class="qv-overlay" id="cricOverlay">
     <div class="qv-modal" style="max-width:480px;">
         <button class="qv-close" id="cricClose">✕</button>
         <div class="cric-scorecard-body" id="cricScorecardBody">Loading…</div>
     </div>
 </div>
-   <div class="qv-overlay" id="cricCommOverlay">
-    <div class="qv-modal" style="max-width:480px;">
-        <button class="qv-close" id="cricCommClose">✕</button>
-        <div id="cricCommHeader" style="margin-bottom:4px;"></div>
-        <div class="cric-comm-list" id="cricCommList">Loading…</div>
-        <div class="cric-comm-live-tag" id="cricCommLiveTag"></div>
-    </div>
-</div>
-
     <!-- ============================================================
     SHOPIFY-STYLE BANNER
     ============================================================ -->
@@ -4731,6 +4858,29 @@ function initPaymentModal() {
    // ============================================================
     // BALL-BY-BALL COMMENTARY
     // ============================================================
+  // ============================================================
+    // COMMENTARY TEXT FORMATTER — fixes B0$/B1$ placeholders
+    // ============================================================
+    function formatCommText(c) {
+        let txt = c.commtxt || "";
+        const formats = c.commentaryformats;
+        if (formats && formats.length) {
+            formats.forEach(function (f) {
+                if (f.type === "bold" && f.value && f.value.length) {
+                    f.value.forEach(function (v) {
+                        if (v.id && v.value != null) {
+                            txt = txt.split(v.id).join("<b>" + v.value + "</b>");
+                        }
+                    });
+                }
+            });
+        }
+        return txt.trim();
+    }
+
+    // ============================================================
+    // BALL-BY-BALL COMMENTARY — inline card version
+    // ============================================================
     let commRefreshTimer = null;
     let commLastBallNbr = null;
 
@@ -4751,7 +4901,7 @@ function initPaymentModal() {
         if (!list) return;
         if (!append) list.innerHTML = "";
         if (!items || !items.length) {
-            if (!append) list.innerHTML = "<div style='padding:10px;text-align:center;color:var(--ink-faint);font-size:0.75rem;'>Commentary abhi available nahi.</div>";
+            if (!append) list.innerHTML = "<div style='padding:10px;text-align:center;color:var(--ink-faint);font-size:0.72rem;'>Commentary abhi available nahi.</div>";
             return;
         }
         const frag = document.createDocumentFragment();
@@ -4762,10 +4912,9 @@ function initPaymentModal() {
             const cls = classifyComm(c);
             div.className = "cric-comm-item" + (cls ? " " + cls : "");
             const overLabel = c.overnum ? c.overnum + " ov" : "";
-            div.innerHTML = "<span class='cco-over'>" + overLabel + "</span>" + c.commtxt;
+            div.innerHTML = "<span class='cco-over'>" + overLabel + "</span>" + formatCommText(c);
             frag.appendChild(div);
         });
-        // naye ball sabse upar dikhayein (jaisa API return karta hai — latest first)
         if (append) list.insertBefore(frag, list.firstChild);
         else list.appendChild(frag);
     }
@@ -4775,7 +4924,6 @@ function initPaymentModal() {
             if (!data || !data.comwrapper) return;
             const items = data.comwrapper;
             if (isRefresh) {
-                // sirf naye balls jo pehle nahi dikhaye
                 const newItems = [];
                 for (var i = 0; i < items.length; i++) {
                     const bn = items[i].commentary && items[i].commentary.ballnbr;
@@ -4796,29 +4944,141 @@ function initPaymentModal() {
         });
     }
 
-    function openCommentary() {
+    function toggleCommentary() {
+        const card = document.getElementById("cricCommCard");
+        const scCard = document.getElementById("cricScCard");
+        if (!card) return;
+        const willOpen = !card.classList.contains("open");
+        if (scCard) scCard.classList.remove("open");
+        card.classList.toggle("open", willOpen);
+        if (!willOpen) {
+            if (commRefreshTimer) { clearInterval(commRefreshTimer); commRefreshTimer = null; }
+            return;
+        }
         const matchId = getCurrentMatchId();
-        const overlay = document.getElementById("cricCommOverlay");
-        const header = document.getElementById("cricCommHeader");
-        if (!matchId || !overlay) return;
+        if (!matchId) return;
         const m = cricMatches[cricIndex];
-        if (header) header.innerHTML = "<h3 style='font-family:var(--display);font-size:1rem;'>" + matchTitle(m) + "</h3>";
+        document.getElementById("cricCommTitle").textContent = matchTitle(m);
         commLastBallNbr = null;
-        renderCommList(null, false);
         document.getElementById("cricCommList").textContent = "Loading…";
         fetchCommentary(matchId, false);
-        overlay.classList.add("open");
-
         if (commRefreshTimer) clearInterval(commRefreshTimer);
         commRefreshTimer = setInterval(function () {
             if (cricMode === "live") fetchCommentary(matchId, true);
-        }, 60000); // har 60 sec refresh — quota bachane ke liye
+        }, 60000);
     }
 
-    function closeCommentary() {
-        const overlay = document.getElementById("cricCommOverlay");
-        if (overlay) overlay.classList.remove("open");
+    function closeCommentaryCard() {
+        const card = document.getElementById("cricCommCard");
+        if (card) card.classList.remove("open");
         if (commRefreshTimer) { clearInterval(commRefreshTimer); commRefreshTimer = null; }
+    }
+
+    // ============================================================
+    // SCORECARD — inline card version
+    // ============================================================
+    let scInningsData = [];
+    let scActiveIdx = 0;
+
+    function renderBattingTable(inn) {
+        const bat = (inn.batsmen || []);
+        let rows = bat.map(function (b) {
+            const dismissal = b.outDesc || "not out";
+            return "<tr><td class='name-col'>" + (b.name || b.batName || "") +
+                (b.isCaptain ? " (c)" : "") + (b.isKeeper ? " †" : "") +
+                "<div class='dismissal'>" + dismissal + "</div></td>" +
+                "<td>" + (b.runs != null ? b.runs : "-") + "</td>" +
+                "<td>" + (b.balls != null ? b.balls : "-") + "</td>" +
+                "<td>" + (b.fours != null ? b.fours : "-") + "</td>" +
+                "<td>" + (b.sixes != null ? b.sixes : "-") + "</td>" +
+                "<td>" + (b.strkRate || b.strikeRate || "-") + "</td></tr>";
+        }).join("");
+        return "<div class='cric-sc-table-wrap'><table class='cric-sc-table'>" +
+            "<tr><th class='name-col'>Batter</th><th>R</th><th>B</th><th>4s</th><th>6s</th><th>SR</th></tr>" +
+            rows + "</table></div>";
+    }
+
+    function renderBowlingTable(inn) {
+        const bowl = (inn.bowlers || []);
+        let rows = bowl.map(function (b) {
+            return "<tr><td class='name-col'>" + (b.name || b.bowlName || "") + "</td>" +
+                "<td>" + (b.overs != null ? b.overs : "-") + "</td>" +
+                "<td>" + (b.maidens != null ? b.maidens : "-") + "</td>" +
+                "<td>" + (b.runs != null ? b.runs : "-") + "</td>" +
+                "<td>" + (b.wickets != null ? b.wickets : "-") + "</td>" +
+                "<td>" + (b.economy || "-") + "</td></tr>";
+        }).join("");
+        return "<div class='cric-sc-table-wrap'><table class='cric-sc-table'>" +
+            "<tr><th class='name-col'>Bowler</th><th>O</th><th>M</th><th>R</th><th>W</th><th>Econ</th></tr>" +
+            rows + "</table></div>";
+    }
+
+    function renderScInnings(idx) {
+        const body = document.getElementById("cricScBody");
+        if (!body || !scInningsData[idx]) { body.innerHTML = "<div style='padding:10px;color:var(--ink-faint);font-size:0.72rem;'>Data available nahi.</div>"; return; }
+        const inn = scInningsData[idx];
+        const extras = inn.extras || {};
+        const extrasTotal = extras.total != null ? extras.total :
+            ((extras.wides||0)+(extras.noBalls||0)+(extras.byes||0)+(extras.legByes||0));
+        body.innerHTML =
+            "<div class='cric-sc-section-title'>Batting</div>" +
+            renderBattingTable(inn) +
+            "<div class='cric-sc-extras'>Extras: " + extrasTotal + "</div>" +
+            "<div class='cric-sc-total'>Total: " + (inn.score != null ? inn.score : "-") +
+            "/" + (inn.wickets != null ? inn.wickets : "-") +
+            " (" + (inn.overs != null ? inn.overs : "-") + " ov)</div>" +
+            "<div class='cric-sc-section-title'>Bowling</div>" +
+            renderBowlingTable(inn);
+    }
+
+    function renderScTabs() {
+        const tabs = document.getElementById("cricScTabs");
+        if (!tabs) return;
+        tabs.innerHTML = scInningsData.map(function (inn, i) {
+            const label = inn.batTeamName || inn.batTeamShortName || ("Innings " + (i + 1));
+            return "<button class='cric-sc-tab" + (i === scActiveIdx ? " active" : "") +
+                "' data-i='" + i + "'>" + label + "</button>";
+        }).join("");
+    }
+
+    function fetchScorecard(matchId) {
+        cricFetch("/mcenter/v1/" + matchId + "/hscard").then(function (data) {
+            if (!data || !data.scoreCard) {
+                document.getElementById("cricScBody").innerHTML =
+                    "<div style='padding:10px;text-align:center;color:var(--ink-faint);font-size:0.72rem;'>Scorecard abhi available nahi.</div>";
+                return;
+            }
+            scInningsData = data.scoreCard;
+            scActiveIdx = scInningsData.length - 1;
+            renderScTabs();
+            renderScInnings(scActiveIdx);
+        }).catch(function () {
+            document.getElementById("cricScBody").innerHTML =
+                "<div style='padding:10px;text-align:center;color:var(--ink-faint);font-size:0.72rem;'>Load nahi ho saka.</div>";
+        });
+    }
+
+    function toggleScorecard() {
+        const card = document.getElementById("cricScCard");
+        const commCard = document.getElementById("cricCommCard");
+        if (!card) return;
+        const willOpen = !card.classList.contains("open");
+        if (commCard) commCard.classList.remove("open");
+        if (commRefreshTimer) { clearInterval(commRefreshTimer); commRefreshTimer = null; }
+        card.classList.toggle("open", willOpen);
+        if (!willOpen) return;
+        const matchId = getCurrentMatchId();
+        if (!matchId) return;
+        const m = cricMatches[cricIndex];
+        document.getElementById("cricScTitle").textContent = matchTitle(m);
+        document.getElementById("cricScTabs").innerHTML = "";
+        document.getElementById("cricScBody").textContent = "Loading…";
+        fetchScorecard(matchId);
+    }
+
+    function closeScorecardCard() {
+        const card = document.getElementById("cricScCard");
+        if (card) card.classList.remove("open");
     }
 
     document.addEventListener("DOMContentLoaded", function () {
@@ -4848,14 +5108,23 @@ function initPaymentModal() {
             if (dot) goToCric(Number(dot.getAttribute("data-i")));
         });
 
-       const commBtn = document.getElementById("cricCommBtn");
-        if (commBtn) commBtn.addEventListener("click", openCommentary);
+    const commBtn = document.getElementById("cricCommBtn");
+        if (commBtn) commBtn.addEventListener("click", toggleCommentary);
+        const commCardClose = document.getElementById("cricCommCardClose");
+        if (commCardClose) commCardClose.addEventListener("click", closeCommentaryCard);
 
-        const commCloseBtn = document.getElementById("cricCommClose");
-        const commOverlay = document.getElementById("cricCommOverlay");
-        if (commCloseBtn) commCloseBtn.addEventListener("click", closeCommentary);
-        if (commOverlay) commOverlay.addEventListener("click", function (e) {
-            if (e.target === commOverlay) closeCommentary();
+        const scBtn = document.getElementById("cricScBtn");
+        if (scBtn) scBtn.addEventListener("click", toggleScorecard);
+        const scCardClose = document.getElementById("cricScCardClose");
+        if (scCardClose) scCardClose.addEventListener("click", closeScorecardCard);
+
+        const scTabs = document.getElementById("cricScTabs");
+        if (scTabs) scTabs.addEventListener("click", function (e) {
+            const tab = e.target.closest(".cric-sc-tab");
+            if (!tab) return;
+            scActiveIdx = Number(tab.getAttribute("data-i"));
+            renderScTabs();
+            renderScInnings(scActiveIdx);
         });
 
         const closeBtn = document.getElementById("cricClose");
