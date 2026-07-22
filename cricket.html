@@ -1341,14 +1341,7 @@
                 </div>
                 <button class="cric-nav-btn" id="cricNextBtn">›</button>
             </div>
-            <div class="cric-squad-wrap" id="cricSquadWrap">
-    <div class="cric-squad-head">
-        <span class="cric-squad-title">👥 Playing XI</span>
-        <div class="cric-squad-tabs" id="cricSquadTabs"></div>
-    </div>
-    <div class="cric-squad-body" id="cricSquadBody">Loading…</div>
-</div>
-
+       
             <div class="cric-btn-row">
                 <button class="cric-comm-btn" id="cricCommBtn">🏏 Commentary</button>
                 <button class="cric-sc-btn" id="cricScBtn">📊 Scorecard</button>
@@ -1590,16 +1583,7 @@ function closeSquadCard() {
     if (card) card.classList.remove("open");
 }
 
-function refreshSquadSection() {
-    const m = cricMatches[cricIndex];
-    const wrap = document.getElementById("cricSquadWrap");
-    if (!m || !wrap) return;
-    const mi = m.matchInfo;
-    renderSquadTabs(m);
-    const matchId = getCurrentMatchId();
-    const teamId = squadActiveTeam === 1 ? mi.team1.teamId : mi.team2.teamId;
-    loadSquad(matchId, teamId);
-}
+
 
         function flattenMatches(data) {
             let all = [];
@@ -1807,7 +1791,7 @@ function refreshSquadSection() {
                     teamRow(mi.team2, null) +
                     '<div class="cric-card-status upcoming-status">📅 ' + dateStr + ' · 📍 ' + place + '</div>';
             }
-                   refreshSquadSection();
+                 
         }
 
         // === COMMENTARY ===
