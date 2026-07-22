@@ -2431,6 +2431,23 @@
                 padding: 8px 0;
             }
         }
+       /* ===== CRICKET LIVE TICKER ===== */
+.cric-ticker-bar{background:linear-gradient(90deg,var(--green),#0a5c2c);width:100%;overflow:hidden;position:relative;}
+.cric-ticker-inner{display:flex;align-items:center;gap:10px;padding:7px 20px;max-width:1280px;margin:0 auto;cursor:pointer;}
+.cric-live-dot{width:7px;height:7px;border-radius:50%;background:#ff4d4d;flex-shrink:0;animation:cricPulse 1.2s infinite;}
+@keyframes cricPulse{0%,100%{opacity:1}50%{opacity:.3}}
+.cric-live-label{font-family:var(--mono);font-size:0.55rem;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.06em;flex-shrink:0;}
+.cric-ticker-text{color:#fff;font-size:0.75rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;}
+.cric-ticker-text b{color:var(--gold-light);}
+.cric-ticker-arrow{color:rgba(255,255,255,0.7);font-size:0.65rem;flex-shrink:0;font-family:var(--mono);}
+.cric-scorecard-body{padding:4px;}
+.cric-scorecard-body h3{font-family:var(--display);font-size:1rem;margin-bottom:8px;}
+.cric-sc-live{font-family:var(--mono);font-size:0.7rem;color:var(--green);background:var(--green-light);padding:3px 10px;border-radius:var(--radius-full);display:inline-block;margin-bottom:8px;}
+.cric-sc-update{font-size:0.8rem;color:var(--ink-soft);margin-bottom:12px;}
+.cric-sc-table{width:100%;border-collapse:collapse;font-size:0.78rem;margin-bottom:10px;}
+.cric-sc-table th{text-align:left;font-family:var(--mono);font-size:0.55rem;text-transform:uppercase;color:var(--ink-faint);padding:4px 6px;border-bottom:1px solid var(--line);}
+.cric-sc-table td{padding:5px 6px;border-bottom:1px solid var(--line);}
+@media (max-width:860px){.cric-ticker-text{font-size:0.68rem;}}
     </style>
 </head>
 <body>
@@ -2481,6 +2498,24 @@
             <input id="navSearchMobile" type="text" placeholder="Search products…" autocomplete="off" />
         </div>
     </header>
+
+   <!-- CRICKET LIVE TICKER -->
+<div class="cric-ticker-bar" id="cricTickerBar" style="display:none;">
+    <div class="cric-ticker-inner" id="cricTickerInner">
+        <span class="cric-live-dot"></span>
+        <span class="cric-live-label">Live</span>
+        <span class="cric-ticker-text" id="cricTickerText">Loading scores…</span>
+        <span class="cric-ticker-arrow">Tap for scorecard ›</span>
+    </div>
+</div>
+
+<!-- CRICKET SCORECARD MODAL (reuses qv-overlay style) -->
+<div class="qv-overlay" id="cricOverlay">
+    <div class="qv-modal" style="max-width:480px;">
+        <button class="qv-close" id="cricClose">✕</button>
+        <div class="cric-scorecard-body" id="cricScorecardBody">Loading…</div>
+    </div>
+</div>
 
     <!-- ============================================================
     SHOPIFY-STYLE BANNER
@@ -4186,6 +4221,97 @@ function initPaymentModal() {
         window.addEventListener('ps:productsLoaded', function() {
             renderBanner();
         });
+
+       // ============================================================
+// CRICKET LIVE TICKER (unofficial Cricbuzz scraper API)
+// ============================================================
+(function () {
+    const CRIC_BASE = "https://cricbuzz-live.vercel.app";
+    let cricMatches = [];
+    let cricIndex = 0;
+    let cricRotateTimer = null;
+
+    function cricFetch(path) {
+        return fetch(CRIC_BASE + path)
+            .then(r => r.json())
+            .then(d => (d && d.data && d.data.matches) ? d.data.matches : []);
+    }
+
+    function loadLiveMatches() {
+        Promise.allSettled([
+            cricFetch("/v1/matches/live?type=international"),
+            cricFetch("/v1/matches/live?type=league")
+        ]).then(results => {
+            let list = [];
+            results.forEach(r => { if (r.status === "fulfilled") list = list.concat(r.value); });
+            cricMatches = list.slice(0, 8);
+            const bar = document.getElementById("cricTickerBar");
+            if (!cricMatches.length) { if (bar) bar.style.display = "none"; return; }
+            if (bar) bar.style.display = "block";
+            cricIndex = 0;
+            renderCricTicker();
+            if (cricRotateTimer) clearInterval(cricRotateTimer);
+            cricRotateTimer = setInterval(function () {
+                cricIndex = (cricIndex + 1) % cricMatches.length;
+                renderCricTicker();
+            }, 6000);
+        }).catch(() => {
+            const bar = document.getElementById("cricTickerBar");
+            if (bar) bar.style.display = "none";
+        });
+    }
+
+    function renderCricTicker() {
+        const m = cricMatches[cricIndex];
+        const el = document.getElementById("cricTickerText");
+        if (!m || !el) return;
+        const teams = (m.teams || []).map(t => "<b>" + (t.team || "") + "</b> " + (t.run || "")).join("  vs  ");
+        el.innerHTML = (m.title || "Match") + " — " + teams + (m.overview ? " · " + m.overview : "");
+    }
+
+    function openCricScorecard(matchId) {
+        const overlay = document.getElementById("cricOverlay");
+        const body = document.getElementById("cricScorecardBody");
+        if (!overlay || !body) return;
+        body.innerHTML = "Loading scorecard…";
+        overlay.classList.add("open");
+        fetch(CRIC_BASE + "/v1/score/" + matchId)
+            .then(r => r.json())
+            .then(d => {
+                const s = d && d.data ? d.data : null;
+                if (!s) { body.innerHTML = "Score fetch nahi ho saka."; return; }
+                body.innerHTML =
+                    "<h3>" + (s.title || "") + "</h3>" +
+                    "<span class='cric-sc-live'>" + (s.liveScore || "") + "</span>" +
+                    "<div class='cric-sc-update'>" + (s.update || "") + "</div>" +
+                    "<table class='cric-sc-table'><tr><th>Batsman</th><th>R</th><th>B</th><th>SR</th></tr>" +
+                    "<tr><td>" + (s.batsmanOne||"") + "</td><td>" + (s.batsmanOneRun||"") + "</td><td>" + (s.batsmanOneBall||"") + "</td><td>" + (s.batsmanOneSR||"") + "</td></tr>" +
+                    "<tr><td>" + (s.batsmanTwo||"") + "</td><td>" + (s.batsmanTwoRun||"") + "</td><td>" + (s.batsmanTwoBall||"") + "</td><td>" + (s.batsmanTwoSR||"") + "</td></tr>" +
+                    "</table>" +
+                    "<table class='cric-sc-table'><tr><th>Bowler</th><th>O</th><th>R</th><th>W</th></tr>" +
+                    "<tr><td>" + (s.bowlerOne||"") + "</td><td>" + (s.bowlerOneOver||"") + "</td><td>" + (s.bowlerOneRun||"") + "</td><td>" + (s.bowlerOneWickets||"") + "</td></tr>" +
+                    "<tr><td>" + (s.bowlerTwo||"") + "</td><td>" + (s.bowlerTwoOver||"") + "</td><td>" + (s.bowlerTwoRun||"") + "</td><td>" + (s.bowlerTwoWicket||"") + "</td></tr>" +
+                    "</table>";
+            })
+            .catch(() => { body.innerHTML = "Score fetch nahi ho saka."; });
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        loadLiveMatches();
+        setInterval(loadLiveMatches, 90000); // har 90 sec list refresh
+
+        const inner = document.getElementById("cricTickerInner");
+        if (inner) inner.addEventListener("click", function () {
+            const m = cricMatches[cricIndex];
+            if (m && m.id) openCricScorecard(m.id);
+        });
+
+        const closeBtn = document.getElementById("cricClose");
+        const overlay = document.getElementById("cricOverlay");
+        if (closeBtn) closeBtn.addEventListener("click", () => overlay.classList.remove("open"));
+        if (overlay) overlay.addEventListener("click", function (e) { if (e.target === overlay) overlay.classList.remove("open"); });
+    });
+})();
     </script>
 
 </body>
