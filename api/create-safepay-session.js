@@ -27,7 +27,6 @@ module.exports = async (req, res) => {
   const orderId = 'ORD' + Date.now();
 
   try {
-    // Step 1: Create payment session (tracker)
     const sessionResponse = await safepay.payments.session.setup({
       merchant_api_key: process.env.SAFEPAY_API_KEY,
       intent: 'CYBERSOURCE',
@@ -38,15 +37,11 @@ module.exports = async (req, res) => {
       metadata: { order_id: orderId }
     });
 
-    console.log('SESSION RESPONSE:', JSON.stringify(sessionResponse));
     const trackerToken = sessionResponse.data.tracker.token;
 
-    // Step 2: Create authentication token
     const authResponse = await safepay.client.passport.create();
-    console.log('AUTH RESPONSE:', JSON.stringify(authResponse));
     const authToken = authResponse.data;
 
-    // Step 3: Generate the Checkout URL
     const checkoutUrl = await safepay.checkout.createCheckoutUrl({
       tracker: trackerToken,
       tbt: authToken,
@@ -56,9 +51,9 @@ module.exports = async (req, res) => {
       cancel_url: 'https://pocketspec.vercel.app/order-cancel'
     });
 
-    console.log('CHECKOUT URL:', checkoutUrl);
+    const fixedCheckoutUrl = checkoutUrl.replace('undefined', 'https://sandbox.api.getsafepay.com/components');
 
-    res.status(200).json({ checkoutUrl, orderId });
+    res.status(200).json({ checkoutUrl: fixedCheckoutUrl, orderId });
 
   } catch (err) {
     console.error('SAFEPAY ERROR:', err);
