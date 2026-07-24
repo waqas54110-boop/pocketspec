@@ -3832,17 +3832,9 @@ function initPaymentModal() {
                 body: JSON.stringify({ amount: currentPayProduct.price, customerName })
             });
             const data = await res.json();
-            if (!data.token) throw new Error('No token received');
+            if (!data.checkoutUrl) throw new Error('No checkout URL received');
 
-            const checkoutUrl = "https://sandbox.api.getsafepay.com/components?" +
-                "beacon=" + data.token +
-                "&env=sandbox" +
-                "&source=custom" +
-                "&order_id=" + data.orderId +
-                "&redirect_url=" + encodeURIComponent(window.location.origin + window.location.pathname) +
-                "&cancel_url=" + encodeURIComponent(window.location.origin + window.location.pathname);
-
-            window.location.href = checkoutUrl;
+            window.location.href = data.checkoutUrl;
 
         } catch (err) {
             console.error(err);
