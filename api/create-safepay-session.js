@@ -14,50 +14,16 @@ module.exports = async (req, res) => {
     return res.status(200).end();
   }
 
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+  // Debug: inspect available methods
+  console.log('safepay keys:', Object.keys(safepay));
+  console.log('safepay.auth:', safepay.auth);
+  console.log('safepay.checkouts:', safepay.checkouts);
 
-  const { amount, customerName } = req.body;
-
-  if (!amount) {
-    return res.status(400).json({ error: 'Amount is required' });
-  }
-
-  const orderId = 'ORD' + Date.now();
-
-  try {
-    // Step 1: Create payment session (tracker)
-    const sessionResponse = await safepay.payments.session.setup({
-      merchant_api_key: process.env.SAFEPAY_API_KEY,
-      intent: 'CYBERSOURCE',
-      mode: 'payment',
-      entry_mode: 'raw',
-      currency: 'PKR',
-      amount: Math.round(amount * 100),
-      metadata: { order_id: orderId }
-    });
-
-    const trackerToken = sessionResponse.data.tracker.token;
-
-    // Step 2: Create authentication token
-    const authResponse = await safepay.auth.passport.create();
-    const authToken = authResponse.data;
-
-    // Step 3: Generate the Checkout URL using the SDK
-    const checkoutUrl = await safepay.checkouts.payment.create({
-      tracker: trackerToken,
-      tbt: authToken,
-      environment: 'sandbox',
-      source: 'hosted',
-      redirect_url: 'https://pocketspec.vercel.app/order-success',
-      cancel_url: 'https://pocketspec.vercel.app/order-cancel'
-    });
-
-    res.status(200).json({ checkoutUrl, orderId });
-
-  } catch (err) {
-    console.error('SAFEPAY ERROR:', err);
-    res.status(500).json({ error: 'Payment session creation failed', details: err.message });
-  }
+  return res.status(200).json({
+    keys: Object.keys(safepay),
+    hasAuth: !!safepay.auth,
+    hasCheckouts: !!safepay.checkouts,
+    authKeys: safepay.auth ? Object.keys(safepay.auth) : null,
+    checkoutsKeys: safepay.checkouts ? Object.keys(safepay.checkouts) : null
+  });
 };
