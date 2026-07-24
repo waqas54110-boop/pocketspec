@@ -27,20 +27,37 @@ module.exports = async (req, res) => {
   const orderId = 'ORD' + Date.now();
 
   try {
-    const response = await safepay.payments.session.setup({
+    // Step 1: Create payment session (tracker)
+    const sessionResponse = await safepay.payments.session.setup({
       merchant_api_key: process.env.SAFEPAY_API_KEY,
       intent: 'CYBERSOURCE',
       mode: 'payment',
+      entry_mode: 'raw',
       currency: 'PKR',
       amount: Math.round(amount * 100),
       metadata: { order_id: orderId }
     });
 
-    const token = response.data.tracker.token;
-    res.status(200).json({ token, orderId });
+    const trackerToken = sessionResponse.data.tracker.token;
+
+    // Step 2: Create authentication token
+    const authResponse = await safepay.auth.passport.create();
+    const authToken = authResponse.data;
+
+    // Step 3: Generate the Checkout URL using the SDK
+    const checkoutUrl = await safepay.checkouts.payment.create({
+      tracker: trackerToken,
+      tbt: authToken,
+      environment: 'sandbox',
+      source: 'hosted',
+      redirect_url: 'https://pocketspec.vercel.app/order-success',
+      cancel_url: 'https://pocketspec.vercel.app/order-cancel'
+    });
+
+    res.status(200).json({ checkoutUrl, orderId });
 
   } catch (err) {
     console.error('SAFEPAY ERROR:', err);
-    res.status(500).json({ error: 'Payment session creation failed' });
+    res.status(500).json({ error: 'Payment session creation failed', details: err.message });
   }
 };
