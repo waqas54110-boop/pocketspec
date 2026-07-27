@@ -51,7 +51,7 @@ module.exports = async (req, res) => {
       cancel_url: 'https://pocketspec.vercel.app/order-cancel'
     });
 
-    const fixedCheckoutUrl = checkoutUrl.replace('undefined', 'https://sandbox.api.getsafepay.com/components');
+    const fixedCheckoutUrl = checkoutUrl.replace('undefined', 'https://sandbox.api.getsafepay.com/checkout/pay');
 
     res.status(200).json({ checkoutUrl: fixedCheckoutUrl, orderId });
 
