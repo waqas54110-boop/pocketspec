@@ -47,8 +47,8 @@ module.exports = async (req, res) => {
       tbt: authToken,
       environment: 'sandbox',
       source: 'hosted',
-     redirect_url: 'https://pocketspec.vercel.app/order-success.html',
-    cancel_url: 'https://pocketspec.vercel.app/order-cancel.html'
+      redirect_url: 'https://pocketspec.vercel.app/order-success.html',
+      cancel_url: 'https://pocketspec.vercel.app/order-cancel.html'
     });
 
     const fixedCheckoutUrl = checkoutUrl.replace('undefined', 'https://sandbox.api.getsafepay.com/checkout/pay');
