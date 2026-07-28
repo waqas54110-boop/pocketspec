@@ -14,10 +14,15 @@ module.exports = async (req, res) => {
     return res.status(200).end();
   }
 
-  return res.status(200).json({
-    hasCheckouts: typeof safepay.checkouts,
-    hasCheckoutsPayment: safepay.checkouts ? typeof safepay.checkouts.payment : 'checkouts is undefined',
-    packageVersion: require('@sfpy/node-core/package.json').version,
-    availableTopLevelKeys: Object.keys(safepay)
-  });
+  try {
+    return res.status(200).json({
+      hasCheckouts: typeof safepay.checkouts,
+      checkoutsKeys: safepay.checkouts ? Object.keys(safepay.checkouts) : 'checkouts is undefined',
+      hasCheckout: typeof safepay.checkout,
+      checkoutKeys: safepay.checkout ? Object.keys(safepay.checkout) : 'checkout is undefined',
+      availableTopLevelKeys: Object.keys(safepay)
+    });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
 };
