@@ -14,6 +14,18 @@ module.exports = async (req, res) => {
     return res.status(200).end();
   }
 
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  const { amount, customerName } = req.body;
+
+  if (!amount) {
+    return res.status(400).json({ error: 'Amount is required' });
+  }
+
+  const orderId = 'ORD' + Date.now();
+
   try {
     const sessionResponse = await safepay.payments.session.setup({
       merchant_api_key: process.env.SAFEPAY_API_KEY,
@@ -21,21 +33,22 @@ module.exports = async (req, res) => {
       mode: 'payment',
       entry_mode: 'raw',
       currency: 'PKR',
-      amount: 50000,
-      metadata: { order_id: 'DEBUG' + Date.now() }
+      amount: Math.round(amount * 100),
+      metadata: { order_id: orderId }
     });
 
-    const authResponse = await safepay.client.passport.create();
+    const trackerToken = sessionResponse.data.tracker.token;
 
-    return res.status(200).json({
-      fullSessionResponse: sessionResponse,
-      fullAuthResponse: authResponse,
-      trackerToken: sessionResponse.data.tracker.token,
-      authTokenValue: authResponse.data,
-      authTokenType: typeof authResponse.data
-    });
+    const checkoutUrl = "https://sandbox.api.getsafepay.com/checkout/pay?" +
+      "tracker=" + trackerToken +
+      "&source=hosted" +
+      "&redirect_url=" + encodeURIComponent('https://pocketspec.vercel.app/order-success.html') +
+      "&cancel_url=" + encodeURIComponent('https://pocketspec.vercel.app/order-cancel.html');
+
+    res.status(200).json({ checkoutUrl, orderId });
 
   } catch (err) {
-    return res.status(500).json({ error: err.message, stack: err.stack });
+    console.error('SAFEPAY ERROR:', err);
+    res.status(500).json({ error: 'Payment session creation failed', details: err.message });
   }
 };
