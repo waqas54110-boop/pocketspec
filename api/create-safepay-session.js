@@ -15,14 +15,27 @@ module.exports = async (req, res) => {
   }
 
   try {
-    return res.status(200).json({
-      hasCheckouts: typeof safepay.checkouts,
-      checkoutsKeys: safepay.checkouts ? Object.keys(safepay.checkouts) : 'checkouts is undefined',
-      hasCheckout: typeof safepay.checkout,
-      checkoutKeys: safepay.checkout ? Object.keys(safepay.checkout) : 'checkout is undefined',
-      availableTopLevelKeys: Object.keys(safepay)
+    const sessionResponse = await safepay.payments.session.setup({
+      merchant_api_key: process.env.SAFEPAY_API_KEY,
+      intent: 'CYBERSOURCE',
+      mode: 'payment',
+      entry_mode: 'raw',
+      currency: 'PKR',
+      amount: 50000,
+      metadata: { order_id: 'DEBUG' + Date.now() }
     });
+
+    const authResponse = await safepay.client.passport.create();
+
+    return res.status(200).json({
+      fullSessionResponse: sessionResponse,
+      fullAuthResponse: authResponse,
+      trackerToken: sessionResponse.data.tracker.token,
+      authTokenValue: authResponse.data,
+      authTokenType: typeof authResponse.data
+    });
+
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message, stack: err.stack });
   }
 };
