@@ -39,8 +39,13 @@ module.exports = async (req, res) => {
 
     const trackerToken = sessionResponse.data.tracker.token;
 
-    const checkoutUrl = "https://sandbox.api.getsafepay.com/checkout/pay?" +
-      "tracker=" + trackerToken +
+    const authResponse = await safepay.client.passport.create();
+    const authToken = authResponse.data;
+
+    const checkoutUrl = "https://sandbox.api.getsafepay.com/embedded?" +
+      "environment=sandbox" +
+      "&tracker=" + trackerToken +
+      "&tbt=" + encodeURIComponent(authToken) +
       "&source=hosted" +
       "&redirect_url=" + encodeURIComponent('https://pocketspec.vercel.app/order-success.html') +
       "&cancel_url=" + encodeURIComponent('https://pocketspec.vercel.app/order-cancel.html');
